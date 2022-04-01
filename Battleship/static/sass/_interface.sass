@@ -27,24 +27,37 @@ button
 body
   +f-mont
   font-size: 15px
+  // background: url(/static/img/1.png)
+  background: url(/static/img/body-background.jpg)
 
-.container
-  max-width: 1080px
-  height: 300px
-  margin: 30px auto
-  color: white
-  background: cornflowerblue
-  border-radius: 20px
+  &::after
+    content: ""
+    background-color: $white
+    opacity: 0.2
+    position: absolute
+    top: 0
+    bottom: 0
+    left: 0
+    right: 0
+    z-index: -1
 
-  display: flex
-  justify-content: center
-  align-items: center
-  text-align: center
+// .container
+//   max-width: 1080px
+//   height: 300px
+//   margin: 30px auto
+//   color: white
+//   background: cornflowerblue
+//   border-radius: 20px
 
-// .section-wrapper
-//   max-width: 1230px
-//   padding: 0 15px
-//   margin: 0 auto
+//   display: flex
+//   justify-content: center
+//   align-items: center
+//   text-align: center
+
+.section-wrapper
+  max-width: 1400px
+  padding: 0 15px
+  margin: 0 auto
 
 // @media (max-width: 1200px)
 

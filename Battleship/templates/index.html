@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Battleship</title>
+    <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico">
 
-    
 	<script src="https://kit.fontawesome.com/1f2dd28b21.js" crossorigin="anonymous"></script>
 	<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Montserrat:wght@500;700&family=Roboto:ital,wght@0,400;1,300&display=swap" rel="stylesheet">
+    
     <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}"> -->
     <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
     <link rel="stylesheet" href="/static/css/normalize.css">
@@ -16,11 +17,27 @@
 <body>
     <section class="header">
         <div class="section-wrapper">
+            <div class="header_title">Battleship</div>
             <div class="contact">
-                <a class="contact_link" href="https://github.com/STPDRichie"><i class="fa-brands fa-github"></i></a>
-                <a class="contact_link" href="https://www.instagram.com/stpdrichie"><i class="fa-brands fa-instagram"></i></a>
-                <a class="contact_link" href="https://vk.com/stpdrichie"><i class="fa-brands fa-vk"></i></a>
+                <div class="contact-wrapper">
+                    <a class="contact_link" href="https://github.com/STPDRichie">
+                        <i class="fa-brands fa-github"></i>
+                    </a>
+                    <a class="contact_link" href="https://www.instagram.com/stpdrichie">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+                    <a class="contact_link" href="https://vk.com/stpdrichie">
+                        <i class="fa-brands fa-vk"></i>
+                    </a>
+                </div>
             </div>
+        </div>
+    </section>
+
+    <section class="game">
+        <div class="section-wrapper">
+            <div class="game_board"></div>
+            <div class="game_board"></div>
         </div>
     </section>
     
