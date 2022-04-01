@@ -1,0 +1,56 @@
+*
+  box-sizing: border-box
+  margin: 0
+  padding: 0
+
+::selection
+	background: #eeeeee
+
+::-webkit-scrollbar
+  width: 10px
+::-webkit-scrollbar-track
+  background: #f5f5f5
+  border-radius: 10px
+::-webkit-scrollbar-thumb
+  background: $light-text
+  border: 2px solid #f5f5f5
+  border-radius: 10px
+
+li, a
+  text-decoration: none
+li
+  list-style: none
+button
+  &:focus
+    outline: none
+
+body
+  +f-mont
+  font-size: 15px
+
+.container
+  max-width: 1080px
+  height: 300px
+  padding: 0 15px
+  margin: 0 auto
+  color: white
+  background: cornflowerblue
+  border-radius: 20px
+
+  display: flex
+  justify-content: center
+  align-items: center
+  text-align: center
+
+// .section-wrapper
+//   max-width: 1230px
+//   padding: 0 15px
+//   margin: 0 auto
+
+// @media (max-width: 1200px)
+
+// @media (max-width: 992px)
+
+// @media (max-width: 768px)
+
+// @media (max-width: 576px)
