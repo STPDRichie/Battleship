@@ -49,8 +49,7 @@ body {
 .container {
   max-width: 1080px;
   height: 300px;
-  padding: 0 15px;
-  margin: 0 auto;
+  margin: 30px auto;
   color: white;
   background: cornflowerblue;
   border-radius: 20px;
@@ -64,5 +63,43 @@ body {
       -ms-flex-align: center;
           align-items: center;
   text-align: center;
+}
+
+.header {
+  background: cornflowerblue;
+  color: #ffffff;
+}
+
+.header .section-wrapper {
+  padding: 15px 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.header .contact {
+  margin: 0 auto;
+  font-size: 35px;
+}
+
+.header .contact_link {
+  display: inline-block;
+  margin: 0 5px;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+.header .contact i {
+  color: cornflowerblue;
 }
 /*# sourceMappingURL=style.css.map */
