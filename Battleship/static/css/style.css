@@ -47,18 +47,6 @@ body {
   background: url(/static/img/body-background.jpg);
 }
 
-body::after {
-  content: "";
-  background-color: #ffffff;
-  opacity: 0.2;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: -1;
-}
-
 .section-wrapper {
   max-width: 1400px;
   padding: 0 15px;
@@ -134,6 +122,7 @@ body::after {
 
 .game {
   height: calc(100vh - 90px);
+  margin: 100px auto;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -165,5 +154,45 @@ body::after {
   height: 600px;
   background-color: #eeeeee;
   border-radius: 30px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  text-align: center;
+}
+
+.game .board_row {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.game .board_cell {
+  width: calc(600px / 11);
+  height: calc(600px / 11);
+  line-height: calc(600px / 11);
+  font-size: 25px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  color: #333333;
+  background-color: #ffffff;
+  border: #999999 2px solid;
+  cursor: pointer;
+  -webkit-transition: 0.1s linear;
+  transition: 0.1s linear;
+}
+
+.game .board_cell:hover {
+  border-color: cornflowerblue;
+}
+
+.game .board_markup_cell {
+  border-color: #ffffff;
+  cursor: default;
+}
+
+.game .board_markup_cell:hover {
+  border-color: #ffffff;
 }
 /*# sourceMappingURL=style.css.map */

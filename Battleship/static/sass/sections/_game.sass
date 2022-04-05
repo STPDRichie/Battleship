@@ -1,5 +1,6 @@
 .game
   height: calc(100vh - 90px)
+  margin: 100px auto
   display: flex
   justify-content: center
   align-items: center
@@ -18,3 +19,32 @@
     height: 600px
     background-color: $section-gray
     border-radius: 30px
+    display: flex
+    flex-wrap: wrap
+    text-align: center
+  
+  .board_row
+    display: flex
+  
+  .board_cell
+    width: calc(600px / 11)
+    height: calc(600px / 11)
+    line-height: calc(600px / 11)
+    font-size: 25px
+    +f_mont_bold
+    color: $dark-text
+    background-color: $white
+    border: $light-text 2px solid
+    cursor: pointer
+    transition: 0.1s linear
+
+    &:hover
+      border-color: $main-blue
+
+  
+  .board_markup_cell
+    border-color: $white
+    cursor: default
+
+    &:hover
+      border-color: $white
