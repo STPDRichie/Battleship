@@ -1,31 +1,19 @@
-// boards = document.getElementsByClassName('game_board');
-icons = document.querySelectorAll('.fa-solid');
+var solid = '<i class="fa-solid"></i>';
+var circle = '<i class="fa-solid fa-circle"></i>';
+var crossedCircle = '<i class="fa-solid fa-circle-xmark"></i>';
 
-// cells.children.addEventListener('click', event => {
-//   if
-// })
-// icon.forEach(element => {
-  // element.getAttribute('class');
-  // element.children.className = 'fa-solid fa-circle-xmark'
-  // element.className
-// })
+var cells = document.getElementsByClassName('board_cell');
 
-// icon('click', event => {
-//   if (icon.className == 'fa-solid'){
-//     icon.className = 'fa-solid fa-circle'
-//   }
-//   else if (icon.className == 'fa-solid fa-circle') {
-//     icon.className = 'fa-solid fa-circle-xmark'
-//   }
-// })
-
-icons.array.forEach(element => {
-  element.addEventListener('click', event => {
-    if (element.className == 'fa-solid') {
-      element.className = 'fa-solid fa-circle';
-    }
-    else if (element.className == 'fa-solid fa-circle') {
-      element.className = 'fa-solid fa-circle-xmark';
-    }
-  })
+Array.prototype.forEach.call(cells, function(element) {
+	element.addEventListener('click', function() {
+      if (element.innerHTML == solid) {
+        element.innerHTML = circle;
+      }
+      else if (element.innerHTML == circle) {
+        element.innerHTML = crossedCircle;
+      }
+      else if (element.innerHTML == crossedCircle) {
+        element.innerHTML = solid;
+      }
+	});
 });
