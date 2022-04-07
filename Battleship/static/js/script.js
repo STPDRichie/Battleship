@@ -8,6 +8,7 @@ game_status_text.addEventListener('click', function() {
   }
 });
 
+
 var solid = '<i class="fa-solid"></i>';
 var circle = '<i class="fa-solid fa-circle"></i>';
 var crossedCircle = '<i class="fa-solid fa-circle-xmark"></i>';
@@ -21,6 +22,11 @@ Array.prototype.forEach.call(player_cells, function(element) {
 	});
 });
 
+
+var status_text_start = 'Start game';
+var status_text_place_ships = 'Place your ships';
+var status_text_battle = 'Battle';
+
 Array.prototype.forEach.call(ai_cells, function(element) {
   element.addEventListener('click', function() {
     handleAIBoard(element);
@@ -28,7 +34,21 @@ Array.prototype.forEach.call(ai_cells, function(element) {
 });
 
 function handlePlayerBoard(cell) {
-  if (game_status_text.innerHTML != 'Start game') {
+  // console.log(cell.outerHTML);
+  console.log(cell.id);
+  if (game_status_text.innerHTML == status_text_start) {
+    return;
+  }
+  
+  if (game_status_text.innerHTML == status_text_place_ships) {
+    if (cell.innerHTML == solid) {
+      cell.innerHTML = circle;
+    }
+    else if (cell.innerHTML == circle) {
+      cell.innerHTML = solid;
+    }
+  }
+  else if (game_status_text.innerHTML != status_text_battle) {
     if (cell.innerHTML == solid) {
       cell.innerHTML = circle;
     }
@@ -42,10 +62,10 @@ function handlePlayerBoard(cell) {
 }
 
 function handleAIBoard(cell) {
-  if (game_status_text.innerHTML == 'Place your ships') {
+  if (game_status_text.innerHTML != status_text_battle) {
     return;
   }
-  if (game_status_text.innerHTML != 'Start game') {
+  else {
     if (cell.innerHTML == solid || cell.innerHTML == circle) {
       cell.innerHTML = crossedCircle;
     }
