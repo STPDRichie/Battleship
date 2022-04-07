@@ -12,6 +12,7 @@ game_status_text.addEventListener('click', function() {
 var solid = '<i class="fa-solid"></i>';
 var circle = '<i class="fa-solid fa-circle"></i>';
 var crossedCircle = '<i class="fa-solid fa-circle-xmark"></i>';
+var emptyCircle = '<i class="fa-regular fa-circle"></i>';
 
 var player_cells = document.getElementById('player-board').getElementsByClassName('board_cell');
 var ai_cells = document.getElementById('ai-board').getElementsByClassName('board_cell');
@@ -34,8 +35,7 @@ Array.prototype.forEach.call(ai_cells, function(element) {
 });
 
 function handlePlayerBoard(cell) {
-  // console.log(cell.outerHTML);
-  console.log(cell.id);
+  // console.log(cell.id);
   if (game_status_text.innerHTML == status_text_start) {
     return;
   }
@@ -62,6 +62,7 @@ function handlePlayerBoard(cell) {
 }
 
 function handleAIBoard(cell) {
+  // console.log(cell.id);
   if (game_status_text.innerHTML != status_text_battle) {
     return;
   }

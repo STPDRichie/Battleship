@@ -44,8 +44,8 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-weight: 500;
   font-size: 15px;
-  background: url(../img/body-bg.png) 0 -10px;
-  background-size: 700px;
+  background: url(../img/body-background.jpg) 0 -10px;
+  background-size: 300px;
 }
 
 .section-wrapper {
