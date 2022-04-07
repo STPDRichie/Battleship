@@ -1,10 +1,18 @@
+var status_text_start = 'Start game';
+var status_text_place_ships = 'Place your ships';
+var status_text_battle = 'Battle';
+
 var game_status_text = document.getElementById('game_status');
+
 game_status_text.addEventListener('click', function() {
-  if (game_status_text.innerHTML == 'Start game') {
-    game_status_text.innerHTML = 'Place your ships';
+  if (game_status_text.innerHTML == status_text_start) {
+    game_status_text.innerHTML = status_text_place_ships;
   }
-  else if (game_status_text.innerHTML == 'Place your ships') {
-    game_status_text.innerHTML = 'Start game';
+  else if (game_status_text.innerHTML == status_text_place_ships) {
+    game_status_text.innerHTML = status_text_start;
+  }
+  else if (game_status_text.innerHTML == status_text_battle) {
+    game_status_text.innerHTML = status_text_start;
   }
 });
 
@@ -23,11 +31,6 @@ Array.prototype.forEach.call(player_cells, function(element) {
 	});
 });
 
-
-var status_text_start = 'Start game';
-var status_text_place_ships = 'Place your ships';
-var status_text_battle = 'Battle';
-
 Array.prototype.forEach.call(ai_cells, function(element) {
   element.addEventListener('click', function() {
     handleAIBoard(element);
@@ -35,34 +38,46 @@ Array.prototype.forEach.call(ai_cells, function(element) {
 });
 
 function handlePlayerBoard(cell) {
-  // console.log(cell.id);
-  if (game_status_text.innerHTML == status_text_start) {
-    return;
-  }
+  var response = $.post('/', {
+    board: 'player',
+    game_status: game_status_text.innerHTML,
+    cell: cell.id
+  });
+  response.done(function(data) {
+    var content = $(data).find('#content')['prevObject'][0];
+    console.log(content);
+    if (content['is_changed']) {
+      game_status_text.innerHTML = content['game_status'];
+      cell.innerHTML = content['cell'];
+    }
+  })
+
+  // if (game_status_text.innerHTML == status_text_start) {
+  //   return;
+  // }
   
-  if (game_status_text.innerHTML == status_text_place_ships) {
-    if (cell.innerHTML == solid) {
-      cell.innerHTML = circle;
-    }
-    else if (cell.innerHTML == circle) {
-      cell.innerHTML = solid;
-    }
-  }
-  else if (game_status_text.innerHTML != status_text_battle) {
-    if (cell.innerHTML == solid) {
-      cell.innerHTML = circle;
-    }
-    else if (cell.innerHTML == circle) {
-      cell.innerHTML = crossedCircle;
-    }
-    else if (cell.innerHTML == crossedCircle) {
-      cell.innerHTML = solid;
-    }
-  }
+  // if (game_status_text.innerHTML == status_text_place_ships) {
+  //   if (cell.innerHTML == solid) {
+  //     cell.innerHTML = circle;
+  //   }
+  //   else if (cell.innerHTML == circle) {
+  //     cell.innerHTML = solid;
+  //   }
+  // }
+  // else if (game_status_text.innerHTML != status_text_battle) {
+  //   if (cell.innerHTML == solid) {
+  //     cell.innerHTML = circle;
+  //   }
+  //   else if (cell.innerHTML == circle) {
+  //     cell.innerHTML = crossedCircle;
+  //   }
+  //   else if (cell.innerHTML == crossedCircle) {
+  //     cell.innerHTML = solid;
+  //   }
+  // }
 }
 
 function handleAIBoard(cell) {
-  // console.log(cell.id);
   if (game_status_text.innerHTML != status_text_battle) {
     return;
   }
