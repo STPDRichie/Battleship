@@ -1,6 +1,6 @@
 .game
-  height: calc(100vh - 90px)
-  margin: 100px auto
+  // height: calc(100vh - 90px)
+  margin: 50px auto 100px
   display: flex
   justify-content: center
   align-items: center
@@ -17,7 +17,7 @@
   &_board
     width: 600px
     height: 600px
-    background-color: $section-gray
+    // background-color: $section-gray
     border-radius: 30px
     display: flex
     flex-wrap: wrap
@@ -45,6 +45,7 @@
   .board_markup_cell
     border-color: $white
     cursor: default
+    user-select: none
 
     &:hover
       border-color: $white
