@@ -1,19 +1,6 @@
-from modules import game_status
+from modules import game_status_changer
 
 from flask import Flask, render_template, request, url_for
-
-
-# status_text_start = 'Start game'
-# status_text_place_ships = 'Ships placing'
-# status_text_battle = 'Battle'
-#
-# needs_text_start = 'Click the button to start game'
-# needs_text_place = 'Place ship'
-
-# icon_solid = '<i class="fa-solid"></i>'
-# icon_circle = '<i class="fa-solid fa-circle"></i>'
-# icon_crossedCircle = '<i class="fa-solid fa-circle-xmark"></i>'
-# icon_emptyCircle = '<i class="fa-regular fa-circle"></i>'
 
 app = Flask(__name__)
 
@@ -30,8 +17,8 @@ def response_to_button_click():
     current_status = request.form['current_status']
     current_needs = request.form['current_needs']
 
-    response = game_status\
-        .change_game_status(current_status, current_needs)
+    response = game_status_changer\
+        .change_game_status(current_status)
 
     return response
 
@@ -40,10 +27,14 @@ def response_to_button_click():
 def response_to_cell_click():
     board = request.form['board']
     current_status = request.form['game_status']
-    cell = request.form['cell']
+    current_needs = request.form['current_needs']
+    cell_icon = request.form['cell_icon']
+    cell_id = request.form['cell_id']
 
-    response = current_status\
-        .change_board_cell(board, current_status, cell)
+    response = game_status_changer\
+        .change_board_cell(board,
+                           current_status, current_needs,
+                           cell_icon, cell_id)
 
     return response
 

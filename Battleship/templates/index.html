@@ -38,7 +38,12 @@
         <div class="section-wrapper">
             <h1 id="game_status" class="game_status">{{ game_panel_text }}</h1>
             <h2 id="game_needs" class="game_needs">{{ game_needs_text }}</h2>
-            <!-- <h1 id="game_status" class="game_status">Start game</h1> -->
+            <div class="game_ship_choise_buttons">
+                <div class="game_ship">Battleship - 1</div>
+                <div class="game_ship">Cruiser - 2</div>
+                <div class="game_ship">Submarine - 3</div>
+                <div class="game_ship">Destroyer - 4</div>
+            </div>
         </div>
     </section>
 
@@ -338,7 +343,7 @@
     </section>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <!-- <script src="{{ url_for('static', filename='js/script.js') }}"></script> -->
-    <script src="../static/js/script.js"></script>
+     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<!--    <script src="../static/js/script.js"></script>-->
 </body>
 </html>

@@ -184,6 +184,42 @@ body {
           user-select: none;
 }
 
+.game_panel .game_ship_choise_buttons {
+  width: 1000px;
+  margin: 10px auto 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.game_panel .game_ship {
+  width: 200px;
+  padding: 5px;
+  font-size: 20px;
+  color: #ffffff;
+  background-color: #4c97fc;
+  border-radius: 15px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  cursor: pointer;
+  -webkit-transition: 0.1s ease-in-out;
+  transition: 0.1s ease-in-out;
+  -webkit-transition-property: background-color;
+  transition-property: background-color;
+}
+
+.game_panel .game_ship:hover {
+  background-color: #3e89ec;
+}
+
 .game {
   margin: 50px auto 100px;
   display: -webkit-box;
