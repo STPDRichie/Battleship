@@ -1,20 +1,39 @@
 .game_panel
-  height: 100px
   margin: 100px auto 0
 
   .section-wrapper
     width: 1400px
-    height: 100px
     background-color: $white
     border-radius: 50px
     text-align: center
-    line-height: 100px
+    display: flex
+    flex-direction: column
+    text-align: center
   
   .game_status
-    color: $dark-text
+    width: 400px
+    margin: 20px auto 0
+    padding: 15px
+    color: $white
+    background-color: $main-blue
+    border-radius: 35px
     user-select: none
     cursor: pointer
-    transition: 0.1s linear
-
+    transition: 0.1s ease-in-out
+    transition-property: background-color
     &:hover
-      color: $main-blue
+      background-color: $main-blue-darker
+    
+  .game_status-inactive
+    width: 400px
+    margin: 20px auto 0
+    padding: 15px
+    color: $light-text
+    background-color: $section-gray
+    border-radius: 35px
+    user-select: none
+  
+  .game_needs
+    margin: 20px auto
+    color: $dark-text
+    user-select: none

@@ -1,19 +1,43 @@
 var status_text_start = 'Start game';
-var status_text_place_ships = 'Place your ships';
+var status_text_place_ships = 'Ships placing';
 var status_text_battle = 'Battle';
 
-var game_status_text = document.getElementById('game_status');
+var needs_text_start = 'Click the button to start game';
+var needs_text_place = 'Place ship';
 
-game_status_text.addEventListener('click', function() {
-  if (game_status_text.innerHTML == status_text_start) {
-    game_status_text.innerHTML = status_text_place_ships;
-  }
-  else if (game_status_text.innerHTML == status_text_place_ships) {
-    game_status_text.innerHTML = status_text_start;
-  }
-  else if (game_status_text.innerHTML == status_text_battle) {
-    game_status_text.innerHTML = status_text_start;
-  }
+var game_status = document.getElementById('game_status');
+var game_needs = document.getElementById('game_needs');
+
+game_status.addEventListener('click', function() {
+  var response = $.post('/game_button_clicked', {
+    current_status: game_status.innerHTML,
+    current_needs: game_needs.innerHTML
+  });
+
+  response.done(function(data) {
+    var content = $(data).find('#content')['prevObject'][0];
+    console.log(content);
+    game_needs.innerHTML = content['game_needs'];
+    game_status.innerHTML = content['game_status'];
+    game_status.classList.remove(content['game_status_remove_class']);
+    game_status.classList.add(content['game_status_add_class']);
+  });
+
+  // if (game_status.innerHTML == status_text_start) {
+  //   game_status.innerHTML = status_text_place_ships;
+  //   game_needs.innerHTML = needs_text_place;
+  //   game_status.classList.remove('game_status');
+  //   game_status.classList.add('game_status-inactive');
+  // }
+  // else if (game_status.innerHTML == status_text_place_ships) {
+  //   game_status.innerHTML = status_text_start;
+  //   game_needs.innerHTML = needs_text_start;
+  //   game_status.classList.remove('game_status-inactive');
+  //   game_status.classList.add('game_status');
+  // }
+  // else if (game_status.innerHTML == status_text_battle) {
+  //   game_status.innerHTML = status_text_start;
+  // }
 });
 
 
@@ -38,16 +62,17 @@ Array.prototype.forEach.call(ai_cells, function(element) {
 });
 
 function handlePlayerBoard(cell) {
-  var response = $.post('/', {
+  var response = $.post('/cell_clicked', {
     board: 'player',
-    game_status: game_status_text.innerHTML,
+    game_status: game_status.innerHTML,
     cell: cell.id
   });
+
   response.done(function(data) {
     var content = $(data).find('#content')['prevObject'][0];
     console.log(content);
     if (content['is_changed']) {
-      game_status_text.innerHTML = content['game_status'];
+      game_status.innerHTML = content['game_status'];
       cell.innerHTML = content['cell'];
     }
   })
@@ -78,7 +103,7 @@ function handlePlayerBoard(cell) {
 }
 
 function handleAIBoard(cell) {
-  if (game_status_text.innerHTML != status_text_battle) {
+  if (game_status.innerHTML != status_text_battle) {
     return;
   }
   else {

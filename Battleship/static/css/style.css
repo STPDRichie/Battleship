@@ -55,7 +55,7 @@ body {
 }
 
 .header {
-  background: cornflowerblue;
+  background: #4c97fc;
   color: #ffffff;
 }
 
@@ -100,9 +100,9 @@ body {
   width: 60px;
   height: 60px;
   font-size: 32px;
-  color: cornflowerblue;
+  color: #4c97fc;
   background-color: #ffffff;
-  border: cornflowerblue 5px solid;
+  border: #4c97fc 5px solid;
   border-radius: 50%;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -122,32 +122,66 @@ body {
 }
 
 .game_panel {
-  height: 100px;
   margin: 100px auto 0;
 }
 
 .game_panel .section-wrapper {
   width: 1400px;
-  height: 100px;
   background-color: #ffffff;
   border-radius: 50px;
   text-align: center;
-  line-height: 100px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  text-align: center;
 }
 
 .game_panel .game_status {
-  color: #333333;
+  width: 400px;
+  margin: 20px auto 0;
+  padding: 15px;
+  color: #ffffff;
+  background-color: #4c97fc;
+  border-radius: 35px;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
   cursor: pointer;
-  -webkit-transition: 0.1s linear;
-  transition: 0.1s linear;
+  -webkit-transition: 0.1s ease-in-out;
+  transition: 0.1s ease-in-out;
+  -webkit-transition-property: background-color;
+  transition-property: background-color;
 }
 
 .game_panel .game_status:hover {
-  color: cornflowerblue;
+  background-color: #3e89ec;
+}
+
+.game_panel .game_status-inactive {
+  width: 400px;
+  margin: 20px auto 0;
+  padding: 15px;
+  color: #999999;
+  background-color: #eeeeee;
+  border-radius: 35px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+.game_panel .game_needs {
+  margin: 20px auto;
+  color: #333333;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 }
 
 .game {
@@ -212,7 +246,7 @@ body {
 }
 
 .game .board_cell:hover {
-  border-color: cornflowerblue;
+  border-color: #4c97fc;
 }
 
 .game .board_markup_cell {
