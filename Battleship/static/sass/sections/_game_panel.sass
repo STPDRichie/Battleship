@@ -8,8 +8,7 @@
     text-align: center
     display: flex
     flex-direction: column
-    text-align: center
-  
+
   .game_status
     width: 400px
     margin: 20px auto 0
@@ -58,3 +57,34 @@
     transition-property: background-color
     &:hover
       background-color: $main-blue-darker
+
+  .game_ship_direction_choise_buttons
+    width: 600px
+    margin: 10px auto 20px
+    display: flex
+    justify-content: space-between
+    align-items: center
+
+  .game_ship_direction
+    width: 250px
+    padding: 10px
+    font-size: 20px
+    color: $white
+    background-color: $main-blue
+    border-radius: 30px
+    user-select: none
+    cursor: pointer
+    transition: 0.1s ease-in-out
+    transition-property: background-color
+    &:hover
+      background-color: $main-blue-darker
+
+  .game_ship_direction-active
+    width: 250px
+    padding: 10px
+    font-size: 20px
+    color: $light-text
+    background-color: $section-gray
+    border-radius: 30px
+    user-select: none
+    cursor: pointer

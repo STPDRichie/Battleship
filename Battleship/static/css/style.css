@@ -1,12 +1,7 @@
 * {
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-}
-
-::-moz-selection {
-  background: #eeeeee;
 }
 
 ::selection {
@@ -41,7 +36,7 @@ button:focus {
 }
 
 body {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-weight: 500;
   font-size: 15px;
   background: url(../img/body-background.jpg) 0 -10px;
@@ -58,42 +53,26 @@ body {
   background: #4c97fc;
   color: #ffffff;
 }
-
 .header .section-wrapper {
   padding: 15px 0;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  justify-content: center;
+  align-items: center;
 }
-
 .header_title {
   position: absolute;
   left: 50px;
   font-size: 35px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-weight: 800;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  user-select: none;
 }
-
 .header .contact {
   margin: 0 auto;
 }
-
 .header .contact-wrapper {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
 }
-
 .header .contact_link {
   margin: 0 10px;
   padding: 5px;
@@ -104,19 +83,11 @@ body {
   background-color: #ffffff;
   border: #4c97fc 5px solid;
   border-radius: 50%;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-transition: 0.2s ease-in-out;
+  justify-content: center;
+  align-items: center;
   transition: 0.2s ease-in-out;
 }
-
 .header .contact_link:hover {
   border: #ffffff 5px solid;
 }
@@ -124,22 +95,14 @@ body {
 .game_panel {
   margin: 100px auto 0;
 }
-
 .game_panel .section-wrapper {
   width: 1400px;
   background-color: #ffffff;
   border-radius: 50px;
   text-align: center;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  text-align: center;
+  flex-direction: column;
 }
-
 .game_panel .game_status {
   width: 400px;
   margin: 20px auto 0;
@@ -147,21 +110,14 @@ body {
   color: #ffffff;
   background-color: #4c97fc;
   border-radius: 35px;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  user-select: none;
   cursor: pointer;
-  -webkit-transition: 0.1s ease-in-out;
   transition: 0.1s ease-in-out;
-  -webkit-transition-property: background-color;
   transition-property: background-color;
 }
-
 .game_panel .game_status:hover {
   background-color: #3e89ec;
 }
-
 .game_panel .game_status-inactive {
   width: 400px;
   margin: 20px auto 0;
@@ -169,35 +125,20 @@ body {
   color: #999999;
   background-color: #eeeeee;
   border-radius: 35px;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  user-select: none;
 }
-
 .game_panel .game_needs {
   margin: 20px auto;
   color: #333333;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  user-select: none;
 }
-
 .game_panel .game_ship_choise_buttons {
   width: 1000px;
   margin: 10px auto 20px;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  justify-content: space-between;
+  align-items: center;
 }
-
 .game_panel .game_ship {
   width: 200px;
   padding: 5px;
@@ -205,96 +146,96 @@ body {
   color: #ffffff;
   background-color: #4c97fc;
   border-radius: 15px;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  user-select: none;
   cursor: pointer;
-  -webkit-transition: 0.1s ease-in-out;
   transition: 0.1s ease-in-out;
-  -webkit-transition-property: background-color;
   transition-property: background-color;
 }
-
 .game_panel .game_ship:hover {
   background-color: #3e89ec;
+}
+.game_panel .game_ship_direction_choise_buttons {
+  width: 600px;
+  margin: 10px auto 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.game_panel .game_ship_direction {
+  width: 250px;
+  padding: 10px;
+  font-size: 20px;
+  color: #ffffff;
+  background-color: #4c97fc;
+  border-radius: 30px;
+  user-select: none;
+  cursor: pointer;
+  transition: 0.1s ease-in-out;
+  transition-property: background-color;
+}
+.game_panel .game_ship_direction:hover {
+  background-color: #3e89ec;
+}
+.game_panel .game_ship_direction-active {
+  width: 250px;
+  padding: 10px;
+  font-size: 20px;
+  color: #999999;
+  background-color: #eeeeee;
+  border-radius: 30px;
+  user-select: none;
+  cursor: pointer;
 }
 
 .game {
   margin: 50px auto 100px;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  justify-content: center;
+  align-items: center;
 }
-
 .game .section-wrapper {
   width: 1400px;
   height: 700px;
   background-color: #ffffff;
   border-radius: 50px;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -ms-flex-pack: distribute;
-      justify-content: space-around;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  justify-content: space-around;
+  align-items: center;
 }
-
 .game_board {
   width: 600px;
   height: 600px;
   border-radius: 30px;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
+  flex-wrap: wrap;
   text-align: center;
 }
-
 .game .board_row {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
 }
-
 .game .board_cell {
-  width: calc(600px / 11);
-  height: calc(600px / 11);
-  line-height: calc(600px / 11);
+  width: 54.5454545455px;
+  height: 54.5454545455px;
+  line-height: 54.5454545455px;
   font-size: 25px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-weight: 800;
   color: #333333;
   background-color: #ffffff;
   border: #999999 2px solid;
   cursor: pointer;
-  -webkit-transition: 0.1s linear;
   transition: 0.1s linear;
 }
-
 .game .board_cell:hover {
   border-color: #4c97fc;
 }
-
 .game .board_markup_cell {
   border-color: #ffffff;
   cursor: default;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  user-select: none;
 }
-
 .game .board_markup_cell:hover {
   border-color: #ffffff;
 }
+
 /*# sourceMappingURL=style.css.map */
