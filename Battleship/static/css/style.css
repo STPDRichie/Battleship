@@ -133,16 +133,16 @@ body {
   user-select: none;
 }
 .game_panel .game_ship_choise_buttons {
-  width: 1000px;
-  margin: 10px auto 20px;
+  width: 900px;
+  margin: 0 auto 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.game_panel .game_ship {
+.game_panel .game_ship_choise_button {
   width: 200px;
   padding: 5px;
-  font-size: 20px;
+  font-size: 18px;
   color: #ffffff;
   background-color: #4c97fc;
   border-radius: 15px;
@@ -151,12 +151,34 @@ body {
   transition: 0.1s ease-in-out;
   transition-property: background-color;
 }
-.game_panel .game_ship:hover {
+.game_panel .game_ship_choise_button:hover {
   background-color: #3e89ec;
+}
+.game_panel .game_ship_choise_button-active {
+  width: 200px;
+  padding: 5px;
+  font-size: 18px;
+  color: #ffffff;
+  background-color: #2172d9;
+  border-radius: 15px;
+  user-select: none;
+  transition: 0.1s ease-in-out;
+  transition-property: background-color;
+}
+.game_panel .game_ship_choise_button-placed {
+  width: 200px;
+  padding: 5px;
+  font-size: 18px;
+  color: #999999;
+  background-color: #eeeeee;
+  border-radius: 15px;
+  user-select: none;
+  transition: 0.1s ease-in-out;
+  transition-property: background-color;
 }
 .game_panel .game_ship_direction_choise_buttons {
   width: 600px;
-  margin: 10px auto 20px;
+  margin: 20px auto;
   display: flex;
   justify-content: space-between;
   align-items: center;

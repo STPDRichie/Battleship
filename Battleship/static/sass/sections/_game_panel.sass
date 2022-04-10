@@ -38,16 +38,16 @@
     user-select: none
   
   .game_ship_choise_buttons
-    width: 1000px
-    margin: 10px auto 20px
+    width: 900px
+    margin: 0 auto 20px
     display: flex
     justify-content: space-between
     align-items: center
   
-  .game_ship
+  .game_ship_choise_button
     width: 200px
     padding: 5px
-    font-size: 20px
+    font-size: 18px
     color: $white
     background-color: $main-blue
     border-radius: 15px
@@ -58,9 +58,31 @@
     &:hover
       background-color: $main-blue-darker
 
+  .game_ship_choise_button-active
+    width: 200px
+    padding: 5px
+    font-size: 18px
+    color: $white
+    background-color: $main-blue-active
+    border-radius: 15px
+    user-select: none
+    transition: 0.1s ease-in-out
+    transition-property: background-color
+
+  .game_ship_choise_button-placed
+    width: 200px
+    padding: 5px
+    font-size: 18px
+    color: $light-text
+    background-color: $section-gray
+    border-radius: 15px
+    user-select: none
+    transition: 0.1s ease-in-out
+    transition-property: background-color
+
   .game_ship_direction_choise_buttons
     width: 600px
-    margin: 10px auto 20px
+    margin: 20px auto
     display: flex
     justify-content: space-between
     align-items: center
