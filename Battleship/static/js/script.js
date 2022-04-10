@@ -17,45 +17,45 @@ game_status.addEventListener('click', function () {
 });
 
 
-const game_ship_directions = document.getElementById('game_ship_direction_choise_buttons').getElementsByTagName('*');
-const game_ship_direction_active = 'game_ship_direction-active'
-const game_ship_direction_inactive = 'game_ship_direction'
-let ship_direction = 'Vertical';
+const ship_direction_buttons = document.getElementById('game_ship_direction_choise_buttons').getElementsByTagName('*');
+const ship_direction_class_active = 'game_ship_direction-active'
+const ship_direction_class_inactive = 'game_ship_direction'
+let selected_ship_direction = 'Vertical';
 
-Array.prototype.forEach.call(game_ship_directions, function (element) {
+Array.prototype.forEach.call(ship_direction_buttons, function (element) {
   element.addEventListener('click', function () {
     changeShipDirection(element);
   });
 });
 
 function changeShipDirection(direction) {
-  if (direction.classList.contains(game_ship_direction_inactive)) {
-    direction.classList.add(game_ship_direction_active);
-    direction.classList.remove(game_ship_direction_inactive);
+  if (direction.classList.contains(ship_direction_class_inactive)) {
+    direction.classList.add(ship_direction_class_active);
+    direction.classList.remove(ship_direction_class_inactive);
 
     let other_button = Array
-        .from(game_ship_directions)
+        .from(ship_direction_buttons)
         .filter(button => button !== direction)[0];
-    other_button.classList.add(game_ship_direction_inactive);
-    other_button.classList.remove(game_ship_direction_active);
+    other_button.classList.add(ship_direction_class_inactive);
+    other_button.classList.remove(ship_direction_class_active);
 
-    if (ship_direction === 'Vertical') {
-      ship_direction = 'Horizontal';
+    if (selected_ship_direction === 'Vertical') {
+      selected_ship_direction = 'Horizontal';
     }
-    else if (ship_direction === 'Horizontal') {
-      ship_direction = 'Vertical';
+    else if (selected_ship_direction === 'Horizontal') {
+      selected_ship_direction = 'Vertical';
     }
   }
 }
 
 
-const game_ship_choise_buttons = document.getElementById('game_ship_choise_buttons').getElementsByTagName('*');
-const ship_select_button_default = 'game_ship_choise_button'
-const ship_select_button_active = 'game_ship_choise_button-active';
-const ship_select_button_placed = 'game_ship_choise_button-placed';
+const ship_select_buttons = document.getElementById('game_ship_choise_buttons').getElementsByTagName('*');
+const ship_select_button_class_default = 'game_ship_choise_button'
+const ship_select_button_class_active = 'game_ship_choise_button-active';
+const ship_select_button_class_placed = 'game_ship_choise_button-placed';
 let selected_ship = 'Battleship'
 
-Array.prototype.forEach.call(game_ship_choise_buttons, function (element) {
+Array.prototype.forEach.call(ship_select_buttons, function (element) {
   element.addEventListener('click', function () {
     changeSelectedShip(element);
   });
@@ -64,16 +64,16 @@ Array.prototype.forEach.call(game_ship_choise_buttons, function (element) {
 function changeSelectedShip(ship) {
   let current_ships_count = parseInt(ship.innerHTML.split(' - ')[1]);
   let current_ship = ship.innerHTML.split(' - ')[0];
-  if (current_ships_count >= 0 && !ship.classList.contains(ship_select_button_placed)) {
+  if (current_ships_count >= 0 && !ship.classList.contains(ship_select_button_class_placed)) {
     let active_ship_button = Array
-        .from(game_ship_choise_buttons)
+        .from(ship_select_buttons)
         .filter(button => button.classList.contains('game_ship_choise_button-active'))[0];
-    active_ship_button.classList.remove(ship_select_button_active);
-    active_ship_button.classList.add(ship_select_button_default);
+    active_ship_button.classList.remove(ship_select_button_class_active);
+    active_ship_button.classList.add(ship_select_button_class_default);
 
     selected_ship = current_ship;
-    ship.classList.add(ship_select_button_active);
-    ship.classList.remove(ship_select_button_default);
+    ship.classList.add(ship_select_button_class_active);
+    ship.classList.remove(ship_select_button_class_default);
   }
 }
 
@@ -95,7 +95,7 @@ Array.prototype.forEach.call(opponent_cells, function(element) {
 
 function handlePersonBoardClick(cell) {
   const response = $.post('/person_cell_clicked', {
-    direction: ship_direction,
+    direction: selected_ship_direction,
     game_status: game_status.innerHTML,
     current_ship: selected_ship,
     cell_icon: cell.innerHTML,
@@ -116,34 +116,34 @@ function handlePersonBoardClick(cell) {
 
       if (content['returned_ship'] !== '') {
         let returned_ship = Array
-            .from(game_ship_choise_buttons)
+            .from(ship_select_buttons)
             .filter(button => button.innerHTML.split(' - ')[0] === content['returned_ship'])[0];
         if (returned_ship.innerHTML.split(' - ')[1] === '0') {
-          returned_ship.classList.remove(ship_select_button_placed);
-          returned_ship.classList.add(ship_select_button_default);
+          returned_ship.classList.remove(ship_select_button_class_placed);
+          returned_ship.classList.add(ship_select_button_class_default);
         }
         returned_ship.innerHTML = content['returned_ship'] + ' - ' + content['ship_count'];
         return;
       }
 
       let current_ship_choise_button = Array
-          .from(game_ship_choise_buttons)
+          .from(ship_select_buttons)
           .filter(button => button.innerHTML.split(' - ')[0] === selected_ship)[0];
       current_ship_choise_button.innerHTML = selected_ship + ' - ' + content['ship_count'];
       if (content['ship_count'] === 0) {
-        current_ship_choise_button.classList.remove(ship_select_button_active);
-        current_ship_choise_button.classList.add(ship_select_button_placed);
+        current_ship_choise_button.classList.remove(ship_select_button_class_active);
+        current_ship_choise_button.classList.add(ship_select_button_class_placed);
         let next_ships = Array
-            .from(game_ship_choise_buttons)
+            .from(ship_select_buttons)
             .filter(button => button.innerHTML.split(' - ')[0] !== selected_ship
-                && !button.classList.contains(ship_select_button_placed));
+                && !button.classList.contains(ship_select_button_class_placed));
         if (next_ships.length !== 0) {
           selected_ship = next_ships[0].innerHTML.split(' - ')[0];
           let next_ship_choise_button = Array
-              .from(game_ship_choise_buttons)
+              .from(ship_select_buttons)
               .filter(button => button.innerHTML.split(' - ')[0] === selected_ship)[0];
-          next_ship_choise_button.classList.remove(ship_select_button_default);
-          next_ship_choise_button.classList.add(ship_select_button_active);
+          next_ship_choise_button.classList.remove(ship_select_button_class_default);
+          next_ship_choise_button.classList.add(ship_select_button_class_active);
         }
       }
     }
