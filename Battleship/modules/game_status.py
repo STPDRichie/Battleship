@@ -58,7 +58,7 @@ def change_player_cell(cell_icon, cell_id_text,
             .is_placement_correct(cell_id, current_ship, ship_direction):
         cell_ids = app.person.place_ship(cell_id, current_ship, ship_direction)
         cells = cells_to_id_format(cell_ids)
-        new_status = app.person.get_game_status()
+        new_status = app.person.check_game_status()
         ship_count = app.person.get_ship_count(current_ship)
         return {'is_changed': True,
                 'game_status': new_status,

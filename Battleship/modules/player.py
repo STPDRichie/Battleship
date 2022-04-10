@@ -1,3 +1,5 @@
+import app
+
 column_numbers_and_letters = {
     'a': 1, 1: 'a',
     'b': 2, 2: 'b',
@@ -42,15 +44,34 @@ class Player:
             'Destroyer': 4
         }
         self._board = [['Empty' for column in range(10)] for row in range(10)]
+        self._remaining_ship_cells_count = 20
+        self._opponent_remaining_ship_cells_count = 20
 
-        self._ship_count = 10
+        self._non_placed_ships_count = 10
         self._battleship = None
         self._cruisers = []
         self._submarines = []
         self._destroyers = []
 
     def fire(self, cell_id):
-        pass
+        fire_result = app.opponent.get_fired(cell_id)
+        if fire_result == 'Destroyed':
+            self._opponent_remaining_ship_cells_count -= 1
+        if self._opponent_remaining_ship_cells_count == 0:
+            return 'Win'
+        return 'Battle'
+
+    def get_fired(self, cell_id):
+        if self._board[cell_id[0] - 1][cell_id[1] - 1] == 'Empty' or \
+                self._board[cell_id[0] - 1][cell_id[1] - 1] == 'Neighbour':
+            self._board[cell_id[0] - 1][cell_id[1] - 1] = 'Missfire'
+            return 'Missfire'
+        if self._board[cell_id[0] - 1][cell_id[1] - 1] == 'Ship':
+            self._board[cell_id[0] - 1][cell_id[1] - 1] = 'Destroyed'
+            self._remaining_ship_cells_count -= 1
+        if self._remaining_ship_cells_count == 0:
+            return 'Lose'
+        return 'Destroyed'
 
     def place_ship(self, cell_id, ship, ship_direction):
         cells = []
@@ -85,7 +106,7 @@ class Player:
                 self._board[cell_id[0] - 1 + c][cell_id[1] - 1] = 'Ship'
                 cells.append([cell_id[0] + c, cell_id[1]])
 
-        self._ship_count -= 1
+        self._non_placed_ships_count -= 1
         self._init_ship(ship, cells)
         return cells
 
@@ -122,7 +143,7 @@ class Player:
         return True
 
     def remove_ship(self, cell_id):
-        self._ship_count += 1
+        self._non_placed_ships_count += 1
         ship = self.get_ship(cell_id)
         if ship == 'Battleship':
             cells = self._battleship
@@ -184,8 +205,8 @@ class Player:
                     if center_row + 1 < 10:
                         self._board[c][center_row + 1] = 'Empty'
 
-    def get_game_status(self):
-        if self._ship_count == 0:
+    def check_game_status(self):
+        if self._non_placed_ships_count == 0:
             return status_text_battle
         return status_text_place_ships
 
