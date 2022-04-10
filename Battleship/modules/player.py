@@ -25,6 +25,14 @@ status_text_place_ships = 'Ships placing'
 status_text_battle = 'Battle'
 
 
+def _get_ship_direction(cells):
+    if len(cells) == 1:
+        return direction_horizontal
+    if cells[0][0] == cells[0][1]:
+        return direction_vertical
+    return direction_horizontal
+
+
 class Player:
     def __init__(self):
         self._ships_remains_to_place = {
@@ -115,11 +123,89 @@ class Player:
 
     def remove_ship(self, cell_id):
         self._ship_count += 1
+        ship = self.get_ship(cell_id)
+        if ship == 'Battleship':
+            cells = self._battleship
+            self._battleship = None
+            self._ships_remains_to_place['Battleship'] += 1
+            self._reset_cells(cells, 'Battleship')
+            return cells
+        if ship == 'Cruiser':
+            for cruiser in self._cruisers:
+                for cell in cruiser:
+                    if cell == cell_id:
+                        cells = cruiser
+                        self._cruisers.remove(cruiser)
+                        self._ships_remains_to_place['Cruiser'] += 1
+                        self._reset_cells(cells, 'Cruiser')
+                        return cells
+        if ship == 'Submarine':
+            for submarine in self._submarines:
+                for cell in submarine:
+                    if cell == cell_id:
+                        cells = submarine
+                        self._submarines.remove(submarine)
+                        self._ships_remains_to_place['Submarine'] += 1
+                        self._reset_cells(cells, 'Submarine')
+                        return cells
+        if ship == 'Destroyer':
+            for destroyer in self._destroyers:
+                for cell in destroyer:
+                    if cell == cell_id:
+                        cells = destroyer
+                        self._destroyers.remove(destroyer)
+                        self._ships_remains_to_place['Destroyer'] += 1
+                        self._reset_cells(cells, 'Destroyer')
+                        return cells
 
-    def check_game_status(self):
+    def _reset_cells(self, cells, ship):
+        ship_range = ships_ranges[ship]
+        ship_direction = _get_ship_direction(cells)
+        reset_length = abs(ship_range[0]) + ship_range[1] + 3
+        if ship_direction == direction_horizontal:
+            start_row = cells[0][1] - 2
+            center_column = cells[0][0] - 1
+            for r in range(start_row, start_row + reset_length):
+                if 0 <= r <= 9:
+                    self._board[center_column][r] = 'Empty'
+                    if center_column - 1 > 0:
+                        self._board[center_column - 1][r] = 'Empty'
+                    if center_column + 1 < 10:
+                        self._board[center_column + 1][r] = 'Empty'
+
+        elif ship_direction == direction_vertical:
+            start_column = cells[0][0] - 2
+            center_row = cells[0][1] - 1
+            for c in range(start_column, start_column + reset_length):
+                if 0 <= c <= 9:
+                    self._board[c][center_row] = 'Empty'
+                    if center_row - 1 > 0:
+                        self._board[c][center_row - 1] = 'Empty'
+                    if center_row + 1 < 10:
+                        self._board[c][center_row + 1] = 'Empty'
+
+    def get_game_status(self):
         if self._ship_count == 0:
             return status_text_battle
         return status_text_place_ships
 
-    def check_ship_count(self, ship):
+    def get_ship_count(self, ship):
         return self._ships_remains_to_place[ship]
+
+    def get_ship(self, cell_id):
+        if self._battleship is not None:
+            for cell in self._battleship:
+                if cell == cell_id:
+                    return 'Battleship'
+        for cruiser in self._cruisers:
+            for cell in cruiser:
+                if cell == cell_id:
+                    return 'Cruiser'
+        for submarine in self._submarines:
+            for cell in submarine:
+                if cell == cell_id:
+                    return 'Submarine'
+        for destroyer in self._destroyers:
+            for cell in destroyer:
+                if cell == cell_id:
+                    return 'Destroyer'

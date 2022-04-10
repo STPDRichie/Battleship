@@ -4,13 +4,6 @@ status_text_start = 'Start game'
 status_text_place_ships = 'Ships placing'
 status_text_battle = 'Battle'
 
-needs_text_start = 'Click the button to start game'
-needs_text_place_battleship = 'Place battleship'
-needs_text_place_cruiser = 'Place cruiser'
-needs_text_place_submarine = 'Place submarine'
-needs_text_place_destroyer = 'Place destroyer'
-needs_text_battle = 'Let\'s begin the war'
-
 icon_empty = '<i class="fa-solid"></i>'
 icon_ship = '<i class="fa-solid fa-circle"></i>'
 icon_destroyed = '<i class="fa-solid fa-circle-xmark"></i>'
@@ -40,26 +33,15 @@ ships_ranges = {
 def change_game_status(current_status):
     if current_status == status_text_start:
         game_status = status_text_place_ships
-        game_needs = needs_text_place_battleship
         game_status_remove_class = 'game_status'
         game_status_add_class = 'game_status-inactive'
         app.person.__init__()
         app.opponent.__init__()
-    elif current_status == status_text_place_ships:
-        game_status = status_text_battle
-        game_needs = needs_text_battle
-        game_status_remove_class = 'game_status-inactive'
-        game_status_add_class = 'game_status-inactive'
-    elif current_status == status_text_battle:
-        game_status = status_text_start
-        game_needs = needs_text_start
-        game_status_remove_class = 'game_status-inactive'
-        game_status_add_class = 'game_status'
-
-    return {'game_status': game_status,
-            'game_needs': game_needs,
-            'game_status_remove_class': game_status_remove_class,
-            'game_status_add_class': game_status_add_class}
+        return {'is_changed': True,
+                'game_status': game_status,
+                'game_status_remove_class': game_status_remove_class,
+                'game_status_add_class': game_status_add_class}
+    return {'is_changed': False}
 
 
 def change_player_cell(cell_icon, cell_id_text,
@@ -76,21 +58,24 @@ def change_player_cell(cell_icon, cell_id_text,
             .is_placement_correct(cell_id, current_ship, ship_direction):
         cell_ids = app.person.place_ship(cell_id, current_ship, ship_direction)
         cells = cells_to_id_format(cell_ids)
-        new_status = app.person.check_game_status()
-        ship_count = app.person.check_ship_count(current_ship)
+        new_status = app.person.get_game_status()
+        ship_count = app.person.get_ship_count(current_ship)
         return {'is_changed': True,
                 'game_status': new_status,
                 'ship_count': ship_count,
+                'returned_ship': '',
                 'cells': cells,
                 'cells_icon': icon_ship}
 
     if cell_icon == icon_ship:
+        returned_ship = app.person.get_ship(cell_id)
         cell_ids = app.person.remove_ship(cell_id)
+        ship_count = app.person.get_ship_count(returned_ship)
         cells = cells_to_id_format(cell_ids)
-        ship_count = app.person.check_ship_count(current_ship)
         return {'is_changed': True,
                 'game_status': status_text_place_ships,
                 'ship_count': ship_count,
+                'returned_ship': returned_ship,
                 'cells': cells,
                 'cells_icon': icon_empty}
 

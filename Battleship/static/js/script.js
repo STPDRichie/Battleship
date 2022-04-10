@@ -8,9 +8,11 @@ game_status.addEventListener('click', function () {
   response.done(function(data) {
     const content = $(data).find('#content')['prevObject'][0];
     console.log(content); // TODO HIDE
-    game_status.innerHTML = content['game_status'];
-    game_status.classList.remove(content['game_status_remove_class']);
-    game_status.classList.add(content['game_status_add_class']);
+    if (content['is_changed']) {
+      game_status.innerHTML = content['game_status'];
+      game_status.classList.remove(content['game_status_remove_class']);
+      game_status.classList.add(content['game_status_add_class']);
+    }
   });
 });
 
@@ -110,6 +112,39 @@ function handlePersonBoardClick(cell) {
       for (let i = 0; i < content['cells'].length; i++) {
         let current_cell = current_board.find(cell => cell.id === content['cells'][i]);
         current_cell.innerHTML = content['cells_icon'];
+      }
+
+      if (content['returned_ship'] !== '') {
+        let returned_ship = Array
+            .from(game_ship_choise_buttons)
+            .filter(button => button.innerHTML.split(' - ')[0] === content['returned_ship'])[0];
+        if (returned_ship.innerHTML.split(' - ')[1] === '0') {
+          returned_ship.classList.remove(ship_select_button_placed);
+          returned_ship.classList.add(ship_select_button_default);
+        }
+        returned_ship.innerHTML = content['returned_ship'] + ' - ' + content['ship_count'];
+        return;
+      }
+
+      let current_ship_choise_button = Array
+          .from(game_ship_choise_buttons)
+          .filter(button => button.innerHTML.split(' - ')[0] === selected_ship)[0];
+      current_ship_choise_button.innerHTML = selected_ship + ' - ' + content['ship_count'];
+      if (content['ship_count'] === 0) {
+        current_ship_choise_button.classList.remove(ship_select_button_active);
+        current_ship_choise_button.classList.add(ship_select_button_placed);
+        let next_ships = Array
+            .from(game_ship_choise_buttons)
+            .filter(button => button.innerHTML.split(' - ')[0] !== selected_ship
+                && !button.classList.contains(ship_select_button_placed));
+        if (next_ships.length !== 0) {
+          selected_ship = next_ships[0].innerHTML.split(' - ')[0];
+          let next_ship_choise_button = Array
+              .from(game_ship_choise_buttons)
+              .filter(button => button.innerHTML.split(' - ')[0] === selected_ship)[0];
+          next_ship_choise_button.classList.remove(ship_select_button_default);
+          next_ship_choise_button.classList.add(ship_select_button_active);
+        }
       }
     }
   });
