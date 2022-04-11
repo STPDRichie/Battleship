@@ -153,6 +153,9 @@ class Player:
         self._ships[ship].append(ship_cells)
 
     def is_placement_correct(self, cell_id, ship, ship_direction):
+        if self._ships_remains_to_place[ship] == 0:
+            return False
+        
         if ship_direction == direction_vertical:
             if cell_id[1] + ships_ranges[ship][0] < 1 or \
                     cell_id[1] + ships_ranges[ship][1] > 10:

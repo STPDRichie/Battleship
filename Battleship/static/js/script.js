@@ -17,7 +17,7 @@ game_status.addEventListener('click', function () {
 });
 
 
-const ship_direction_buttons = document.getElementById('game_ship_direction_choise_buttons').getElementsByTagName('*');
+const ship_direction_buttons = document.getElementById('game_ship_direction_select_buttons').getElementsByTagName('*');
 const ship_direction_class_selected = 'game_ship_direction-active'
 const ship_direction_class_not_selected = 'game_ship_direction'
 let selected_ship_direction = 'Vertical';
@@ -49,10 +49,10 @@ function changeShipDirection(direction) {
 }
 
 
-const ship_select_buttons = document.getElementById('game_ship_choise_buttons').getElementsByTagName('*');
-const ship_select_button_class_default = 'game_ship_choise_button'
-const ship_select_button_class_active = 'game_ship_choise_button-active';
-const ship_select_button_class_placed = 'game_ship_choise_button-placed';
+const ship_select_buttons = document.getElementById('game_ship_select_buttons').getElementsByTagName('*');
+const ship_select_button_class_default = 'game_ship_select_button'
+const ship_select_button_class_active = 'game_ship_select_button-active';
+const ship_select_button_class_placed = 'game_ship_select_button-placed';
 let selected_ship = 'Battleship'
 
 Array.prototype.forEach.call(ship_select_buttons, function (element) {
@@ -67,7 +67,7 @@ function changeSelectedShip(ship) {
   if (current_ships_count >= 0 && !ship.classList.contains(ship_select_button_class_placed)) {
     let active_ship_button = Array
         .from(ship_select_buttons)
-        .filter(button => button.classList.contains('game_ship_choise_button-active'))[0];
+        .filter(button => button.classList.contains('game_ship_select_button-active'))[0];
     active_ship_button.classList.remove(ship_select_button_class_active);
     active_ship_button.classList.add(ship_select_button_class_default);
 
@@ -148,11 +148,8 @@ function handlePersonBoardClick(cell) {
       }
 
       if (game_status.innerHTML === 'Battle') {
-        let active_button = Array
-            .from(ship_direction_buttons)
-            .filter(button => button.classList.contains(ship_direction_class_not_selected))[0];
-        active_button.classList.remove(ship_direction_class_not_selected);
-        active_button.classList.add(ship_direction_class_selected);
+        document.getElementById('game_ship_direction_select_buttons').style.display = 'none';
+        document.getElementById('game_ship_select_buttons').style.display = 'none';
       }
     }
   });

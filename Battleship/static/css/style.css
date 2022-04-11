@@ -105,7 +105,7 @@ body {
 }
 .game_panel .game_status {
   width: 400px;
-  margin: 20px auto 0;
+  margin: 20px auto;
   padding: 15px;
   color: #ffffff;
   background-color: #4c97fc;
@@ -120,26 +120,21 @@ body {
 }
 .game_panel .game_status-inactive {
   width: 400px;
-  margin: 20px auto 0;
+  margin: 20px auto;
   padding: 15px;
   color: #999999;
   background-color: #eeeeee;
   border-radius: 35px;
   user-select: none;
 }
-.game_panel .game_needs {
-  margin: 20px auto;
-  color: #333333;
-  user-select: none;
-}
-.game_panel .game_ship_choise_buttons {
+.game_panel .game_ship_select_buttons {
   width: 900px;
   margin: 0 auto 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.game_panel .game_ship_choise_button {
+.game_panel .game_ship_select_button {
   width: 200px;
   padding: 5px;
   font-size: 18px;
@@ -151,10 +146,10 @@ body {
   transition: 0.1s ease-in-out;
   transition-property: background-color;
 }
-.game_panel .game_ship_choise_button:hover {
+.game_panel .game_ship_select_button:hover {
   background-color: #3e89ec;
 }
-.game_panel .game_ship_choise_button-active {
+.game_panel .game_ship_select_button-active {
   width: 200px;
   padding: 5px;
   font-size: 18px;
@@ -165,7 +160,7 @@ body {
   transition: 0.1s ease-in-out;
   transition-property: background-color;
 }
-.game_panel .game_ship_choise_button-placed {
+.game_panel .game_ship_select_button-placed {
   width: 200px;
   padding: 5px;
   font-size: 18px;
@@ -176,9 +171,9 @@ body {
   transition: 0.1s ease-in-out;
   transition-property: background-color;
 }
-.game_panel .game_ship_direction_choise_buttons {
+.game_panel .game_ship_direction_select_buttons {
   width: 600px;
-  margin: 20px auto;
+  margin: 0 auto 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
