@@ -18,8 +18,8 @@ game_status.addEventListener('click', function () {
 
 
 const ship_direction_buttons = document.getElementById('game_ship_direction_choise_buttons').getElementsByTagName('*');
-const ship_direction_class_active = 'game_ship_direction-active'
-const ship_direction_class_inactive = 'game_ship_direction'
+const ship_direction_class_selected = 'game_ship_direction-active'
+const ship_direction_class_not_selected = 'game_ship_direction'
 let selected_ship_direction = 'Vertical';
 
 Array.prototype.forEach.call(ship_direction_buttons, function (element) {
@@ -29,15 +29,15 @@ Array.prototype.forEach.call(ship_direction_buttons, function (element) {
 });
 
 function changeShipDirection(direction) {
-  if (direction.classList.contains(ship_direction_class_inactive)) {
-    direction.classList.add(ship_direction_class_active);
-    direction.classList.remove(ship_direction_class_inactive);
+  if (direction.classList.contains(ship_direction_class_not_selected)) {
+    direction.classList.add(ship_direction_class_selected);
+    direction.classList.remove(ship_direction_class_not_selected);
 
     let other_button = Array
         .from(ship_direction_buttons)
         .filter(button => button !== direction)[0];
-    other_button.classList.add(ship_direction_class_inactive);
-    other_button.classList.remove(ship_direction_class_active);
+    other_button.classList.add(ship_direction_class_not_selected);
+    other_button.classList.remove(ship_direction_class_selected);
 
     if (selected_ship_direction === 'Vertical') {
       selected_ship_direction = 'Horizontal';
@@ -145,6 +145,14 @@ function handlePersonBoardClick(cell) {
           next_ship_choise_button.classList.remove(ship_select_button_class_default);
           next_ship_choise_button.classList.add(ship_select_button_class_active);
         }
+      }
+
+      if (game_status.innerHTML === 'Battle') {
+        let active_button = Array
+            .from(ship_direction_buttons)
+            .filter(button => button.classList.contains(ship_direction_class_not_selected))[0];
+        active_button.classList.remove(ship_direction_class_not_selected);
+        active_button.classList.add(ship_direction_class_selected);
       }
     }
   });
