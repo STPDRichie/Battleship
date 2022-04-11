@@ -29,9 +29,9 @@ def response_to_player_cell_click():
     cell_icon = request.form['cell_icon']
     cell_id = request.form['cell_id']
     return game_status\
-        .change_player_cell(cell_icon, cell_id,
-                            current_ship, ship_direction,
-                            current_status)
+        .change_person_cells(cell_icon, cell_id,
+                             current_ship, ship_direction,
+                             current_status)
 
 
 @app.route('/opponent_cell_clicked', methods=['POST'])

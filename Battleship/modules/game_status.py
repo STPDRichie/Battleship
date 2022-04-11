@@ -44,9 +44,9 @@ def change_game_status(current_status):
     return {'is_changed': False}
 
 
-def change_player_cell(cell_icon, cell_id_text,
-                       current_ship, ship_direction,
-                       current_status):
+def change_person_cells(cell_icon, cell_id_text,
+                        current_ship, ship_direction,
+                        current_status):
     if current_status == status_text_start or \
             current_status != status_text_place_ships:
         return {'is_changed': False}
@@ -57,7 +57,7 @@ def change_player_cell(cell_icon, cell_id_text,
     if cell_icon == icon_empty and app.person\
             .is_placement_correct(cell_id, current_ship, ship_direction):
         cell_ids = app.person.place_ship(cell_id, current_ship, ship_direction)
-        cells = cells_to_id_format(cell_ids)
+        cells = _person_cells_to_id_format(cell_ids)
         new_status = app.person.check_game_status()
         ship_count = app.person.get_ship_count(current_ship)
         return {'is_changed': True,
@@ -71,7 +71,7 @@ def change_player_cell(cell_icon, cell_id_text,
         returned_ship = app.person.get_ship(cell_id)
         cell_ids = app.person.remove_ship(cell_id)
         ship_count = app.person.get_ship_count(returned_ship)
-        cells = cells_to_id_format(cell_ids)
+        cells = _person_cells_to_id_format(cell_ids)
         return {'is_changed': True,
                 'game_status': status_text_place_ships,
                 'ship_count': ship_count,
@@ -100,7 +100,7 @@ def change_opponent_cell(cell_icon, cell_id_text, current_status):
     return {'is_changed': False}
 
 
-def cells_to_id_format(cell_ids):
+def _person_cells_to_id_format(cell_ids):
     cells = []
     for cell_id in cell_ids:
         cells.append(
