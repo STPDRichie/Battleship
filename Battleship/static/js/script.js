@@ -1,11 +1,11 @@
 const game_status = document.getElementById('game_status');
 
 game_status.addEventListener('click', function () {
-  const response = $.post('/game_button_clicked', {
+  const game_status_click_response = $.post('/game_button_clicked', {
     current_status: game_status.innerHTML
   });
 
-  response.done(function(data) {
+  game_status_click_response.done(function (data) {
     const content = $(data).find('#content')['prevObject'][0];
     console.log(content); // TODO HIDE
     if (content['is_changed']) {
@@ -35,7 +35,7 @@ function changeShipDirection(direction) {
 
     let other_button = Array
         .from(ship_direction_buttons)
-        .filter(button => button !== direction)[0];
+        .find(button => button !== direction);
     other_button.classList.add(ship_direction_class_not_selected);
     other_button.classList.remove(ship_direction_class_selected);
 
@@ -67,7 +67,7 @@ function changeSelectedShip(ship) {
   if (current_ships_count >= 0 && !ship.classList.contains(ship_select_button_class_placed)) {
     let active_ship_button = Array
         .from(ship_select_buttons)
-        .filter(button => button.classList.contains('game_ship_select_button-active'))[0];
+        .find(button => button.classList.contains('game_ship_select_button-active'));
     active_ship_button.classList.remove(ship_select_button_class_active);
     active_ship_button.classList.add(ship_select_button_class_default);
 
@@ -90,11 +90,14 @@ Array.prototype.forEach.call(person_cells, function(element) {
 Array.prototype.forEach.call(opponent_cells, function(element) {
   element.addEventListener('click', function () {
     handleOpponentBoardClick(element);
+    if (game_status.innerHTML !== 'Win') {
+      getOpponentTurn();
+    }
   });
 });
 
 function handlePersonBoardClick(cell) {
-  const response = $.post('/person_cell_clicked', {
+  const person_board_click_response = $.post('/person_cell_clicked', {
     direction: selected_ship_direction,
     game_status: game_status.innerHTML,
     current_ship: selected_ship,
@@ -102,7 +105,7 @@ function handlePersonBoardClick(cell) {
     cell_id: cell.id
   });
 
-  response.done(function(data) {
+  person_board_click_response.done(function (data) {
     const content = $(data).find('#content')['prevObject'][0];
     console.log(content); // TODO HIDE
     if (content['is_changed']) {
@@ -117,7 +120,7 @@ function handlePersonBoardClick(cell) {
       if (content['returned_ship'] !== '') {
         let returned_ship = Array
             .from(ship_select_buttons)
-            .filter(button => button.innerHTML.split(' - ')[0] === content['returned_ship'])[0];
+            .find(button => button.innerHTML.split(' - ')[0] === content['returned_ship']);
         if (returned_ship.innerHTML.split(' - ')[1] === '0') {
           returned_ship.classList.remove(ship_select_button_class_placed);
           returned_ship.classList.add(ship_select_button_class_default);
@@ -156,18 +159,33 @@ function handlePersonBoardClick(cell) {
 }
 
 function handleOpponentBoardClick(cell) {
-  const response = $.post('/opponent_cell_clicked', {
+  const opponent_board_click_response = $.post('/opponent_cell_clicked', {
     game_status: game_status.innerHTML,
-    cell_icon: cell.innerHTML,
     cell_id: cell.id
   });
 
-  response.done(function(data) {
+  opponent_board_click_response.done(function (data) {
     const content = $(data).find('#content')['prevObject'][0];
     console.log(content); // TODO HIDE
     if (content['is_changed']) {
       game_status.innerHTML = content['game_status'];
-      cell.innerHTML = content['cell_icon']
+      cell.innerHTML = content['cell_icon'];
+    }
+  });
+}
+
+function getOpponentTurn() {
+  const opponent_fire = $.post('/get_opponent_fire', {
+    game_status: game_status.innerHTML
+  });
+
+  opponent_fire.done(function (data) {
+    const content = $(data).find('#content')['prevObject'][0];
+    console.log(content); // TODO HIDE
+    if (content['is_changed']) {
+      game_status.innerHTML = content['game_status'];
+      let fired_cell = Array.from(person_cells).find(cell => cell.id === content['cell']);
+      fired_cell.innerHTML = content['cell_icon']
     }
   });
 }
