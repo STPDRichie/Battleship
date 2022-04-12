@@ -1,3 +1,5 @@
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
 const game_status = document.getElementById('game_status');
 
 game_status.addEventListener('click', function () {
@@ -77,9 +79,10 @@ function changeSelectedShip(ship) {
   }
 }
 
-
-const person_cells = document.getElementById('person-board').getElementsByClassName('board_cell');
-const opponent_cells = document.getElementById('opponent-board').getElementsByClassName('board_cell');
+const person_board = document.getElementById('person-board');
+const person_cells = person_board.getElementsByClassName('board_cell');
+const opponent_board = document.getElementById('opponent-board');
+const opponent_cells = opponent_board.getElementsByClassName('board_cell');
 
 Array.prototype.forEach.call(person_cells, function(element) {
   element.addEventListener('click', function () {
@@ -88,10 +91,30 @@ Array.prototype.forEach.call(person_cells, function(element) {
 });
 
 Array.prototype.forEach.call(opponent_cells, function(element) {
-  element.addEventListener('click', function () {
+  element.addEventListener('click', async function () {
     handleOpponentBoardClick(element);
-    if (game_status.innerHTML !== 'Win') {
+    await sleep(100);
+    if (game_status.innerHTML === 'Win') {
+      opponent_board.classList.add('game_board-inactive');
+      person_board.classList.add('game_board-inactive');
+      game_status.style.color = '#ffffff'
+      game_status.style.backgroundColor = '#95e1d3';
+    }
+
+    opponent_board.classList.add('game_board-inactive');
+    await sleep(600);
+    if (game_status.innerHTML !== 'Win' && game_status.innerHTML !== 'Lose') {
       getOpponentTurn();
+      await sleep(200);
+      opponent_board.classList.remove('game_board-inactive');
+    }
+
+    await sleep(100);
+    if (game_status.innerHTML === 'Lose') {
+      opponent_board.classList.add('game_board-inactive');
+      person_board.classList.add('game_board-inactive');
+      game_status.style.color = '#ffffff'
+      game_status.style.backgroundColor = '#f38181';
     }
   });
 });

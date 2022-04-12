@@ -3,6 +3,8 @@ import app
 status_start = 'Start game'
 status_place_ships = 'Ships placing'
 status_battle = 'Battle'
+status_win = 'Win'
+status_lose = 'Lose'
 
 icon_empty = '<i class="fa-solid"></i>'
 icon_ship = '<i class="fa-solid fa-circle"></i>'
@@ -37,7 +39,7 @@ def change_game_status(current_status):
         game_status_add_class = 'game_status-inactive'
         app.person.__init__()
         app.opponent.__init__()
-        app.robot.init_board()
+        app.robot.__init__()
         return {'is_changed': True,
                 'game_status': game_status,
                 'game_status_remove_class': game_status_remove_class,
@@ -106,11 +108,10 @@ def fire_person_cell(current_status):
     cell_icon = icon_missfire
     if fired_cell_status == 'Destroyed':
         cell_icon = icon_destroyed
-    if game_status == status_battle:
-        return {'is_changed': True,
-                'game_status': game_status,
-                'cell': cell,
-                'cell_icon': cell_icon}
+    return {'is_changed': True,
+            'game_status': game_status,
+            'cell': cell,
+            'cell_icon': cell_icon}
 
 
 def _person_cells_to_id_format(cell_ids):

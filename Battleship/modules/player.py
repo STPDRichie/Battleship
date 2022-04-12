@@ -114,26 +114,34 @@ class Player:
         }
 
     def fire(self, cell_id):
-        fire_result = app.opponent.get_fired(cell_id)
         game_status = status_battle
         cell_status = cell_missfire
+        fire_result, one_more = app.opponent.get_fired(cell_id)
         if fire_result == cell_destroyed:
-            self.opponent_remaining_ship_cells_count -= 1
-            print('op_ships', self.opponent_remaining_ship_cells_count)  # todo
             cell_status = cell_destroyed
+            if one_more:
+                self.opponent_remaining_ship_cells_count -= 1
         if self.opponent_remaining_ship_cells_count == 0:
             game_status = status_win
         return game_status, cell_status
 
     def get_fired(self, cell_id):
-        if self.board[cell_id[1] - 1][cell_id[0] - 1] == cell_empty or \
-                self.board[cell_id[1] - 1][cell_id[0] - 1] == cell_neighbor:
-            self.board[cell_id[1] - 1][cell_id[0] - 1] = cell_missfire
-            return cell_missfire
-        if self.board[cell_id[1] - 1][cell_id[0] - 1] == cell_ship:
-            self.board[cell_id[1] - 1][cell_id[0] - 1] = cell_destroyed
+        column, row = cell_id[1] - 1, cell_id[0] - 1
+        if self.board[column][row] == cell_missfire:
+            return cell_missfire, False
+
+        if self.board[column][row] == cell_empty or \
+                self.board[column][row] == cell_neighbor:
+            self.board[column][row] = cell_missfire
+            return cell_missfire, False
+
+        if self.board[column][row] == cell_destroyed:
+            return cell_destroyed, False
+
+        if self.board[column][row] == cell_ship:
+            self.board[column][row] = cell_destroyed
             self.remaining_ship_cells_count -= 1
-            return cell_destroyed
+            return cell_destroyed, True
 
     def place_ship(self, cell_id, ship, ship_direction):
         ship_cells = get_ship_cells(cell_id, ship, ship_direction)
@@ -177,7 +185,6 @@ class Player:
                 if self.board[cell_id[1] - 1][cell_id[0] + c - 1] \
                         == cell_neighbor:
                     return False
-
         return True
 
     def remove_ship(self, cell_id):
@@ -246,3 +253,4 @@ class Player:
                 for cell in ship:
                     if cell == cell_id:
                         return ship_name
+        return ''

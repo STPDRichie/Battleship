@@ -1,4 +1,6 @@
 import random
+import time
+
 import app
 
 direction_vertical = 'Vertical'
@@ -18,7 +20,12 @@ status_lose = 'Lose'
 
 class Robot:
     def __init__(self):
+        self.opponent_empty_cells = []
+        for i in range(1, 11):
+            for j in range(1, 11):
+                self.opponent_empty_cells.append([i, j])
         self.last_fired_cell = []
+        self.init_board()
 
     def init_board(self):
         app.opponent.place_ship([1, 2], 'Battleship', 'Vertical')
@@ -38,12 +45,16 @@ class Robot:
     def fire(self):
         column = random.randint(1, 10)
         row = random.randint(1, 10)
-        cell_status = app.person.get_fired([column, row])
-        if cell_status == cell_destroyed:
-            app.opponent.opponent_remaining_ship_cells_count -= 1
-            print('my_ships', app.opponent.opponent_remaining_ship_cells_count)  # todo
+        while [column, row] not in self.opponent_empty_cells:
+            column = random.randint(1, 10)
+            row = random.randint(1, 10)
+        fire_result, one_more = app.person.get_fired([column, row])
+        self.opponent_empty_cells.remove([column, row])
+        if fire_result == cell_destroyed:
+            if one_more:
+                app.opponent.opponent_remaining_ship_cells_count -= 1
             if app.opponent.opponent_remaining_ship_cells_count == 0:
                 return status_lose, [column, row], cell_destroyed
             return status_battle, [column, row], cell_destroyed
-        if cell_status == cell_missfire:
+        if fire_result == cell_missfire:
             return status_battle, [column, row], cell_missfire

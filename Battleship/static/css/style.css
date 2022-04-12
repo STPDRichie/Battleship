@@ -253,5 +253,13 @@ body {
 .game .board_markup_cell:hover {
   border-color: #ffffff;
 }
+.game .game_board-inactive::after {
+  position: absolute;
+  content: "";
+  width: 600px;
+  height: 600px;
+  background-color: #ffffff;
+  opacity: 0.5;
+}
 
 /*# sourceMappingURL=style.css.map */
