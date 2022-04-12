@@ -9,7 +9,7 @@ game_status.addEventListener('click', function () {
 
   game_status_click_response.done(function (data) {
     const content = $(data).find('#content')['prevObject'][0];
-    console.log(content); // TODO HIDE
+    // console.log(content); // TODO HIDE
     if (content['is_changed']) {
       game_status.innerHTML = content['game_status'];
       game_status.classList.remove(content['game_status_remove_class']);
@@ -92,29 +92,31 @@ Array.prototype.forEach.call(person_cells, function(element) {
 
 Array.prototype.forEach.call(opponent_cells, function(element) {
   element.addEventListener('click', async function () {
-    handleOpponentBoardClick(element);
-    await sleep(100);
-    if (game_status.innerHTML === 'Win') {
-      opponent_board.classList.add('game_board-inactive');
-      person_board.classList.add('game_board-inactive');
-      game_status.style.color = '#ffffff'
-      game_status.style.backgroundColor = '#95e1d3';
-    }
+    if (game_status.innerHTML === 'Battle') {
+      handleOpponentBoardClick(element);
+      await sleep(100);
+      if (game_status.innerHTML === 'Win') {
+        opponent_board.classList.add('game_board-inactive');
+        person_board.classList.add('game_board-inactive');
+        game_status.style.color = '#ffffff'
+        game_status.style.backgroundColor = '#95e1d3';
+      }
 
-    opponent_board.classList.add('game_board-inactive');
-    await sleep(600);
-    if (game_status.innerHTML !== 'Win' && game_status.innerHTML !== 'Lose') {
-      getOpponentTurn();
-      await sleep(200);
-      opponent_board.classList.remove('game_board-inactive');
-    }
-
-    await sleep(100);
-    if (game_status.innerHTML === 'Lose') {
       opponent_board.classList.add('game_board-inactive');
-      person_board.classList.add('game_board-inactive');
-      game_status.style.color = '#ffffff'
-      game_status.style.backgroundColor = '#f38181';
+      await sleep(600);
+      if (game_status.innerHTML !== 'Win' && game_status.innerHTML !== 'Lose') {
+        getOpponentTurn();
+        await sleep(200);
+        opponent_board.classList.remove('game_board-inactive');
+      }
+
+      await sleep(100);
+      if (game_status.innerHTML === 'Lose') {
+        opponent_board.classList.add('game_board-inactive');
+        person_board.classList.add('game_board-inactive');
+        game_status.style.color = '#ffffff'
+        game_status.style.backgroundColor = '#f38181';
+      }
     }
   });
 });
@@ -130,7 +132,7 @@ function handlePersonBoardClick(cell) {
 
   person_board_click_response.done(function (data) {
     const content = $(data).find('#content')['prevObject'][0];
-    console.log(content); // TODO HIDE
+    // console.log(content); // TODO HIDE
     if (content['is_changed']) {
       game_status.innerHTML = content['game_status'];
 
@@ -189,7 +191,7 @@ function handleOpponentBoardClick(cell) {
 
   opponent_board_click_response.done(function (data) {
     const content = $(data).find('#content')['prevObject'][0];
-    console.log(content); // TODO HIDE
+    // console.log(content); // TODO HIDE
     if (content['is_changed']) {
       game_status.innerHTML = content['game_status'];
       cell.innerHTML = content['cell_icon'];
@@ -204,7 +206,7 @@ function getOpponentTurn() {
 
   opponent_fire.done(function (data) {
     const content = $(data).find('#content')['prevObject'][0];
-    console.log(content); // TODO HIDE
+    // console.log(content); // TODO HIDE
     if (content['is_changed']) {
       game_status.innerHTML = content['game_status'];
       let fired_cell = Array.from(person_cells).find(cell => cell.id === content['cell']);

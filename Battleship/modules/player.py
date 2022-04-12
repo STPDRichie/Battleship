@@ -84,7 +84,7 @@ def get_ship_cells(cell_id, ship, ship_direction):
 
 class Player:
     def __init__(self):
-        self._ships_remains_to_place = {
+        self.ships_remains_to_place = {
             'Battleship': 1,
             'Cruiser': 2,
             'Submarine': 3,
@@ -158,32 +158,35 @@ class Player:
         return ship_cells
 
     def _init_ship(self, ship, ship_cells):
-        self._ships_remains_to_place[ship] -= 1
+        self.ships_remains_to_place[ship] -= 1
         ship_neighbor_cells = get_neighbor_cells(ship_cells)
         for cell in ship_neighbor_cells:
             self.neighbors_board[cell[1] - 1][cell[0] - 1] += 1
         self.ships[ship].append(ship_cells)
 
     def is_placement_correct(self, cell_id, ship, ship_direction):
-        if self._ships_remains_to_place[ship] == 0:
+        if self.ships_remains_to_place[ship] == 0:
             return False
 
+        column = cell_id[0]
+        row = cell_id[1]
+        ship_range = ships_ranges[ship]
         if ship_direction == direction_vertical:
-            if cell_id[1] + ships_ranges[ship][0] < 1 or \
-                    cell_id[1] + ships_ranges[ship][1] > 10:
+            if row + ship_range[0] < 1 or \
+                    row + ship_range[1] > 10:
                 return False
-            for r in range(ships_ranges[ship][0], ships_ranges[ship][1] + 1):
-                if self.board[cell_id[1] + r - 1][cell_id[0] - 1] \
-                        == cell_neighbor:
+            for r in range(ship_range[0], ship_range[1] + 1):
+                if self.board[row - 1 + r][column - 1] == cell_neighbor or \
+                        self.board[row - 1 + r][column - 1] == cell_ship:
                     return False
 
         elif ship_direction == direction_horizontal:
-            if cell_id[0] + ships_ranges[ship][0] < 1 or \
-                    cell_id[0] + ships_ranges[ship][1] > 10:
+            if column + ship_range[0] < 1 or \
+                    column + ship_range[1] > 10:
                 return False
-            for c in range(ships_ranges[ship][0], ships_ranges[ship][1] + 1):
-                if self.board[cell_id[1] - 1][cell_id[0] + c - 1] \
-                        == cell_neighbor:
+            for c in range(ship_range[0], ship_range[1] + 1):
+                if self.board[row - 1][column - 1 + c] == cell_neighbor or \
+                        self.board[row - 1][column - 1 + c] == cell_ship:
                     return False
         return True
 
@@ -195,7 +198,7 @@ class Player:
                 if cell == cell_id:
                     cells = ship
                     self.ships[current_ship].remove(ship)
-                    self._ships_remains_to_place[current_ship] += 1
+                    self.ships_remains_to_place[current_ship] += 1
                     self._uninit_ship(current_ship, cells)
                     return cells
 
@@ -245,7 +248,7 @@ class Player:
         return status_place_ships
 
     def get_ship_count(self, ship):
-        return self._ships_remains_to_place[ship]
+        return self.ships_remains_to_place[ship]
 
     def get_ship(self, cell_id):
         for ship_name in self.ships.keys():

@@ -39,7 +39,7 @@ def change_game_status(current_status):
         game_status_add_class = 'game_status-inactive'
         app.person.__init__()
         app.opponent.__init__()
-        app.robot.__init__()
+        app.robot.init_board()
         return {'is_changed': True,
                 'game_status': game_status,
                 'game_status_remove_class': game_status_remove_class,

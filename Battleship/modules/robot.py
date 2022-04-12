@@ -1,5 +1,4 @@
-import random
-import time
+from random import randint
 
 import app
 
@@ -17,6 +16,9 @@ status_battle = 'Battle'
 status_win = 'Win'
 status_lose = 'Lose'
 
+ship_list = ['Battleship', 'Cruiser', 'Submarine', 'Destroyer']
+directions = ['Vertical', 'Horizontal']
+
 
 class Robot:
     def __init__(self):
@@ -25,36 +27,36 @@ class Robot:
             for j in range(1, 11):
                 self.opponent_empty_cells.append([i, j])
         self.last_fired_cell = []
-        self.init_board()
 
     def init_board(self):
-        app.opponent.place_ship([1, 2], 'Battleship', 'Vertical')
-        app.opponent.place_ship([3, 2], 'Cruiser', 'Vertical')
-        app.opponent.place_ship([5, 2], 'Cruiser', 'Vertical')
-        app.opponent.place_ship([7, 1], 'Submarine', 'Vertical')
-        app.opponent.place_ship([9, 1], 'Submarine', 'Vertical')
-        app.opponent.place_ship([1, 6], 'Submarine', 'Vertical')
-        app.opponent.place_ship([3, 6], 'Destroyer', 'Vertical')
-        app.opponent.place_ship([5, 6], 'Destroyer', 'Vertical')
-        app.opponent.place_ship([7, 6], 'Destroyer', 'Vertical')
-        app.opponent.place_ship([9, 6], 'Destroyer', 'Vertical')
-        print(app.opponent.ships)
-        for i in range(10):
-            print(app.opponent.neighbors_board[i])
+        while app.opponent.non_placed_ships_count > 0:
+            ship = ship_list[randint(0, 3)]
+            while app.opponent.ships_remains_to_place[ship] == 0:
+                ship = ship_list[randint(0, 3)]
+
+            column, row = randint(1, 10), randint(1, 10)
+            ship_direction = directions[randint(0, 1)]
+            while not app.opponent\
+                    .is_placement_correct([column, row], ship, ship_direction):
+                column, row = randint(1, 10), randint(1, 10)
+                ship_direction = directions[randint(0, 1)]
+
+            app.opponent.place_ship([column, row], ship, ship_direction)
 
     def fire(self):
-        column = random.randint(1, 10)
-        row = random.randint(1, 10)
+        column, row = randint(1, 10), randint(1, 10)
         while [column, row] not in self.opponent_empty_cells:
-            column = random.randint(1, 10)
-            row = random.randint(1, 10)
+            column, row = randint(1, 10), randint(1, 10)
+
         fire_result, one_more = app.person.get_fired([column, row])
         self.opponent_empty_cells.remove([column, row])
+
         if fire_result == cell_destroyed:
             if one_more:
                 app.opponent.opponent_remaining_ship_cells_count -= 1
             if app.opponent.opponent_remaining_ship_cells_count == 0:
                 return status_lose, [column, row], cell_destroyed
             return status_battle, [column, row], cell_destroyed
+
         if fire_result == cell_missfire:
             return status_battle, [column, row], cell_missfire
