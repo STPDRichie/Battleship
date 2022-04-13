@@ -59,7 +59,7 @@ def change_person_cells(cell_icon, cell_id_text,
     if cell_icon == icon_empty and app.person\
             .is_placement_correct(cell_id, current_ship, ship_direction):
         cell_ids = app.person.place_ship(cell_id, current_ship, ship_direction)
-        cells = _person_cells_to_id_format(cell_ids)
+        cells = person_cells_to_id_format(cell_ids)
         new_status = app.person.check_game_status()
         ship_count = app.person.get_ship_count(current_ship)
         return {'is_changed': True,
@@ -73,7 +73,7 @@ def change_person_cells(cell_icon, cell_id_text,
         returned_ship = app.person.get_ship(cell_id)
         cell_ids = app.person.remove_ship(cell_id)
         ship_count = app.person.get_ship_count(returned_ship)
-        cells = _person_cells_to_id_format(cell_ids)
+        cells = person_cells_to_id_format(cell_ids)
         return {'is_changed': True,
                 'game_status': status_place_ships,
                 'ship_count': ship_count,
@@ -104,7 +104,7 @@ def fire_person_cell(current_status):
         return {'is_changed': False}
 
     game_status, cell_id, fired_cell_status = app.robot.fire()
-    cell = _person_cells_to_id_format([cell_id])[0]
+    cell = person_cells_to_id_format([cell_id])[0]
     cell_icon = icon_missfire
     if fired_cell_status == 'Destroyed':
         cell_icon = icon_destroyed
@@ -114,7 +114,7 @@ def fire_person_cell(current_status):
             'cell_icon': cell_icon}
 
 
-def _person_cells_to_id_format(cell_ids):
+def person_cells_to_id_format(cell_ids):
     cells = []
     for cell_id in cell_ids:
         cells.append(
