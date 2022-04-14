@@ -1,6 +1,6 @@
 from random import randint
 
-import app
+from modules.player import Player
 
 direction_vertical = 'Vertical'
 direction_horizontal = 'Horizontal'
@@ -20,8 +20,9 @@ ship_list = ['Battleship', 'Cruiser', 'Submarine', 'Destroyer']
 directions = ['Vertical', 'Horizontal']
 
 
-class Robot:
+class Robot(Player):
     def __init__(self):
+        super().__init__()
         self.opponent_empty_cells = []
         for i in range(1, 11):
             for j in range(1, 11):
@@ -29,32 +30,32 @@ class Robot:
         self.last_fired_cell = []
 
     def init_board(self):
-        while app.opponent.non_placed_ships_count > 0:
+        while self.non_placed_ships_count > 0:
             ship = ship_list[randint(0, 3)]
-            while app.opponent.ships_remains_to_place[ship] == 0:
+            while self.ships_remains_to_place[ship] == 0:
                 ship = ship_list[randint(0, 3)]
 
             column, row = randint(1, 10), randint(1, 10)
             ship_direction = directions[randint(0, 1)]
-            while not app.opponent\
-                    .is_placement_correct([column, row], ship, ship_direction):
+            while not self.is_placement_correct(
+                    [column, row], ship, ship_direction):
                 column, row = randint(1, 10), randint(1, 10)
                 ship_direction = directions[randint(0, 1)]
 
-            app.opponent.place_ship([column, row], ship, ship_direction)
+            self.place_ship([column, row], ship, ship_direction)
 
-    def fire(self):
+    def random_fire(self):
         column, row = randint(1, 10), randint(1, 10)
         while [column, row] not in self.opponent_empty_cells:
             column, row = randint(1, 10), randint(1, 10)
 
-        fire_result, one_more = app.person.get_fired([column, row])
+        fire_result, one_more = self.opponent.get_fired([column, row])
         self.opponent_empty_cells.remove([column, row])
 
         if fire_result == cell_destroyed:
             if one_more:
-                app.opponent.opponent_remaining_ship_cells_count -= 1
-            if app.opponent.opponent_remaining_ship_cells_count == 0:
+                self.opponent_remaining_ship_cells_count -= 1
+            if self.opponent_remaining_ship_cells_count == 0:
                 return status_lose, [column, row], cell_destroyed
             return status_battle, [column, row], cell_destroyed
 

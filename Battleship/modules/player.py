@@ -1,5 +1,3 @@
-import app
-
 column_numbers_and_letters = {
     'a': 1, 1: 'a',
     'b': 2, 2: 'b',
@@ -90,6 +88,8 @@ class Player:
             'Submarine': 3,
             'Destroyer': 4
         }
+        self.opponent = None
+
         self.board = \
             [[cell_empty for row in range(10)] for column in range(10)]
         self.neighbors_board = \
@@ -113,10 +113,13 @@ class Player:
             'Destroyer': []
         }
 
+    def init_opponent(self, opponent):
+        self.opponent = opponent
+
     def fire(self, cell_id):
         game_status = status_battle
         cell_status = cell_missfire
-        fire_result, one_more = app.opponent.get_fired(cell_id)
+        fire_result, one_more = self.opponent.get_fired(cell_id)
         if fire_result == cell_destroyed:
             cell_status = cell_destroyed
             if one_more:

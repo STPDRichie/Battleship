@@ -37,9 +37,14 @@ def change_game_status(current_status):
         game_status = status_place_ships
         game_status_remove_class = 'game_status'
         game_status_add_class = 'game_status-inactive'
+
         app.person.__init__()
-        app.opponent.__init__()
+        app.robot.__init__()
+
+        app.person.init_opponent(app.robot)
+        app.robot.init_opponent(app.person)
         app.robot.init_board()
+
         return {'is_changed': True,
                 'game_status': game_status,
                 'game_status_remove_class': game_status_remove_class,
@@ -103,7 +108,7 @@ def fire_person_cell(current_status):
     if current_status != status_battle:
         return {'is_changed': False}
 
-    game_status, cell_id, fired_cell_status = app.robot.fire()
+    game_status, cell_id, fired_cell_status = app.robot.random_fire()
     cell = person_cells_to_id_format([cell_id])[0]
     cell_icon = icon_missfire
     if fired_cell_status == 'Destroyed':
