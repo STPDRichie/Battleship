@@ -263,11 +263,3 @@ class Player:
                     if cell == cell_id:
                         return ships_item[0]
         return None
-
-    # def get_ship(self, cell_id):
-    #     for ship_name in self.ships.keys():
-    #         for ship in self.ships[ship_name]:
-    #             for cell in ship:
-    #                 if cell == cell_id:
-    #                     return ship_name
-    #     return None
