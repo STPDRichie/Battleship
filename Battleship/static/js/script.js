@@ -1,6 +1,14 @@
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
+const color_white = '#ffffff'
+const color_green = '#95e1d3'
+const color_red = '#f38181'
+
+
 const game_status = document.getElementById('game_status');
+const game_status_battle = 'Battle';
+const game_status_win = 'Win';
+const game_status_lose = 'Lose';
 
 game_status.addEventListener('click', function () {
   const game_status_click_response = $.post('/game_button_clicked', {
@@ -55,6 +63,7 @@ const ship_select_buttons = document.getElementById('game_ship_select_buttons').
 const ship_select_button_class_default = 'game_ship_select_button'
 const ship_select_button_class_active = 'game_ship_select_button-active';
 const ship_select_button_class_placed = 'game_ship_select_button-placed';
+const ship_html_sep = ' - ';
 let selected_ship = 'Battleship'
 
 Array.prototype.forEach.call(ship_select_buttons, function (element) {
@@ -64,12 +73,12 @@ Array.prototype.forEach.call(ship_select_buttons, function (element) {
 });
 
 function changeSelectedShip(ship) {
-  let current_ships_count = parseInt(ship.innerHTML.split(' - ')[1]);
-  let current_ship = ship.innerHTML.split(' - ')[0];
+  let current_ships_count = parseInt(ship.innerHTML.split(ship_html_sep)[1]);
+  let current_ship = ship.innerHTML.split(ship_html_sep)[0];
   if (current_ships_count >= 0 && !ship.classList.contains(ship_select_button_class_placed)) {
     let active_ship_button = Array
         .from(ship_select_buttons)
-        .find(button => button.classList.contains('game_ship_select_button-active'));
+        .find(button => button.classList.contains(ship_select_button_class_active));
     active_ship_button.classList.remove(ship_select_button_class_active);
     active_ship_button.classList.add(ship_select_button_class_default);
 
@@ -83,9 +92,11 @@ const person_board = document.getElementById('person-board');
 const person_cells = person_board.getElementsByClassName('board_cell');
 const opponent_board = document.getElementById('opponent-board');
 const opponent_cells = opponent_board.getElementsByClassName('board_cell');
+const board_class_inactive = 'game_board-inactive';
+const markup_cell = 'board_markup_cell';
 
 Array.prototype.forEach.call(person_cells, function(element) {
-  if (!element.classList.contains('board_markup_cell')) {
+  if (!element.classList.contains(markup_cell)) {
     element.addEventListener('click', function () {
       handlePersonBoardClick(element);
     });
@@ -93,32 +104,32 @@ Array.prototype.forEach.call(person_cells, function(element) {
 });
 
 Array.prototype.forEach.call(opponent_cells, function(element) {
-  if (!element.classList.contains('board_markup_cell')) {
+  if (!element.classList.contains(markup_cell)) {
     element.addEventListener('click', async function () {
-      if (game_status.innerHTML === 'Battle') {
+      if (game_status.innerHTML === game_status_battle) {
         handleOpponentBoardClick(element);
         await sleep(100);
-        if (game_status.innerHTML === 'Win') {
-          opponent_board.classList.add('game_board-inactive');
-          person_board.classList.add('game_board-inactive');
-          game_status.style.color = '#ffffff'
-          game_status.style.backgroundColor = '#95e1d3';
+        if (game_status.innerHTML === game_status_win) {
+          opponent_board.classList.add(board_class_inactive);
+          person_board.classList.add(board_class_inactive);
+          game_status.style.color = color_white;
+          game_status.style.backgroundColor = color_green;
         }
 
-        opponent_board.classList.add('game_board-inactive');
+        opponent_board.classList.add(board_class_inactive);
         await sleep(600);
-        if (game_status.innerHTML !== 'Win' && game_status.innerHTML !== 'Lose') {
+        if (game_status.innerHTML !== game_status_win && game_status.innerHTML !== game_status_lose) {
           getOpponentTurn();
           await sleep(200);
-          opponent_board.classList.remove('game_board-inactive');
+          opponent_board.classList.remove(board_class_inactive);
         }
 
         await sleep(100);
-        if (game_status.innerHTML === 'Lose') {
-          opponent_board.classList.add('game_board-inactive');
-          person_board.classList.add('game_board-inactive');
-          game_status.style.color = '#ffffff'
-          game_status.style.backgroundColor = '#f38181';
+        if (game_status.innerHTML === game_status_lose) {
+          opponent_board.classList.add(board_class_inactive);
+          person_board.classList.add(board_class_inactive);
+          game_status.style.color = color_white;
+          game_status.style.backgroundColor = color_red;
         }
       }
     });
@@ -149,37 +160,37 @@ function handlePersonBoardClick(cell) {
       if (content['returned_ship'] !== '') {
         let returned_ship = Array
             .from(ship_select_buttons)
-            .find(button => button.innerHTML.split(' - ')[0] === content['returned_ship']);
-        if (returned_ship.innerHTML.split(' - ')[1] === '0') {
+            .find(button => button.innerHTML.split(ship_html_sep)[0] === content['returned_ship']);
+        if (returned_ship.innerHTML.split(ship_html_sep)[1] === '0') {
           returned_ship.classList.remove(ship_select_button_class_placed);
           returned_ship.classList.add(ship_select_button_class_default);
         }
-        returned_ship.innerHTML = content['returned_ship'] + ' - ' + content['ship_count'];
+        returned_ship.innerHTML = content['returned_ship'] + ship_html_sep + content['ship_count'];
         return;
       }
 
       let current_ship_choise_button = Array
           .from(ship_select_buttons)
-          .filter(button => button.innerHTML.split(' - ')[0] === selected_ship)[0];
-      current_ship_choise_button.innerHTML = selected_ship + ' - ' + content['ship_count'];
+          .filter(button => button.innerHTML.split(ship_html_sep)[0] === selected_ship)[0];
+      current_ship_choise_button.innerHTML = selected_ship + ship_html_sep + content['ship_count'];
       if (content['ship_count'] === 0) {
         current_ship_choise_button.classList.remove(ship_select_button_class_active);
         current_ship_choise_button.classList.add(ship_select_button_class_placed);
         let next_ships = Array
             .from(ship_select_buttons)
-            .filter(button => button.innerHTML.split(' - ')[0] !== selected_ship
+            .filter(button => button.innerHTML.split(ship_html_sep)[0] !== selected_ship
                 && !button.classList.contains(ship_select_button_class_placed));
         if (next_ships.length !== 0) {
-          selected_ship = next_ships[0].innerHTML.split(' - ')[0];
+          selected_ship = next_ships[0].innerHTML.split(ship_html_sep)[0];
           let next_ship_choise_button = Array
               .from(ship_select_buttons)
-              .filter(button => button.innerHTML.split(' - ')[0] === selected_ship)[0];
+              .filter(button => button.innerHTML.split(ship_html_sep)[0] === selected_ship)[0];
           next_ship_choise_button.classList.remove(ship_select_button_class_default);
           next_ship_choise_button.classList.add(ship_select_button_class_active);
         }
       }
 
-      if (game_status.innerHTML === 'Battle') {
+      if (game_status.innerHTML === game_status_battle) {
         document.getElementById('game_ship_direction_select_buttons').style.display = 'none';
         document.getElementById('game_ship_select_buttons').style.display = 'none';
       }
