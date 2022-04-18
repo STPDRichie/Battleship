@@ -146,6 +146,8 @@ class Player:
             self.remaining_ship_cells_count -= 1
             return cell_destroyed, True
 
+        return None, False
+
     def place_ship(self, cell_id, ship, ship_direction):
         ship_cells = get_ship_cells(cell_id, ship, ship_direction)
         neighbor_cells = get_neighbor_cells(ship_cells)
@@ -204,6 +206,7 @@ class Player:
                     self.ships_remains_to_place[current_ship] += 1
                     self._uninit_ship(current_ship, cells)
                     return cells
+        return None
 
     def _uninit_ship(self, ship, cells):
         ship_range = ships_ranges[ship]
@@ -254,9 +257,17 @@ class Player:
         return self.ships_remains_to_place[ship]
 
     def get_ship(self, cell_id):
-        for ship_name in self.ships.keys():
-            for ship in self.ships[ship_name]:
+        for ships_item in self.ships.items():
+            for ship in ships_item[1]:
                 for cell in ship:
                     if cell == cell_id:
-                        return ship_name
-        return ''
+                        return ships_item[0]
+        return None
+
+    # def get_ship(self, cell_id):
+    #     for ship_name in self.ships.keys():
+    #         for ship in self.ships[ship_name]:
+    #             for cell in ship:
+    #                 if cell == cell_id:
+    #                     return ship_name
+    #     return None

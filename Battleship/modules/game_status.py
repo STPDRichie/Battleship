@@ -124,8 +124,6 @@ def person_cells_to_id_format(cell_ids):
     for cell_id in cell_ids:
         cells.append(
             'person-board_cell-' +
-            '{0}-{1}'.format(
-                column_numbers_and_letters[cell_id[0]],
-                cell_id[1])
+            f'{column_numbers_and_letters[cell_id[0]]}-{cell_id[1]}'
         )
     return cells
