@@ -173,6 +173,13 @@ class RobotTests(unittest.TestCase):
         app.robot.__init__()
         app.robot.init_board()
 
+        robot_ships_cells = []
+        for ship_name in ['Battleship', 'Cruiser', 'Submarine', 'Destroyer']:
+            for ship in app.robot.ships[ship_name]:
+                for cell in ship:
+                    robot_ships_cells.append(cell)
+
+        self.assertEqual(len(robot_ships_cells), 20)
         self.assertEqual(app.robot.non_placed_ships_count, 0)
 
         self.assertEqual(len(app.robot.ships['Battleship']), 1)
@@ -183,7 +190,7 @@ class RobotTests(unittest.TestCase):
         self.assertEqual(len(app.robot.ships['Battleship'][0]), 4)
 
         self.assertEqual(len(app.robot.ships['Cruiser'][0]), 3)
-        self.assertEqual(len(app.robot.ships['Cruiser'][1]), 1)
+        self.assertEqual(len(app.robot.ships['Cruiser'][1]), 3)
 
         self.assertEqual(len(app.robot.ships['Submarine'][0]), 2)
         self.assertEqual(len(app.robot.ships['Submarine'][1]), 2)
