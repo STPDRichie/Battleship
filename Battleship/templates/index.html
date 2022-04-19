@@ -6,11 +6,11 @@
     <title>Battleship</title>
     <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico">
 
-	<script src="https://kit.fontawesome.com/1f2dd28b21.js" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/fontAwesome.js') }}"></script>
 	<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Montserrat:wght@500;700&family=Roboto:ital,wght@0,400;1,300&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="../static/css/normalize.css">
-    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <section class="header">
@@ -342,8 +342,8 @@
             </div>
         </div>
     </section>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
