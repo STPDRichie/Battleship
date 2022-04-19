@@ -61,3 +61,5 @@ class Robot(Player):
 
         if fire_result == cell_missfire:
             return status_battle, [column, row], cell_missfire
+
+        return None
