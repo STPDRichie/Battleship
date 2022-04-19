@@ -106,13 +106,6 @@ class Player:
             'Destroyer': []
         }
 
-        self.ships_neighbor_cells = {
-            'Battleship': [],
-            'Cruiser': [],
-            'Submarine': [],
-            'Destroyer': []
-        }
-
     def init_opponent(self, opponent):
         self.opponent = opponent
 
@@ -151,7 +144,6 @@ class Player:
     def place_ship(self, cell_id, ship, ship_direction):
         ship_cells = get_ship_cells(cell_id, ship, ship_direction)
         neighbor_cells = get_neighbor_cells(ship_cells)
-        self.ships_neighbor_cells[ship].append(neighbor_cells)
 
         for cell in neighbor_cells:
             self.board[cell[1] - 1][cell[0] - 1] = cell_neighbor
