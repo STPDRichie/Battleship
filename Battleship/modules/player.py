@@ -151,13 +151,12 @@ class Player:
             self.board[cell[1] - 1][cell[0] - 1] = cell_ship
 
         self.non_placed_ships_count -= 1
-        self._init_ship(ship, ship_cells)
+        self._init_ship(ship, ship_cells, neighbor_cells)
         return ship_cells
 
-    def _init_ship(self, ship, ship_cells):
+    def _init_ship(self, ship, ship_cells, neighbor_cells):
         self.ships_remains_to_place[ship] -= 1
-        ship_neighbor_cells = get_neighbor_cells(ship_cells)
-        for cell in ship_neighbor_cells:
+        for cell in neighbor_cells:
             self.neighbors_board[cell[1] - 1][cell[0] - 1] += 1
         self.ships[ship].append(ship_cells)
 
@@ -211,12 +210,12 @@ class Player:
                 if 0 <= r <= 9:
                     self.neighbors_board[r][center_c] -= 1
                     self.board[r][center_c] = cell_empty
-                    if center_c - 1 > 0:
+                    if center_c - 1 >= 0:
                         self.neighbors_board[r][center_c - 1] -= 1
                         if self.board[r][center_c - 1] == cell_ship or \
                                 self.neighbors_board[r][center_c - 1] == 0:
                             self.board[r][center_c - 1] = cell_empty
-                    if center_c + 1 < 10:
+                    if center_c + 1 <= 9:
                         self.neighbors_board[r][center_c + 1] -= 1
                         if self.board[r][center_c + 1] == cell_ship or \
                                 self.neighbors_board[r][center_c + 1] == 0:
@@ -229,12 +228,12 @@ class Player:
                 if 0 <= c <= 9:
                     self.neighbors_board[center_r][c] -= 1
                     self.board[center_r][c] = cell_empty
-                    if center_r - 1 > 0:
+                    if center_r - 1 >= 0:
                         self.neighbors_board[center_r - 1][c] -= 1
                         if self.board[center_r - 1][c] == cell_ship or \
                                 self.neighbors_board[center_r - 1][c] == 0:
                             self.board[center_r - 1][c] = cell_empty
-                    if center_r + 1 < 10:
+                    if center_r + 1 <= 9:
                         self.neighbors_board[center_r + 1][c] -= 1
                         if self.board[center_r + 1][c] == cell_ship or \
                                 self.neighbors_board[center_r + 1][c] == 0:

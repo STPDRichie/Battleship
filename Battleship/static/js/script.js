@@ -169,24 +169,24 @@ function handlePersonBoardClick(cell) {
         return;
       }
 
-      let current_ship_choise_button = Array
+      let current_ship_select_button = Array
           .from(ship_select_buttons)
           .filter(button => button.innerHTML.split(ship_html_sep)[0] === selected_ship)[0];
-      current_ship_choise_button.innerHTML = selected_ship + ship_html_sep + content['ship_count'];
+      current_ship_select_button.innerHTML = selected_ship + ship_html_sep + content['ship_count'];
       if (content['ship_count'] === 0) {
-        current_ship_choise_button.classList.remove(ship_select_button_class_active);
-        current_ship_choise_button.classList.add(ship_select_button_class_placed);
+        current_ship_select_button.classList.remove(ship_select_button_class_active);
+        current_ship_select_button.classList.add(ship_select_button_class_placed);
         let next_ships = Array
             .from(ship_select_buttons)
             .filter(button => button.innerHTML.split(ship_html_sep)[0] !== selected_ship
                 && !button.classList.contains(ship_select_button_class_placed));
         if (next_ships.length !== 0) {
           selected_ship = next_ships[0].innerHTML.split(ship_html_sep)[0];
-          let next_ship_choise_button = Array
+          let next_ship_select_button = Array
               .from(ship_select_buttons)
               .filter(button => button.innerHTML.split(ship_html_sep)[0] === selected_ship)[0];
-          next_ship_choise_button.classList.remove(ship_select_button_class_default);
-          next_ship_choise_button.classList.add(ship_select_button_class_active);
+          next_ship_select_button.classList.remove(ship_select_button_class_default);
+          next_ship_select_button.classList.add(ship_select_button_class_active);
         }
       }
 
