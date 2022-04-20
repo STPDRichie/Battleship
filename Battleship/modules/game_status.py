@@ -9,7 +9,7 @@ status_lose = 'Lose'
 icon_empty = '<i class="fa-solid"></i>'
 icon_ship = '<i class="fa-solid fa-circle"></i>'
 icon_destroyed = '<i class="fa-solid fa-circle-xmark"></i>'
-icon_missfire = '<i class="fa-regular fa-circle"></i>'
+icon_misfire = '<i class="fa-regular fa-circle"></i>'
 
 column_numbers_and_letters = {
     'a': 1, 1: 'a',
@@ -24,106 +24,119 @@ column_numbers_and_letters = {
     'j': 10, 10: 'j'
 }
 
-ships_ranges = {
-    'Battleship': [-1, 2],
-    'Cruiser': [-1, 1],
-    'Submarine': [0, 1],
-    'Destroyer': [0, 0]
-}
-
 
 def change_game_status(current_status):
-    if current_status == status_start:
-        game_status = status_place_ships
-        game_status_remove_class = 'game_status'
-        game_status_add_class = 'game_status-inactive'
+    if current_status != status_start:
+        return {'is_changed': False}
 
-        app.person.__init__()
-        app.robot.__init__()
+    game_status = status_place_ships
+    game_status_remove_class = 'game_status'
+    game_status_add_class = 'game_status-inactive'
 
-        app.person.init_opponent(app.robot)
-        app.robot.init_opponent(app.person)
-        app.robot.init_board()
+    app.person.__init__()
+    app.robot.__init__()
 
-        return {'is_changed': True,
-                'game_status': game_status,
-                'game_status_remove_class': game_status_remove_class,
-                'game_status_add_class': game_status_add_class}
-    return {'is_changed': False}
+    app.person.init_opponent(app.robot)
+    app.robot.init_opponent(app.person)
+    app.robot.init_board()
+
+    return {
+        'is_changed': True,
+        'game_status': game_status,
+        'game_status_remove_class': game_status_remove_class,
+        'game_status_add_class': game_status_add_class
+    }
 
 
-def change_person_cells(cell_icon, cell_id_text,
-                        current_ship, ship_direction,
-                        current_status):
+def change_person_cells(cell_icon, cell_id, ship,
+                        ship_direction, current_status):
     if current_status != status_place_ships:
         return {'is_changed': False}
 
-    cell_id = [int(column_numbers_and_letters[cell_id_text.split('-')[-2]]),
-               int(cell_id_text.split('-')[-1])]
+    cell = cell_id_to_computing_format(cell_id)
 
-    if cell_icon == icon_empty and app.person\
-            .is_placement_correct(cell_id, current_ship, ship_direction):
-        cell_ids = app.person.place_ship(cell_id, current_ship, ship_direction)
-        cells = person_cells_to_id_format(cell_ids)
-        new_status = app.person.check_game_status()
-        ship_count = app.person.get_ship_count(current_ship)
-        return {'is_changed': True,
-                'game_status': new_status,
-                'ship_count': ship_count,
-                'returned_ship': '',
-                'cells': cells,
-                'cells_icon': icon_ship}
-
-    if cell_icon == icon_ship:
-        returned_ship = app.person.get_ship(cell_id)
-        cell_ids = app.person.remove_ship(cell_id)
+    if cell_icon == icon_empty:
+        returned_ship = ''
+        ship_cells = app.person.place_ship(cell, ship, ship_direction)
+        if not ship_cells:
+            return {'is_changed': False}
+        new_game_status = app.person.check_game_status()
+        cells_ids = person_cells_to_id_format(ship_cells)
+        ship_count = app.person.get_ship_count(ship)
+        new_icon = icon_ship
+    elif cell_icon == icon_ship:
+        returned_ship = app.person.get_ship(cell)
+        ship_cells = app.person.return_ship(cell)
+        new_game_status = app.person.check_game_status()
+        cells_ids = person_cells_to_id_format(ship_cells)
         ship_count = app.person.get_ship_count(returned_ship)
-        cells = person_cells_to_id_format(cell_ids)
-        return {'is_changed': True,
-                'game_status': status_place_ships,
-                'ship_count': ship_count,
-                'returned_ship': returned_ship,
-                'cells': cells,
-                'cells_icon': icon_empty}
+        new_icon = icon_empty
+    else:
+        return {'is_changed': False}
 
-    return {'is_changed': False}
+    return {
+        'is_changed': True,
+        'game_status': new_game_status,
+        'ship_count': ship_count,
+        'returned_ship': returned_ship,
+        'cells': cells_ids,
+        'cells_icon': new_icon
+    }
 
 
-def fire_opponent_cell(cell_id_text, current_status):
+def fire_opponent_cell(cell_id, current_status):
     if current_status != status_battle:
         return {'is_changed': False}
 
-    cell_id = [int(column_numbers_and_letters[cell_id_text.split('-')[-2]]),
-               int(cell_id_text.split('-')[-1])]
-    game_status, fired_cell_status = app.person.fire(cell_id)
-    cell_icon = icon_missfire
+    cell = cell_id_to_computing_format(cell_id)
+    fired_cell_status = app.person.fire(cell)
+    new_game_status = app.person.check_game_status()
+
     if fired_cell_status == 'Destroyed':
-        cell_icon = icon_destroyed
-    return {'is_changed': True,
-            'game_status': game_status,
-            'cell_icon': cell_icon}
+        new_icon = icon_destroyed
+    else:
+        new_icon = icon_misfire
+
+    return {
+        'is_changed': True,
+        'game_status': new_game_status,
+        'cell_icon': new_icon
+    }
 
 
 def fire_person_cell(current_status):
     if current_status != status_battle:
         return {'is_changed': False}
 
-    game_status, cell_id, fired_cell_status = app.robot.random_fire()
-    cell = person_cells_to_id_format([cell_id])[0]
-    cell_icon = icon_missfire
+    fired_cell, fired_cell_status = app.robot.random_fire()
+    new_game_status = app.person.check_game_status()
+    fired_cell_id = person_cells_to_id_format([fired_cell])[0]
+
     if fired_cell_status == 'Destroyed':
-        cell_icon = icon_destroyed
-    return {'is_changed': True,
-            'game_status': game_status,
-            'cell': cell,
-            'cell_icon': cell_icon}
+        new_icon = icon_destroyed
+    else:
+        new_icon = icon_misfire
+
+    return {
+        'is_changed': True,
+        'game_status': new_game_status,
+        'cell': fired_cell_id,
+        'cell_icon': new_icon
+    }
 
 
-def person_cells_to_id_format(cell_ids):
-    cells = []
-    for cell_id in cell_ids:
-        cells.append(
+def cell_id_to_computing_format(cell_id):
+    splitted_id = cell_id.split('-')
+    column = int(column_numbers_and_letters[splitted_id[-2]]) - 1
+    row = int(splitted_id[-1]) - 1
+    return [row, column]
+
+
+def person_cells_to_id_format(cells):
+    cells_ids = []
+    for cell in cells:
+        cells_ids.append(
             'person-board_cell-' +
-            f'{column_numbers_and_letters[cell_id[0]]}-{cell_id[1]}'
-        )
-    return cells
+            f'{column_numbers_and_letters[cell[1] + 1]}-{cell[0] + 1}')
+
+    return cells_ids

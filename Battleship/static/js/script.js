@@ -11,7 +11,7 @@ const game_status_win = 'Win';
 const game_status_lose = 'Lose';
 
 game_status.addEventListener('click', function () {
-  const game_status_click_response = $.post('/game_button_clicked', {
+  const game_status_click_response = $.post('/status_button_clicked', {
     current_status: game_status.innerHTML
   });
 

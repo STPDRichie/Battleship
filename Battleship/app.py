@@ -2,7 +2,7 @@ from modules import game_status
 from modules.player import Player
 from modules.robot import Robot
 
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request
 
 
 app = Flask(__name__)
@@ -16,8 +16,8 @@ def index():
     return render_template('index.html', game_panel_text='Start game')
 
 
-@app.route('/game_button_clicked', methods=['POST'])
-def response_to_button_click():
+@app.route('/status_button_clicked', methods=['POST'])
+def response_to_status_button_click():
     current_status = request.form['current_status']
     return game_status\
         .change_game_status(current_status)
@@ -26,18 +26,18 @@ def response_to_button_click():
 @app.route('/person_cell_clicked', methods=['POST'])
 def response_to_player_cell_click():
     current_status = request.form['game_status']
-    current_ship = request.form['current_ship']
+    ship = request.form['current_ship']
     ship_direction = request.form['direction']
     cell_icon = request.form['cell_icon']
     cell_id = request.form['cell_id']
     return game_status\
         .change_person_cells(cell_icon, cell_id,
-                             current_ship, ship_direction,
+                             ship, ship_direction,
                              current_status)
 
 
 @app.route('/opponent_cell_clicked', methods=['POST'])
-def response_to_ai_cell_click():
+def rensonse_to_opponent_cell_click():
     current_status = request.form['game_status']
     cell_id = request.form['cell_id']
     return game_status\
@@ -45,7 +45,7 @@ def response_to_ai_cell_click():
 
 
 @app.route('/get_opponent_fire', methods=['POST'])
-def return_opponent_fire():
+def fire_person():
     current_status = request.form['game_status']
     return game_status.fire_person_cell(current_status)
 
