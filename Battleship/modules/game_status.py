@@ -50,8 +50,8 @@ def change_game_status(current_status):
 
 
 def get_person_outline_cells(ship, ship_direction,
-                             cell_id, curerent_status):
-    if curerent_status != status_place_ships:
+                             cell_id, current_status):
+    if current_status != status_place_ships:
         return {'is_changed': False}
 
     cell = cell_id_to_computing_format(cell_id)
@@ -147,9 +147,9 @@ def fire_person_cell(current_status):
 
 
 def cell_id_to_computing_format(cell_id):
-    splitted_id = cell_id.split('-')
-    column = int(column_numbers_and_letters[splitted_id[-2]]) - 1
-    row = int(splitted_id[-1]) - 1
+    id_split = cell_id.split('-')
+    column = int(column_numbers_and_letters[id_split[-2]]) - 1
+    row = int(id_split[-1]) - 1
     return [row, column]
 
 

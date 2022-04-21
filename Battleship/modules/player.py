@@ -77,9 +77,9 @@ def get_ship_cells(cell, ship, ship_direction):
 class Player:
     def __init__(self):
         self.board = \
-            [[cell_empty for column in range(10)] for row in range(10)]
+            [[cell_empty for _ in range(10)] for _ in range(10)]
         self.neighbors_board = \
-            [[0 for column in range(10)] for row in range(10)]
+            [[0 for _ in range(10)] for _ in range(10)]
 
         self.non_placed_ships_count = 10
         self.ships_remains_to_place = {

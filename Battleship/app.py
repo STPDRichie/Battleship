@@ -48,7 +48,7 @@ def response_to_person_cell_click():
 
 
 @app.route('/opponent_cell_clicked', methods=['POST'])
-def rensonse_to_opponent_cell_click():
+def response_to_opponent_cell_click():
     current_status = request.form['game_status']
     cell_id = request.form['cell_id']
     return game_status\
