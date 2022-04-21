@@ -36,6 +36,10 @@
     cursor: pointer
     transition: 0.1s linear
 
+  #opponent-board .board_cell:not(.board_markup_cell)
+    &:hover
+      border-color: $main-blue
+
   
   .board_markup_cell
     border-color: $white

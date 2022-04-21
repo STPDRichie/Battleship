@@ -61,7 +61,7 @@ def get_person_outline_cells(ship, ship_direction,
     if len(cells) != ship_length:
         return {'is_changed': False}
 
-    cells_ids = person_cells_to_id_format(cells)
+    cells_ids = player_cells_to_id_format(cells, 'person')
 
     return {
         'is_changed': True,
@@ -82,14 +82,14 @@ def change_person_cells(cell_icon, cell_id, ship,
         if not ship_cells:
             return {'is_changed': False}
         new_game_status = app.person.check_game_status()
-        cells_ids = person_cells_to_id_format(ship_cells)
+        cells_ids = player_cells_to_id_format(ship_cells, 'person')
         ship_count = app.person.get_ship_count(ship)
         new_icon = icon_ship
     elif cell_icon == icon_ship:
         returned_ship = app.person.get_ship(cell)
         ship_cells = app.person.return_ship(cell)
         new_game_status = app.person.check_game_status()
-        cells_ids = person_cells_to_id_format(ship_cells)
+        cells_ids = player_cells_to_id_format(ship_cells, 'person')
         ship_count = app.person.get_ship_count(returned_ship)
         new_icon = icon_empty
     else:
@@ -131,7 +131,7 @@ def fire_person_cell(current_status):
 
     fired_cell, fired_cell_status = app.robot.random_fire()
     new_game_status = app.person.check_game_status()
-    fired_cell_id = person_cells_to_id_format([fired_cell])[0]
+    fired_cell_id = player_cells_to_id_format([fired_cell], 'person')[0]
 
     if fired_cell_status == 'Destroyed':
         new_icon = icon_destroyed
@@ -146,6 +146,15 @@ def fire_person_cell(current_status):
     }
 
 
+def get_opponent_remaining_ship_cells():
+    remaining_cells = app.robot.get_remaining_ship_cells()
+    cells_ids = player_cells_to_id_format(remaining_cells, 'opponent')
+    return {
+        'cells': cells_ids,
+        'cell_icon': icon_ship
+    }
+
+
 def cell_id_to_computing_format(cell_id):
     id_split = cell_id.split('-')
     column = int(column_numbers_and_letters[id_split[-2]]) - 1
@@ -153,11 +162,11 @@ def cell_id_to_computing_format(cell_id):
     return [row, column]
 
 
-def person_cells_to_id_format(cells):
+def player_cells_to_id_format(cells, player):
     cells_ids = []
     for cell in cells:
         cells_ids.append(
-            'person-board_cell-' +
+            f'{player}-board_cell-' +
             f'{column_numbers_and_letters[cell[1] + 1]}-{cell[0] + 1}')
 
     return cells_ids

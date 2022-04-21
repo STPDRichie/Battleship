@@ -50,7 +50,7 @@ class GameStatusTests(unittest.TestCase):
 
     def test_correct_convert_cell_format(self):
         cells = [[6, 5], [1, 9]]
-        cells_id_text = game_status.person_cells_to_id_format(cells)
+        cells_id_text = game_status.player_cells_to_id_format(cells, 'person')
         expected_cell_ids = ['person-board_cell-f-7', 'person-board_cell-j-2']
 
         self.assertEqual(expected_cell_ids, cells_id_text)
@@ -64,7 +64,7 @@ class ShipPlacingTests(unittest.TestCase):
         app.person.place_ship(cell, 'Submarine', direction_vertical)
 
         neighbor_cell_id = game_status\
-            .person_cells_to_id_format([neighbor_cell])[0]
+            .player_cells_to_id_format([neighbor_cell], 'person')[0]
         incorrect_game_status_response = game_status\
             .change_person_cells(icon_empty, neighbor_cell_id, 'Destroyer',
                                  direction_vertical, status_start)
@@ -74,11 +74,11 @@ class ShipPlacingTests(unittest.TestCase):
     def test_correct_ship_place(self):
         app.person.__init__()
         cell = [7, 3]
-        cell_id = game_status.person_cells_to_id_format([cell])[0]
+        cell_id = game_status.player_cells_to_id_format([cell], 'person')[0]
         cruiser_cells = [[6, 3], [7, 3], [8, 3]]
 
         cruiser_cells_ids = game_status\
-            .person_cells_to_id_format(cruiser_cells)
+            .player_cells_to_id_format(cruiser_cells, 'person')
         correct_ship_place_response = game_status\
             .change_person_cells(icon_empty, cell_id, 'Cruiser',
                                  direction_vertical, status_place_ships)
@@ -96,7 +96,7 @@ class ShipPlacingTests(unittest.TestCase):
         neighbor_cell = [6, 5]
 
         neighbor_cell_id = game_status\
-            .person_cells_to_id_format([neighbor_cell])[0]
+            .player_cells_to_id_format([neighbor_cell], 'person')[0]
         app.person.place_ship(cell, 'Submarine', direction_vertical)
         incorrect_ship_place_response = game_status\
             .change_person_cells(icon_empty, neighbor_cell_id, 'Destroyer',
@@ -107,12 +107,12 @@ class ShipPlacingTests(unittest.TestCase):
     def test_correct_ship_remove(self):
         app.person.__init__()
         cell = [5, 5]
-        cell_id = game_status.person_cells_to_id_format([cell])[0]
+        cell_id = game_status.player_cells_to_id_format([cell], 'person')[0]
         app.person.place_ship(cell, 'Submarine', direction_vertical)
         submarine_cells = [[5, 5], [6, 5]]
 
         submarine_cells_ids = game_status\
-            .person_cells_to_id_format(submarine_cells)
+            .player_cells_to_id_format(submarine_cells, 'person')
         remove_ship_response = game_status\
             .change_person_cells(icon_ship, cell_id, 'Destroyer',
                                  direction_horizontal, status_place_ships)

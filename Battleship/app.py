@@ -61,5 +61,10 @@ def fire_person():
     return game_status.fire_person_cell(current_status)
 
 
+@app.route('/get_opponent_remaining_ships', methods=['GET'])
+def get_opponent_remaining_ship_cells():
+    return game_status.get_opponent_remaining_ship_cells()
+
+
 if __name__ == '__main__':
     app.run(debug=True)

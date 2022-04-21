@@ -103,31 +103,11 @@ Array.prototype.forEach.call(person_cells, function(element) {
     });
 
     element.addEventListener('mouseover', function () {
-      const person_cell_hover_response = $.post('/person_cell_hovered', {
-        game_status: game_status.innerHTML,
-        current_ship: selected_ship,
-        direction: selected_ship_direction,
-        cell_id: element.id
-      });
-
-      person_cell_hover_response.done(function (data) {
-        const content = $(data).find('#content')['prevObject'][0];
-        if (content['is_changed']) {
-          for (let i = 0; i < content['cells'].length; i++) {
-            let current_cell = Array.from(person_cells).find(cell => cell.id === content['cells'][i]);
-            hovered_cells.push(current_cell)
-            current_cell.style.backgroundColor = color_gray;
-          }
-        }
-      });
+      handlePersonCellHover(element);
     });
 
     element.addEventListener('mouseout', function () {
-      for (let i = 0; i < hovered_cells.length; i++) {
-        let current_cell = hovered_cells[i];
-        current_cell.style.backgroundColor = color_white;
-      }
-      hovered_cells = []
+      handlePersonCellUnhover();
     });
   }
 });
@@ -146,10 +126,10 @@ Array.prototype.forEach.call(opponent_cells, function(element) {
         }
 
         opponent_board.classList.add(board_class_inactive);
-        await sleep(600);
+        await sleep(700);
         if (game_status.innerHTML !== game_status_win && game_status.innerHTML !== game_status_lose) {
           getOpponentTurn();
-          await sleep(200);
+          await sleep(100);
           opponent_board.classList.remove(board_class_inactive);
         }
 
@@ -159,6 +139,7 @@ Array.prototype.forEach.call(opponent_cells, function(element) {
           person_board.classList.add(board_class_inactive);
           game_status.style.color = color_white;
           game_status.style.backgroundColor = color_red;
+          showOpponentRemainingShipCells();
         }
       }
     });
@@ -225,6 +206,34 @@ function handlePersonBoardClick(cell) {
   });
 }
 
+function handlePersonCellHover(cell) {
+  const person_cell_hover_response = $.post('/person_cell_hovered', {
+    game_status: game_status.innerHTML,
+    current_ship: selected_ship,
+    direction: selected_ship_direction,
+    cell_id: cell.id
+  });
+
+  person_cell_hover_response.done(function (data) {
+    const content = $(data).find('#content')['prevObject'][0];
+    if (content['is_changed']) {
+      for (let i = 0; i < content['cells'].length; i++) {
+        let current_cell = Array.from(person_cells).find(cell => cell.id === content['cells'][i]);
+        hovered_cells.push(current_cell)
+        current_cell.style.backgroundColor = color_gray;
+      }
+    }
+  });
+}
+
+function handlePersonCellUnhover() {
+  for (let i = 0; i < hovered_cells.length; i++) {
+    let current_cell = hovered_cells[i];
+    current_cell.style.backgroundColor = color_white;
+  }
+  hovered_cells = []
+}
+
 function handleOpponentBoardClick(cell) {
   const opponent_board_click_response = $.post('/opponent_cell_clicked', {
     game_status: game_status.innerHTML,
@@ -251,6 +260,20 @@ function getOpponentTurn() {
       game_status.innerHTML = content['game_status'];
       let fired_cell = Array.from(person_cells).find(cell => cell.id === content['cell']);
       fired_cell.innerHTML = content['cell_icon']
+    }
+  });
+}
+
+function showOpponentRemainingShipCells() {
+  const opponent_remaining_ships = $.get('/get_opponent_remaining_ships');
+
+  opponent_remaining_ships.done(function (data) {
+    const content = $(data).find('#content')['prevObject'][0];
+    const remaining_ship_cells = content['cells'];
+
+    for (let i = 0; i < remaining_ship_cells.length; i++) {
+      let current_cell = Array.from(opponent_cells).find(cell => cell.id === remaining_ship_cells[i]);
+      current_cell.innerHTML = content['cell_icon'];
     }
   });
 }
