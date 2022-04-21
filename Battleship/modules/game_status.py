@@ -1,4 +1,5 @@
 import app
+from modules.player import get_ship_cells, ships_ranges
 
 status_start = 'Start game'
 status_place_ships = 'Ships placing'
@@ -45,6 +46,26 @@ def change_game_status(current_status):
         'game_status': game_status,
         'game_status_remove_class': game_status_remove_class,
         'game_status_add_class': game_status_add_class
+    }
+
+
+def get_person_outline_cells(ship, ship_direction,
+                             cell_id, curerent_status):
+    if curerent_status != status_place_ships:
+        return {'is_changed': False}
+
+    cell = cell_id_to_computing_format(cell_id)
+    cells = get_ship_cells(cell, ship, ship_direction)
+
+    ship_length = abs(ships_ranges[ship][0]) + ships_ranges[ship][1] + 1
+    if len(cells) != ship_length:
+        return {'is_changed': False}
+
+    cells_ids = person_cells_to_id_format(cells)
+
+    return {
+        'is_changed': True,
+        'cells': cells_ids
     }
 
 

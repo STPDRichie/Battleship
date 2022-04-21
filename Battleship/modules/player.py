@@ -63,11 +63,13 @@ def get_ship_cells(cell, ship, ship_direction):
 
     if ship_direction == direction_vertical:
         for r in range(ship_range[0], ship_range[1] + 1):
-            cells.append([cell[0] + r, cell[1]])
+            if 0 <= cell[0] + r <= 9:
+                cells.append([cell[0] + r, cell[1]])
 
     if ship_direction == direction_horizontal:
         for c in range(ship_range[0], ship_range[1] + 1):
-            cells.append([cell[0], cell[1] + c])
+            if 0 <= cell[1] + c <= 9:
+                cells.append([cell[0], cell[1] + c])
 
     return cells
 

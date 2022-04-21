@@ -1,8 +1,9 @@
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-const color_white = '#ffffff'
-const color_green = '#95e1d3'
-const color_red = '#f38181'
+const color_white = '#ffffff';
+const color_green = '#95e1d3';
+const color_red = '#f38181';
+const color_gray = '#d8d8d8';
 
 
 const game_status = document.getElementById('game_status');
@@ -17,7 +18,6 @@ game_status.addEventListener('click', function () {
 
   game_status_click_response.done(function (data) {
     const content = $(data).find('#content')['prevObject'][0];
-    // console.log(content); // TODO HIDE
     if (content['is_changed']) {
       game_status.innerHTML = content['game_status'];
       game_status.classList.remove(content['game_status_remove_class']);
@@ -94,11 +94,40 @@ const opponent_board = document.getElementById('opponent-board');
 const opponent_cells = opponent_board.getElementsByClassName('board_cell');
 const board_class_inactive = 'game_board-inactive';
 const markup_cell = 'board_markup_cell';
+let hovered_cells = [];
 
 Array.prototype.forEach.call(person_cells, function(element) {
   if (!element.classList.contains(markup_cell)) {
     element.addEventListener('click', function () {
       handlePersonBoardClick(element);
+    });
+
+    element.addEventListener('mouseover', function () {
+      const person_cell_hover_response = $.post('/person_cell_hovered', {
+        game_status: game_status.innerHTML,
+        current_ship: selected_ship,
+        direction: selected_ship_direction,
+        cell_id: element.id
+      });
+
+      person_cell_hover_response.done(function (data) {
+        const content = $(data).find('#content')['prevObject'][0];
+        if (content['is_changed']) {
+          for (let i = 0; i < content['cells'].length; i++) {
+            let current_cell = Array.from(person_cells).find(cell => cell.id === content['cells'][i]);
+            hovered_cells.push(current_cell)
+            current_cell.style.backgroundColor = color_gray;
+          }
+        }
+      });
+    });
+
+    element.addEventListener('mouseout', function () {
+      for (let i = 0; i < hovered_cells.length; i++) {
+        let current_cell = hovered_cells[i];
+        current_cell.style.backgroundColor = color_white;
+      }
+      hovered_cells = []
     });
   }
 });
@@ -147,13 +176,11 @@ function handlePersonBoardClick(cell) {
 
   person_board_click_response.done(function (data) {
     const content = $(data).find('#content')['prevObject'][0];
-    // console.log(content); // TODO HIDE
     if (content['is_changed']) {
       game_status.innerHTML = content['game_status'];
 
-      let current_board = Array.from(person_cells);
       for (let i = 0; i < content['cells'].length; i++) {
-        let current_cell = current_board.find(cell => cell.id === content['cells'][i]);
+        let current_cell = Array.from(person_cells).find(cell => cell.id === content['cells'][i]);
         current_cell.innerHTML = content['cells_icon'];
       }
 
@@ -206,7 +233,6 @@ function handleOpponentBoardClick(cell) {
 
   opponent_board_click_response.done(function (data) {
     const content = $(data).find('#content')['prevObject'][0];
-    // console.log(content); // TODO HIDE
     if (content['is_changed']) {
       game_status.innerHTML = content['game_status'];
       cell.innerHTML = content['cell_icon'];
@@ -221,7 +247,6 @@ function getOpponentTurn() {
 
   opponent_fire.done(function (data) {
     const content = $(data).find('#content')['prevObject'][0];
-    // console.log(content); // TODO HIDE
     if (content['is_changed']) {
       game_status.innerHTML = content['game_status'];
       let fired_cell = Array.from(person_cells).find(cell => cell.id === content['cell']);

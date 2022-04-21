@@ -242,9 +242,6 @@ body {
   cursor: pointer;
   transition: 0.1s linear;
 }
-.game .board_cell:hover {
-  border-color: #4c97fc;
-}
 .game .board_markup_cell {
   border-color: #ffffff;
   cursor: default;

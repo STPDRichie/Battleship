@@ -23,8 +23,19 @@ def response_to_status_button_click():
         .change_game_status(current_status)
 
 
+@app.route('/person_cell_hovered', methods=['POST'])
+def response_to_person_cell_hover():
+    current_status = request.form['game_status']
+    ship = request.form['current_ship']
+    ship_direction = request.form['direction']
+    cell_id = request.form['cell_id']
+    return game_status\
+        .get_person_outline_cells(ship, ship_direction,
+                                  cell_id, current_status)
+
+
 @app.route('/person_cell_clicked', methods=['POST'])
-def response_to_player_cell_click():
+def response_to_person_cell_click():
     current_status = request.form['game_status']
     ship = request.form['current_ship']
     ship_direction = request.form['direction']
