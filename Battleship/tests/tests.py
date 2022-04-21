@@ -1,4 +1,5 @@
-import unittest
+import sys
+from unittest import TestCase, main
 
 import app
 from modules import game_status
@@ -24,7 +25,7 @@ cell_misfire = 'Misfire'
 cell_destroyed = 'Destroyed'
 
 
-class GameStatusTests(unittest.TestCase):
+class GameStatusTest(TestCase):
     def test_correct_changing_status_start_to_place_ships(self):
         response = game_status.change_game_status(status_start)
 
@@ -56,7 +57,7 @@ class GameStatusTests(unittest.TestCase):
         self.assertEqual(expected_cell_ids, cells_id_text)
 
 
-class ShipPlacingTests(unittest.TestCase):
+class ShipPlacingTest(TestCase):
     def test_dont_place_ship_when_status_start(self):
         app.person.__init__()
         cell = [5, 5]
@@ -125,7 +126,7 @@ class ShipPlacingTests(unittest.TestCase):
                          remove_ship_response)
 
 
-class FireTests(unittest.TestCase):
+class FireTest(TestCase):
     def test_correct_destroy(self):
         app.person.__init__()
         app.robot.__init__()
@@ -149,7 +150,7 @@ class FireTests(unittest.TestCase):
         self.assertEqual(20, app.robot.remaining_ship_cells_count)
 
 
-class GetFiredTests(unittest.TestCase):
+class GetFiredTest(TestCase):
     def test_correct_destroy(self):
         app.person.__init__()
         app.person.place_ship([5, 5], 'Submarine', direction_vertical)
@@ -178,7 +179,7 @@ class GetFiredTests(unittest.TestCase):
         self.assertEqual(19, app.person.remaining_ship_cells_count)
 
 
-class RobotTests(unittest.TestCase):
+class RobotTest(TestCase):
     def test_correct_board_init(self):
         app.robot.__init__()
         app.robot.init_board()
@@ -233,4 +234,4 @@ class RobotTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()
