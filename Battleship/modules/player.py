@@ -26,7 +26,7 @@ def get_ship_direction(ship_cells):
     return direction_vertical
 
 
-def get_neighbor_cells(ship_cells):
+def get_ship_neighbor_cells(ship_cells):
     ship_direction = get_ship_direction(ship_cells)
     neighbors = []
 
@@ -140,7 +140,7 @@ class Player:
             return []
 
         ship_cells = get_ship_cells(cell, ship, ship_direction)
-        neighbor_cells = get_neighbor_cells(ship_cells)
+        neighbor_cells = get_ship_neighbor_cells(ship_cells)
 
         for neighbor_cell in neighbor_cells:
             self.board[neighbor_cell[0]][neighbor_cell[1]] = cell_neighbor
@@ -250,6 +250,23 @@ class Player:
                     if ship_cell == cell:
                         return ships_item[0]
         return None
+
+    def is_ship_destroyed(self, cell):
+        ship_cells = []
+        for ship_item in self.ships.items():
+            for ship in ship_item[1]:
+                for ship_cell in ship:
+                    if ship_cell == cell:
+                        ship_cells = ship
+
+        if not ship_cells:
+            return False
+
+        for ship_cell in ship_cells:
+            if self.board[ship_cell[0]][ship_cell[1]] == cell_ship:
+                return False
+
+        return True
 
     def get_remaining_ship_cells(self):
         remaining_cells = []

@@ -115,13 +115,21 @@ def fire_opponent_cell(cell_id, current_status):
 
     if fired_cell_status == 'Destroyed':
         new_icon = icon_destroyed
+        is_ship_destroyed = app.robot.is_ship_destroyed(cell)
     else:
         new_icon = icon_misfire
+        is_ship_destroyed = False
+
+    destroyed_ship = ''
+    if is_ship_destroyed:
+        destroyed_ship = app.robot.get_ship(cell)
 
     return {
         'is_changed': True,
         'game_status': new_game_status,
-        'cell_icon': new_icon
+        'cell_icon': new_icon,
+        'is_ship_destroyed': is_ship_destroyed,
+        'destroyed_ship': destroyed_ship
     }
 
 
@@ -135,14 +143,22 @@ def fire_person_cell(current_status):
 
     if fired_cell_status == 'Destroyed':
         new_icon = icon_destroyed
+        is_ship_destroyed = app.person.is_ship_destroyed(fired_cell)
     else:
         new_icon = icon_misfire
+        is_ship_destroyed = False
+
+    destroyed_ship = ''
+    if is_ship_destroyed:
+        destroyed_ship = app.person.get_ship(fired_cell)
 
     return {
         'is_changed': True,
         'game_status': new_game_status,
         'cell': fired_cell_id,
-        'cell_icon': new_icon
+        'cell_icon': new_icon,
+        'is_ship_destroyed': is_ship_destroyed,
+        'destroyed_ship': destroyed_ship
     }
 
 

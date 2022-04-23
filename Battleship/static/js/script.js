@@ -22,6 +22,8 @@ game_status.addEventListener('click', function () {
       game_status.innerHTML = content['game_status'];
       game_status.classList.remove(content['game_status_remove_class']);
       game_status.classList.add(content['game_status_add_class']);
+
+      document.getElementById('game_ship_placing_buttons').style.display = 'block';
     }
   });
 });
@@ -87,6 +89,10 @@ function changeSelectedShip(ship) {
     ship.classList.remove(ship_select_button_class_default);
   }
 }
+
+
+const remaining_ships = document.getElementsByClassName('remaining_ship_count');
+
 
 const person_board = document.getElementById('person-board');
 const person_cells = person_board.getElementsByClassName('board_cell');
@@ -201,6 +207,8 @@ function handlePersonBoardClick(cell) {
       if (game_status.innerHTML === game_status_battle) {
         document.getElementById('game_ship_direction_select_buttons').style.display = 'none';
         document.getElementById('game_ship_select_buttons').style.display = 'none';
+
+        document.getElementById('remaining_ships_panel').style.display = 'block';
       }
     }
   });
@@ -244,6 +252,11 @@ function handleOpponentBoardClick(cell) {
     const content = $(data).find('#content')['prevObject'][0];
     if (content['is_changed']) {
       game_status.innerHTML = content['game_status'];
+
+      if (content['is_ship_destroyed'] && cell.innerHTML !== '<i class="fa-solid fa-circle-xmark"></i>') {
+        changeRemainingShipCount('opponent', content['destroyed_ship'].toLowerCase());
+      }
+      
       cell.innerHTML = content['cell_icon'];
     }
   });
@@ -259,9 +272,24 @@ function getOpponentTurn() {
     if (content['is_changed']) {
       game_status.innerHTML = content['game_status'];
       let fired_cell = Array.from(person_cells).find(cell => cell.id === content['cell']);
+
+      if (content['is_ship_destroyed'] && fired_cell.innerHTML !== '<i class="fa-solid fa-circle-xmark"></i>') {
+        changeRemainingShipCount('person', content['destroyed_ship'].toLowerCase());
+      }
+
       fired_cell.innerHTML = content['cell_icon']
     }
   });
+}
+
+function changeRemainingShipCount(player, ship_name) {
+  let current_ship = Array
+      .from(remaining_ships)
+      .find(item => item.id === `${player}_remaining_ship_count_${ship_name}`);
+
+  if (current_ship.innerHTML !== '0') {
+    current_ship.innerHTML = (parseInt(current_ship.innerHTML) - 1).toString();
+  }
 }
 
 function showOpponentRemainingShipCells() {

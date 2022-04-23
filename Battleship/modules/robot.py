@@ -55,3 +55,6 @@ class Robot(Player):
             self.opponent_remaining_ship_cells_count -= 1
 
         return cell, fired_cell_status
+
+    # def get_cell_neighbors(self, cell):
+    #     pass

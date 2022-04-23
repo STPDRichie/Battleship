@@ -44,9 +44,10 @@ body {
 }
 
 .section-wrapper {
-  max-width: 1400px;
+  width: 1400px;
   padding: 0 15px;
   margin: 0 auto;
+  border-radius: 50px;
 }
 
 .header {
@@ -96,12 +97,13 @@ body {
   margin: 100px auto 0;
 }
 .game_panel .section-wrapper {
-  width: 1400px;
   background-color: #ffffff;
-  border-radius: 50px;
   text-align: center;
   display: flex;
   flex-direction: column;
+}
+.game_panel .game_ship_placing_buttons {
+  display: none;
 }
 .game_panel .game_status {
   width: 400px;
@@ -203,17 +205,56 @@ body {
   user-select: none;
 }
 
+.remaining_ships {
+  margin: 30px auto 0;
+  display: none;
+}
+.remaining_ships .section-wrapper {
+  background-color: #ffffff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  user-select: none;
+}
+.remaining_ships_player {
+  width: 545.4545454545px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 54.5454545455px;
+}
+.remaining_ships .remaining_ship {
+  width: 150px;
+  height: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.remaining_ships .remaining_ship_icon {
+  display: flex;
+  font-size: 15px;
+}
+.remaining_ships .remaining_ship_icon > * {
+  padding: 5px;
+}
+.remaining_ships .remaining_ship_count {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  text-align: center;
+}
+
 .game {
-  margin: 50px auto 100px;
+  margin: 30px auto 100px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 .game .section-wrapper {
-  width: 1400px;
-  height: 700px;
   background-color: #ffffff;
-  border-radius: 50px;
+  height: 700px;
   display: flex;
   justify-content: space-around;
   align-items: center;
