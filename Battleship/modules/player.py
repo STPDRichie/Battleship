@@ -100,7 +100,7 @@ class Player:
 
         self.remaining_ship_cells_count = 20
         self.opponent_remaining_ship_cells_count = 20
-        self.destroyed_ships = []
+        self.destroyed_ship_cells = []
 
     def init_opponent(self, opponent):
         self.opponent = opponent
@@ -127,7 +127,7 @@ class Player:
             self.board[row][column] = cell_misfire
 
         if current_cell == cell_ship:
-            self.destroyed_ships.append([row, column])
+            self.destroyed_ship_cells.append([row, column])
             fired_cell_status = cell_destroyed
             self.board[row][column] = cell_destroyed
             self.remaining_ship_cells_count -= 1
@@ -179,7 +179,7 @@ class Player:
 
         return True
 
-    def return_ship(self, cell):
+    def get_ship_cells(self, cell):
         self.non_placed_ships_count += 1
 
         ship_name = self.get_ship(cell)
@@ -273,7 +273,7 @@ class Player:
         for ship_item in self.ships.items():
             for ship in ship_item[1]:
                 for ship_cell in ship:
-                    if ship_cell not in self.destroyed_ships:
+                    if ship_cell not in self.destroyed_ship_cells:
                         remaining_cells.append(ship_cell)
 
         return remaining_cells

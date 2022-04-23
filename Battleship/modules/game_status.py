@@ -87,7 +87,7 @@ def change_person_cells(cell_icon, cell_id, ship,
         new_icon = icon_ship
     elif cell_icon == icon_ship:
         returned_ship = app.person.get_ship(cell)
-        ship_cells = app.person.return_ship(cell)
+        ship_cells = app.person.get_ship_cells(cell)
         new_game_status = app.person.check_game_status()
         cells_ids = player_cells_to_id_format(ship_cells, 'person')
         ship_count = app.person.get_ship_count(returned_ship)
