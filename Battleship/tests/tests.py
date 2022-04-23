@@ -1,7 +1,7 @@
 from unittest import TestCase, main
 
 import app
-from modules import game_status
+from modules import game_status, robot
 
 status_start = 'Start game'
 status_place_ships = 'Ships placing'
@@ -232,6 +232,17 @@ class RobotTest(TestCase):
             self.assertEqual(cell_misfire, cell_status)
             self.assertEqual(20, app.robot.opponent_remaining_ship_cells_count)
             self.assertEqual(20, app.person.remaining_ship_cells_count)
+
+    def test_correct_get_cell_neighbors(self):
+        center_cell = [5, 5]
+        side_cell = [0, 9]
+
+        center_cell_response = robot.get_cell_neighbors(center_cell)
+        side_cell_response = robot.get_cell_neighbors(side_cell)
+
+        self.assertEqual([[4, 5], [5, 4], [5, 6], [6, 5]],
+                         center_cell_response)
+        self.assertEqual([[0, 8], [1, 9]], side_cell_response)
 
 
 class GameStatusTest(TestCase):

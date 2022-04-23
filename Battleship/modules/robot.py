@@ -20,6 +20,17 @@ ship_list = ['Battleship', 'Cruiser', 'Submarine', 'Destroyer']
 directions = ['Vertical', 'Horizontal']
 
 
+def get_cell_neighbors(cell):
+    cell_neighbors = []
+    for row in range(-1, 2):
+        for column in range(-1, 2):
+            if (row + column) % 2 != 0:
+                if 0 <= row + cell[0] <= 9 and 0 <= column + cell[1] <= 9:
+                    cell_neighbors.append([row + cell[0], column + cell[1]])
+
+    return cell_neighbors
+
+
 class Robot(Player):
     def __init__(self):
         super().__init__()
@@ -55,6 +66,3 @@ class Robot(Player):
             self.opponent_remaining_ship_cells_count -= 1
 
         return cell, fired_cell_status
-
-    # def get_cell_neighbors(self, cell):
-    #     pass

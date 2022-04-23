@@ -5,6 +5,8 @@ const color_green = '#95e1d3';
 const color_red = '#f38181';
 const color_gray = '#d8d8d8';
 
+const icon_destroyed = '<i class="fa-solid fa-circle-xmark"></i>'
+
 
 const game_status = document.getElementById('game_status');
 const game_status_battle = 'Battle';
@@ -253,10 +255,10 @@ function handleOpponentBoardClick(cell) {
     if (content['is_changed']) {
       game_status.innerHTML = content['game_status'];
 
-      if (content['is_ship_destroyed'] && cell.innerHTML !== '<i class="fa-solid fa-circle-xmark"></i>') {
+      if (content['is_ship_destroyed'] && cell.innerHTML !== icon_destroyed) {
         changeRemainingShipCount('opponent', content['destroyed_ship'].toLowerCase());
       }
-      
+
       cell.innerHTML = content['cell_icon'];
     }
   });
@@ -273,7 +275,7 @@ function getOpponentTurn() {
       game_status.innerHTML = content['game_status'];
       let fired_cell = Array.from(person_cells).find(cell => cell.id === content['cell']);
 
-      if (content['is_ship_destroyed'] && fired_cell.innerHTML !== '<i class="fa-solid fa-circle-xmark"></i>') {
+      if (content['is_ship_destroyed'] && fired_cell.innerHTML !== icon_destroyed) {
         changeRemainingShipCount('person', content['destroyed_ship'].toLowerCase());
       }
 
