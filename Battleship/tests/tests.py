@@ -55,12 +55,14 @@ class GameStatusTest(TestCase):
             .player_cells_to_id_format(cells, 'person')
 
         opponent_cells_ids = game_status\
-            .player_cells_to_id_format(cells, 'person')
+            .player_cells_to_id_format(cells, 'opponent')
 
-        self.assertEqual(['person-board_cell-f-7', 'person-board_cell-j-2'],
-                         person_cells_ids)
-        self.assertEqual(['person-board_cell-f-7', 'person-board_cell-j-2'],
-                         opponent_cells_ids)
+        self.assertEqual(
+            ['person-board_cell-f-7', 'person-board_cell-j-2'],
+            person_cells_ids)
+        self.assertEqual(
+            ['opponent-board_cell-f-7', 'opponent-board_cell-j-2'],
+            opponent_cells_ids)
 
 
 class ShipPlacingTest(TestCase):
