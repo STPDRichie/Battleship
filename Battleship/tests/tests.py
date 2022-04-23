@@ -51,10 +51,16 @@ class GameStatusTest(TestCase):
 
     def test_correct_convert_cell_format(self):
         cells = [[6, 5], [1, 9]]
-        cells_id_text = game_status.player_cells_to_id_format(cells, 'person')
-        expected_cell_ids = ['person-board_cell-f-7', 'person-board_cell-j-2']
+        person_cells_ids = game_status\
+            .player_cells_to_id_format(cells, 'person')
 
-        self.assertEqual(expected_cell_ids, cells_id_text)
+        opponent_cells_ids = game_status\
+            .player_cells_to_id_format(cells, 'person')
+
+        self.assertEqual(['person-board_cell-f-7', 'person-board_cell-j-2'],
+                         person_cells_ids)
+        self.assertEqual(['person-board_cell-f-7', 'person-board_cell-j-2'],
+                         opponent_cells_ids)
 
 
 class ShipPlacingTest(TestCase):
