@@ -1,6 +1,7 @@
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const color_white = '#ffffff';
+const color_darkgray = '#333333';
 const color_green = '#95e1d3';
 const color_red = '#f38181';
 const color_gray = '#d8d8d8';
@@ -256,7 +257,7 @@ function handleOpponentBoardClick(cell) {
       game_status.innerHTML = content['game_status'];
 
       if (content['is_ship_destroyed'] && cell.innerHTML !== icon_destroyed) {
-        changeRemainingShipCount('opponent', content['destroyed_ship'].toLowerCase());
+        changeRemainingShipCount('opponent', content['destroyed_ship'].toLowerCase(), color_green).then(r => r);
       }
 
       cell.innerHTML = content['cell_icon'];
@@ -276,7 +277,7 @@ function getOpponentTurn() {
       let fired_cell = Array.from(person_cells).find(cell => cell.id === content['cell']);
 
       if (content['is_ship_destroyed'] && fired_cell.innerHTML !== icon_destroyed) {
-        changeRemainingShipCount('person', content['destroyed_ship'].toLowerCase());
+        changeRemainingShipCount('person', content['destroyed_ship'].toLowerCase(), color_red).then(r => r);
       }
 
       fired_cell.innerHTML = content['cell_icon']
@@ -284,13 +285,16 @@ function getOpponentTurn() {
   });
 }
 
-function changeRemainingShipCount(player, ship_name) {
+async function changeRemainingShipCount(player, ship_name, text_color) {
   let current_ship = Array
       .from(remaining_ships)
       .find(item => item.id === `${player}_remaining_ship_count_${ship_name}`);
 
   if (current_ship.innerHTML !== '0') {
+    current_ship.style.color = text_color;
     current_ship.innerHTML = (parseInt(current_ship.innerHTML) - 1).toString();
+    await sleep(500);
+    current_ship.style.color = color_darkgray;
   }
 }
 

@@ -218,6 +218,7 @@ body {
   user-select: none;
 }
 .remaining_ships_player {
+  color: #333333;
   width: 545.4545454545px;
   display: flex;
   justify-content: center;
@@ -244,6 +245,7 @@ body {
   font-weight: 800;
   font-size: 20px;
   text-align: center;
+  transition: color 0.3s ease-in-out;
 }
 
 .game {
