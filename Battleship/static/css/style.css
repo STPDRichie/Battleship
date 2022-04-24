@@ -60,7 +60,7 @@ body {
   justify-content: center;
   align-items: center;
 }
-.header_title {
+.header__title {
   position: absolute;
   left: 50px;
   font-size: 35px;
@@ -68,13 +68,13 @@ body {
   font-weight: 800;
   user-select: none;
 }
-.header .contact {
+.header__contact {
   margin: 0 auto;
 }
-.header .contact-wrapper {
+.header__contact-wrapper {
   display: flex;
 }
-.header .contact_link {
+.header__link {
   margin: 0 10px;
   padding: 5px;
   width: 60px;
@@ -89,23 +89,23 @@ body {
   align-items: center;
   transition: 0.2s ease-in-out;
 }
-.header .contact_link:hover {
+.header__link:hover {
   border: #ffffff 5px solid;
 }
 
-.game_panel {
+.game-panel {
   margin: 100px auto 0;
 }
-.game_panel .section-wrapper {
+.game-panel .section-wrapper {
   background-color: #ffffff;
   text-align: center;
   display: flex;
   flex-direction: column;
 }
-.game_panel .game_ship_placing_buttons {
+.game-panel__ship-placing-buttons {
   display: none;
 }
-.game_panel .game_status {
+.game-panel__status {
   width: 400px;
   margin: 20px auto;
   padding: 15px;
@@ -117,10 +117,10 @@ body {
   transition: 0.1s ease-in-out;
   transition-property: background-color;
 }
-.game_panel .game_status:hover {
+.game-panel__status:hover {
   background-color: #3e89ec;
 }
-.game_panel .game_status-inactive {
+.game-panel__status_inactive {
   width: 400px;
   margin: 20px auto;
   padding: 15px;
@@ -129,14 +129,14 @@ body {
   border-radius: 35px;
   user-select: none;
 }
-.game_panel .game_ship_select_buttons {
+.game-panel__ship-select-buttons {
   width: 900px;
   margin: 0 auto 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.game_panel .game_ship_select_button {
+.game-panel__ship-select-button {
   width: 200px;
   padding: 5px;
   font-size: 18px;
@@ -148,10 +148,10 @@ body {
   transition: 0.1s ease-in-out;
   transition-property: background-color;
 }
-.game_panel .game_ship_select_button:hover {
+.game-panel__ship-select-button:hover {
   background-color: #3e89ec;
 }
-.game_panel .game_ship_select_button-active {
+.game-panel__ship-select-button_active {
   width: 200px;
   padding: 5px;
   font-size: 18px;
@@ -162,7 +162,7 @@ body {
   transition: 0.1s ease-in-out;
   transition-property: background-color;
 }
-.game_panel .game_ship_select_button-placed {
+.game-panel__ship-select-button_inactive {
   width: 200px;
   padding: 5px;
   font-size: 18px;
@@ -173,14 +173,14 @@ body {
   transition: 0.1s ease-in-out;
   transition-property: background-color;
 }
-.game_panel .game_ship_direction_select_buttons {
+.game-panel__ship-direction-select-buttons {
   width: 600px;
   margin: 0 auto 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.game_panel .game_ship_direction {
+.game-panel__ship-direction {
   width: 250px;
   padding: 10px;
   font-size: 20px;
@@ -192,10 +192,10 @@ body {
   transition: 0.1s ease-in-out;
   transition-property: background-color;
 }
-.game_panel .game_ship_direction:hover {
+.game-panel__ship-direction:hover {
   background-color: #3e89ec;
 }
-.game_panel .game_ship_direction-active {
+.game-panel__ship-direction_active {
   width: 250px;
   padding: 10px;
   font-size: 20px;
@@ -205,11 +205,11 @@ body {
   user-select: none;
 }
 
-.remaining_ships {
+.remaining-ships {
   margin: 30px auto 0;
   display: none;
 }
-.remaining_ships .section-wrapper {
+.remaining-ships .section-wrapper {
   background-color: #ffffff;
   display: flex;
   justify-content: space-around;
@@ -217,7 +217,7 @@ body {
   padding: 10px 0;
   user-select: none;
 }
-.remaining_ships_player {
+.remaining-ships__player {
   color: #333333;
   width: 545.4545454545px;
   display: flex;
@@ -225,7 +225,7 @@ body {
   align-items: center;
   margin-left: 54.5454545455px;
 }
-.remaining_ships .remaining_ship {
+.remaining-ships .remaining-ship {
   width: 150px;
   height: 70px;
   display: flex;
@@ -233,14 +233,14 @@ body {
   justify-content: space-evenly;
   align-items: center;
 }
-.remaining_ships .remaining_ship_icon {
+.remaining-ships .remaining-ship__icon {
   display: flex;
   font-size: 15px;
 }
-.remaining_ships .remaining_ship_icon > * {
+.remaining-ships .remaining-ship__icon > * {
   padding: 5px;
 }
-.remaining_ships .remaining_ship_count {
+.remaining-ships .remaining-ship__count {
   font-family: "Montserrat", sans-serif;
   font-weight: 800;
   font-size: 20px;
@@ -261,7 +261,7 @@ body {
   justify-content: space-around;
   align-items: center;
 }
-.game_board {
+.game__board {
   width: 600px;
   height: 600px;
   border-radius: 30px;
@@ -269,10 +269,18 @@ body {
   flex-wrap: wrap;
   text-align: center;
 }
-.game .board_row {
+.game__board_inactive::after {
+  position: absolute;
+  content: "";
+  width: 600px;
+  height: 600px;
+  background-color: #ffffff;
+  opacity: 0.5;
+}
+.game__row {
   display: flex;
 }
-.game .board_cell {
+.game__cell {
   width: 54.5454545455px;
   height: 54.5454545455px;
   line-height: 54.5454545455px;
@@ -285,24 +293,16 @@ body {
   cursor: pointer;
   transition: 0.1s linear;
 }
-.game #opponent-board .board_cell:not(.board_markup_cell):hover {
+#opponent-board .game__cell:not(.game__markup-cell):hover {
   border-color: #4c97fc;
 }
-.game .board_markup_cell {
+.game__markup-cell {
   border-color: #ffffff;
   cursor: default;
   user-select: none;
 }
-.game .board_markup_cell:hover {
+.game__markup-cell:hover {
   border-color: #ffffff;
-}
-.game .game_board-inactive::after {
-  position: absolute;
-  content: "";
-  width: 600px;
-  height: 600px;
-  background-color: #ffffff;
-  opacity: 0.5;
 }
 
 /*# sourceMappingURL=style.css.map */

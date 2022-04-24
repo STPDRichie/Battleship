@@ -15,16 +15,16 @@
 <body>
     <section class="header">
         <div class="section-wrapper">
-            <div class="header_title">Battleship</div>
-            <div class="contact">
-                <div class="contact-wrapper">
-                    <a class="contact_link" href="https://github.com/STPDRichie">
+            <div class="header__title">Battleship</div>
+            <div class="header__contact">
+                <div class="header__contact-wrapper">
+                    <a class="header__link" href="https://github.com/STPDRichie">
                         <i class="fa-brands fa-github"></i>
                     </a>
-                    <a class="contact_link" href="https://www.instagram.com/stpdrichie">
+                    <a class="header__link" href="https://www.instagram.com/stpdrichie">
                         <i class="fa-brands fa-instagram"></i>
                     </a>
-                    <a class="contact_link" href="https://vk.com/stpdrichie">
+                    <a class="header__link" href="https://vk.com/stpdrichie">
                         <i class="fa-brands fa-vk"></i>
                     </a>
                 </div>
@@ -32,88 +32,88 @@
         </div>
     </section>
 
-    <section class="game_panel">
+    <section class="game-panel">
         <div class="section-wrapper">
-            <h1 id="game_status" class="game_status">{{ game_panel_text }}</h1>
-            <div id="game_ship_placing_buttons" class="game_ship_placing_buttons">
-                <div id="game_ship_direction_select_buttons" class="game_ship_direction_select_buttons">
-                    <div class="game_ship_direction-active">Vertical</div>
-                    <div class="game_ship_direction">Horizontal</div>
+            <h1 id="game-status" class="game-panel__status">{{ game_panel_text }}</h1>
+            <div id="ship-placing-buttons" class="game-panel__ship-placing-buttons">
+                <div id="ship-direction-select-buttons" class="game-panel__ship-direction-select-buttons">
+                    <div class="game-panel__ship-direction_active">Vertical</div>
+                    <div class="game-panel__ship-direction">Horizontal</div>
                 </div>
-                <div id="game_ship_select_buttons" class="game_ship_select_buttons">
-                    <div class="game_ship_select_button-active">Battleship - 1</div>
-                    <div class="game_ship_select_button">Cruiser - 2</div>
-                    <div class="game_ship_select_button">Submarine - 3</div>
-                    <div class="game_ship_select_button">Destroyer - 4</div>
+                <div id="ship-select-buttons" class="game-panel__ship-select-buttons">
+                    <div class="game-panel__ship-select-button_active">Battleship - 1</div>
+                    <div class="game-panel__ship-select-button">Cruiser - 2</div>
+                    <div class="game-panel__ship-select-button">Submarine - 3</div>
+                    <div class="game-panel__ship-select-button">Destroyer - 4</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="remaining_ships_panel" class="remaining_ships">
+    <section id="remaining-ships-panel" class="remaining-ships">
         <div class="section-wrapper">
-            <div class="remaining_ships_player">
-                <div class="remaining_ship">
-                    <div class="remaining_ship_icon">
+            <div class="remaining-ships__player">
+                <div class="remaining-ship">
+                    <div class="remaining-ship__icon">
                         <i class="fa-solid fa-circle"></i>
                         <i class="fa-solid fa-circle"></i>
                         <i class="fa-solid fa-circle"></i>
                         <i class="fa-solid fa-circle"></i>
                     </div>
-                    <div id="person_remaining_ship_count_battleship" class="remaining_ship_count">1</div>
+                    <div id="person-remaining-ship-count__battleship" class="remaining-ship__count">1</div>
                 </div>
-                <div class="remaining_ship">
-                    <div class="remaining_ship_icon">
+                <div class="remaining-ship">
+                    <div class="remaining-ship__icon">
                         <i class="fa-solid fa-circle"></i>
                         <i class="fa-solid fa-circle"></i>
                         <i class="fa-solid fa-circle"></i>
                     </div>
-                    <div id="person_remaining_ship_count_cruiser" class="remaining_ship_count">2</div>
+                    <div id="person-remaining-ship-count__cruiser" class="remaining-ship__count">2</div>
                 </div>
-                <div class="remaining_ship">
-                    <div class="remaining_ship_icon">
+                <div class="remaining-ship">
+                    <div class="remaining-ship__icon">
                         <i class="fa-solid fa-circle"></i>
                         <i class="fa-solid fa-circle"></i>
                     </div>
-                    <div id="person_remaining_ship_count_submarine" class="remaining_ship_count">3</div>
+                    <div id="person-remaining-ship-count__submarine" class="remaining-ship__count">3</div>
                 </div>
-                <div class="remaining_ship">
-                    <div class="remaining_ship_icon">
+                <div class="remaining-ship">
+                    <div class="remaining-ship__icon">
                         <i class="fa-solid fa-circle"></i>
                     </div>
-                    <div id="person_remaining_ship_count_destroyer" class="remaining_ship_count">4</div>
+                    <div id="person-remaining-ship-count__destroyer" class="remaining-ship__count">4</div>
                 </div>
             </div>
-            <div class="remaining_ships_player">
-                <div class="remaining_ship">
-                    <div class="remaining_ship_icon">
+            <div class="remaining-ships__player">
+                <div class="remaining-ship">
+                    <div class="remaining-ship__icon">
                         <i class="fa-solid fa-circle"></i>
                         <i class="fa-solid fa-circle"></i>
                         <i class="fa-solid fa-circle"></i>
                         <i class="fa-solid fa-circle"></i>
                     </div>
-                    <div id="opponent_remaining_ship_count_battleship" class="remaining_ship_count">1</div>
+                    <div id="opponent-remaining-ship-count__battleship" class="remaining-ship__count">1</div>
                 </div>
-                <div class="remaining_ship">
-                    <div class="remaining_ship_icon">
+                <div class="remaining-ship">
+                    <div class="remaining-ship__icon">
                         <i class="fa-solid fa-circle"></i>
                         <i class="fa-solid fa-circle"></i>
                         <i class="fa-solid fa-circle"></i>
                     </div>
-                    <div id="opponent_remaining_ship_count_cruiser" class="remaining_ship_count">2</div>
+                    <div id="opponent-remaining-ship-count__cruiser" class="remaining-ship__count">2</div>
                 </div>
-                <div class="remaining_ship">
-                    <div class="remaining_ship_icon">
+                <div class="remaining-ship">
+                    <div class="remaining-ship__icon">
                         <i class="fa-solid fa-circle"></i>
                         <i class="fa-solid fa-circle"></i>
                     </div>
-                    <div id="opponent_remaining_ship_count_submarine" class="remaining_ship_count">3</div>
+                    <div id="opponent-remaining-ship-count__submarine" class="remaining-ship__count">3</div>
                 </div>
-                <div class="remaining_ship">
-                    <div class="remaining_ship_icon">
+                <div class="remaining-ship">
+                    <div class="remaining-ship__icon">
                         <i class="fa-solid fa-circle"></i>
                     </div>
-                    <div id="opponent_remaining_ship_count_destroyer" class="remaining_ship_count">4</div>
+                    <div id="opponent-remaining-ship-count__destroyer" class="remaining-ship__count">4</div>
                 </div>
             </div>
         </div>
@@ -121,294 +121,294 @@
 
     <section class="game">
         <div class="section-wrapper">
-            <div id="person-board" class="game_board">
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell"></div>
-                    <div class="board_cell board_markup_cell">A</div>
-                    <div class="board_cell board_markup_cell">B</div>
-                    <div class="board_cell board_markup_cell">C</div>
-                    <div class="board_cell board_markup_cell">D</div>
-                    <div class="board_cell board_markup_cell">E</div>
-                    <div class="board_cell board_markup_cell">F</div>
-                    <div class="board_cell board_markup_cell">G</div>
-                    <div class="board_cell board_markup_cell">H</div>
-                    <div class="board_cell board_markup_cell">I</div>
-                    <div class="board_cell board_markup_cell">J</div>
+            <div id="person-board" class="game__board">
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell"></div>
+                    <div class="game__cell game__markup-cell">A</div>
+                    <div class="game__cell game__markup-cell">B</div>
+                    <div class="game__cell game__markup-cell">C</div>
+                    <div class="game__cell game__markup-cell">D</div>
+                    <div class="game__cell game__markup-cell">E</div>
+                    <div class="game__cell game__markup-cell">F</div>
+                    <div class="game__cell game__markup-cell">G</div>
+                    <div class="game__cell game__markup-cell">H</div>
+                    <div class="game__cell game__markup-cell">I</div>
+                    <div class="game__cell game__markup-cell">J</div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">1</div>
-                    <div id="person-board_cell-a-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-b-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-c-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-d-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-e-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-f-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-g-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-h-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-i-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-j-1" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">1</div>
+                    <div id="person-board__cell_a-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_b-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_c-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_d-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_e-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_f-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_g-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_h-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_i-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_j-1" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">2</div>
-                    <div id="person-board_cell-a-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-b-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-c-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-d-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-e-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-f-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-g-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-h-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-i-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-j-2" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">2</div>
+                    <div id="person-board__cell_a-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_b-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_c-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_d-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_e-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_f-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_g-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_h-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_i-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_j-2" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">3</div>
-                    <div id="person-board_cell-a-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-b-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-c-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-d-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-e-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-f-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-g-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-h-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-i-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-j-3" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">3</div>
+                    <div id="person-board__cell_a-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_b-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_c-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_d-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_e-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_f-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_g-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_h-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_i-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_j-3" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">4</div>
-                    <div id="person-board_cell-a-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-b-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-c-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-d-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-e-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-f-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-g-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-h-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-i-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-j-4" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">4</div>
+                    <div id="person-board__cell_a-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_b-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_c-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_d-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_e-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_f-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_g-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_h-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_i-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_j-4" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">5</div>
-                    <div id="person-board_cell-a-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-b-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-c-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-d-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-e-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-f-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-g-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-h-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-i-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-j-5" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">5</div>
+                    <div id="person-board__cell_a-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_b-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_c-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_d-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_e-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_f-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_g-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_h-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_i-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_j-5" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">6</div>
-                    <div id="person-board_cell-a-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-b-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-c-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-d-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-e-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-f-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-g-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-h-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-i-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-j-6" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">6</div>
+                    <div id="person-board__cell_a-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_b-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_c-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_d-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_e-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_f-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_g-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_h-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_i-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_j-6" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">7</div>
-                    <div id="person-board_cell-a-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-b-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-c-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-d-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-e-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-f-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-g-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-h-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-i-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-j-7" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">7</div>
+                    <div id="person-board__cell_a-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_b-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_c-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_d-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_e-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_f-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_g-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_h-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_i-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_j-7" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">8</div>
-                    <div id="person-board_cell-a-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-b-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-c-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-d-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-e-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-f-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-g-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-h-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-i-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-j-8" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">8</div>
+                    <div id="person-board__cell_a-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_b-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_c-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_d-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_e-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_f-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_g-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_h-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_i-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_j-8" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">9</div>
-                    <div id="person-board_cell-a-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-b-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-c-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-d-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-e-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-f-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-g-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-h-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-i-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-j-9" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">9</div>
+                    <div id="person-board__cell_a-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_b-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_c-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_d-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_e-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_f-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_g-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_h-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_i-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_j-9" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">10</div>
-                    <div id="person-board_cell-a-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-b-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-c-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-d-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-e-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-f-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-g-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-h-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-i-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="person-board_cell-j-10" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">10</div>
+                    <div id="person-board__cell_a-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_b-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_c-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_d-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_e-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_f-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_g-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_h-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_i-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="person-board__cell_j-10" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
             </div>
-            <div id="opponent-board" class="game_board">
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell"></div>
-                    <div class="board_cell board_markup_cell">A</div>
-                    <div class="board_cell board_markup_cell">B</div>
-                    <div class="board_cell board_markup_cell">C</div>
-                    <div class="board_cell board_markup_cell">D</div>
-                    <div class="board_cell board_markup_cell">E</div>
-                    <div class="board_cell board_markup_cell">F</div>
-                    <div class="board_cell board_markup_cell">G</div>
-                    <div class="board_cell board_markup_cell">H</div>
-                    <div class="board_cell board_markup_cell">I</div>
-                    <div class="board_cell board_markup_cell">J</div>
+            <div id="opponent-board" class="game__board">
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell"></div>
+                    <div class="game__cell game__markup-cell">A</div>
+                    <div class="game__cell game__markup-cell">B</div>
+                    <div class="game__cell game__markup-cell">C</div>
+                    <div class="game__cell game__markup-cell">D</div>
+                    <div class="game__cell game__markup-cell">E</div>
+                    <div class="game__cell game__markup-cell">F</div>
+                    <div class="game__cell game__markup-cell">G</div>
+                    <div class="game__cell game__markup-cell">H</div>
+                    <div class="game__cell game__markup-cell">I</div>
+                    <div class="game__cell game__markup-cell">J</div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">1</div>
-                    <div id="opponent-board_cell-a-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-b-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-c-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-d-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-e-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-f-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-g-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-h-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-i-1" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-j-1" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">1</div>
+                    <div id="opponent-board__cell_a-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_b-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_c-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_d-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_e-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_f-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_g-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_h-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_i-1" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_j-1" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">2</div>
-                    <div id="opponent-board_cell-a-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-b-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-c-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-d-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-e-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-f-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-g-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-h-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-i-2" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-j-2" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">2</div>
+                    <div id="opponent-board__cell_a-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_b-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_c-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_d-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_e-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_f-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_g-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_h-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_i-2" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_j-2" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">3</div>
-                    <div id="opponent-board_cell-a-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-b-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-c-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-d-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-e-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-f-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-g-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-h-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-i-3" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-j-3" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">3</div>
+                    <div id="opponent-board__cell_a-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_b-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_c-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_d-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_e-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_f-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_g-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_h-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_i-3" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_j-3" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">4</div>
-                    <div id="opponent-board_cell-a-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-b-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-c-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-d-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-e-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-f-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-g-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-h-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-i-4" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-j-4" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">4</div>
+                    <div id="opponent-board__cell_a-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_b-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_c-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_d-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_e-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_f-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_g-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_h-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_i-4" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_j-4" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">5</div>
-                    <div id="opponent-board_cell-a-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-b-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-c-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-d-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-e-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-f-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-g-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-h-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-i-5" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-j-5" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">5</div>
+                    <div id="opponent-board__cell_a-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_b-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_c-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_d-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_e-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_f-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_g-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_h-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_i-5" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_j-5" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">6</div>
-                    <div id="opponent-board_cell-a-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-b-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-c-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-d-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-e-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-f-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-g-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-h-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-i-6" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-j-6" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">6</div>
+                    <div id="opponent-board__cell_a-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_b-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_c-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_d-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_e-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_f-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_g-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_h-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_i-6" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_j-6" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">7</div>
-                    <div id="opponent-board_cell-a-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-b-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-c-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-d-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-e-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-f-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-g-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-h-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-i-7" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-j-7" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">7</div>
+                    <div id="opponent-board__cell_a-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_b-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_c-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_d-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_e-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_f-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_g-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_h-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_i-7" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_j-7" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">8</div>
-                    <div id="opponent-board_cell-a-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-b-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-c-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-d-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-e-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-f-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-g-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-h-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-i-8" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-j-8" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">8</div>
+                    <div id="opponent-board__cell_a-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_b-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_c-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_d-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_e-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_f-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_g-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_h-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_i-8" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_j-8" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">9</div>
-                    <div id="opponent-board_cell-a-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-b-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-c-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-d-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-e-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-f-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-g-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-h-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-i-9" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-j-9" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">9</div>
+                    <div id="opponent-board__cell_a-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_b-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_c-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_d-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_e-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_f-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_g-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_h-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_i-9" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_j-9" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
-                <div class="board_row">
-                    <div class="board_cell board_markup_cell">10</div>
-                    <div id="opponent-board_cell-a-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-b-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-c-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-d-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-e-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-f-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-g-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-h-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-i-10" class="board_cell"><i class="fa-solid"></i></div>
-                    <div id="opponent-board_cell-j-10" class="board_cell"><i class="fa-solid"></i></div>
+                <div class="game__row">
+                    <div class="game__cell game__markup-cell">10</div>
+                    <div id="opponent-board__cell_a-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_b-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_c-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_d-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_e-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_f-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_g-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_h-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_i-10" class="game__cell"><i class="fa-solid"></i></div>
+                    <div id="opponent-board__cell_j-10" class="game__cell"><i class="fa-solid"></i></div>
                 </div>
             </div>
         </div>

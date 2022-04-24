@@ -31,8 +31,6 @@ def change_game_status(current_status):
         return {'is_changed': False}
 
     game_status = status_place_ships
-    game_status_remove_class = 'game_status'
-    game_status_add_class = 'game_status-inactive'
 
     app.person.__init__()
     app.robot.__init__()
@@ -42,9 +40,7 @@ def change_game_status(current_status):
 
     return {
         'is_changed': True,
-        'game_status': game_status,
-        'game_status_remove_class': game_status_remove_class,
-        'game_status_add_class': game_status_add_class
+        'game_status': game_status
     }
 
 
@@ -171,17 +167,17 @@ def get_opponent_remaining_ship_cells():
 
 
 def cell_id_to_computing_format(cell_id):
-    id_split = cell_id.split('-')
-    column = int(column_numbers_and_letters[id_split[-2]]) - 1
-    row = int(id_split[-1]) - 1
-    return (row, column)
+    column_row = cell_id.split('_')[-1].split('-')
+    column = int(column_numbers_and_letters[column_row[0]]) - 1
+    row = int(column_row[1]) - 1
+    return row, column
 
 
 def player_cells_to_id_format(cells, player):
     cells_ids = []
     for cell in cells:
         cells_ids.append(
-            f'{player}-board_cell-' +
+            f'{player}-board__cell_' +
             f'{column_numbers_and_letters[cell[1] + 1]}-{cell[0] + 1}')
 
     return cells_ids

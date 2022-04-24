@@ -1,4 +1,4 @@
-.game_panel
+.game-panel
   margin: 100px auto 0
 
   .section-wrapper
@@ -7,10 +7,10 @@
     display: flex
     flex-direction: column
 
-  .game_ship_placing_buttons
+  &__ship-placing-buttons
     display: none
 
-  .game_status
+  &__status
     width: 400px
     margin: 20px auto
     padding: 15px
@@ -24,7 +24,7 @@
     &:hover
       background-color: $main-blue-darker
     
-  .game_status-inactive
+  &__status_inactive
     width: 400px
     margin: 20px auto
     padding: 15px
@@ -33,14 +33,14 @@
     border-radius: 35px
     user-select: none
   
-  .game_ship_select_buttons
+  &__ship-select-buttons
     width: 900px
     margin: 0 auto 20px
     display: flex
     justify-content: space-between
     align-items: center
   
-  .game_ship_select_button
+  &__ship-select-button
     width: 200px
     padding: 5px
     font-size: 18px
@@ -54,7 +54,7 @@
     &:hover
       background-color: $main-blue-darker
 
-  .game_ship_select_button-active
+  &__ship-select-button_active
     width: 200px
     padding: 5px
     font-size: 18px
@@ -65,7 +65,7 @@
     transition: 0.1s ease-in-out
     transition-property: background-color
 
-  .game_ship_select_button-placed
+  &__ship-select-button_inactive
     width: 200px
     padding: 5px
     font-size: 18px
@@ -76,14 +76,14 @@
     transition: 0.1s ease-in-out
     transition-property: background-color
 
-  .game_ship_direction_select_buttons
+  &__ship-direction-select-buttons
     width: 600px
     margin: 0 auto 20px
     display: flex
     justify-content: space-between
     align-items: center
 
-  .game_ship_direction
+  &__ship-direction
     width: 250px
     padding: 10px
     font-size: 20px
@@ -97,7 +97,7 @@
     &:hover
       background-color: $main-blue-darker
 
-  .game_ship_direction-active
+  &__ship-direction_active
     width: 250px
     padding: 10px
     font-size: 20px

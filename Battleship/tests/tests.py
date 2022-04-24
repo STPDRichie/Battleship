@@ -39,9 +39,6 @@ class ChangeGameStatusTest(TestCase):
 
         self.assertEqual(True, response['is_changed'])
         self.assertEqual(status_place_ships, response['game_status'])
-        self.assertEqual('game_status', response['game_status_remove_class'])
-        self.assertEqual('game_status-inactive',
-                         response['game_status_add_class'])
 
     def test_dont_change_status_from_not_start(self):
         battle_response = game_status.change_game_status(status_battle)
@@ -265,14 +262,14 @@ class GameStatusTest(TestCase):
             .player_cells_to_id_format(cells, 'opponent')
 
         self.assertEqual(
-            ['person-board_cell-f-7', 'person-board_cell-j-2'],
+            ['person-board__cell_f-7', 'person-board__cell_j-2'],
             person_cells_ids)
         self.assertEqual(
-            ['opponent-board_cell-f-7', 'opponent-board_cell-j-2'],
+            ['opponent-board__cell_f-7', 'opponent-board__cell_j-2'],
             opponent_cells_ids)
 
     def test_correct_convert_cell_to_computing_format(self):
-        cells = ['person-board_cell-f-7', 'opponent-board_cell-j-2']
+        cells = ['person-board__cell_f-7', 'opponent-board__cell_j-2']
 
         person_cell = game_status.cell_id_to_computing_format(cells[0])
         opponent_cell = game_status.cell_id_to_computing_format(cells[1])

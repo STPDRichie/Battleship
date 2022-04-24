@@ -11,18 +11,26 @@
     justify-content: space-around
     align-items: center
 
-  &_board
+  &__board
     width: 600px
     height: 600px
     border-radius: 30px
     display: flex
     flex-wrap: wrap
     text-align: center
+
+    &_inactive::after
+      position: absolute
+      content: ''
+      width: 600px
+      height: 600px
+      background-color: $white
+      opacity: 0.5
   
-  .board_row
+  &__row
     display: flex
   
-  .board_cell
+  &__cell
     width: calc(600px / 11)
     height: calc(600px / 11)
     line-height: calc(600px / 11)
@@ -34,22 +42,14 @@
     cursor: pointer
     transition: 0.1s linear
 
-  #opponent-board .board_cell:not(.board_markup_cell)
+  #opponent-board &__cell:not(&__markup-cell)
     &:hover
       border-color: $main-blue
 
   
-  .board_markup_cell
+  &__markup-cell
     border-color: $white
     cursor: default
     user-select: none
     &:hover
       border-color: $white
-
-  .game_board-inactive::after
-    position: absolute
-    content: ''
-    width: 600px
-    height: 600px
-    background-color: $white
-    opacity: 0.5
