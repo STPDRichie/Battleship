@@ -14,7 +14,6 @@
   &__board
     width: 600px
     height: 600px
-    border-radius: 30px
     display: flex
     flex-wrap: wrap
     text-align: center
@@ -26,27 +25,26 @@
       height: 600px
       background-color: $white
       opacity: 0.5
-  
+
+
   &__row
     display: flex
-  
+
   &__cell
     width: calc(600px / 11)
     height: calc(600px / 11)
     line-height: calc(600px / 11)
     font-size: 25px
     +f_mont_bold
-    color: $dark-text
-    background-color: $white
-    border: $light-text 2px solid
+    color: $darkgray
+    border: $lightgray 2px solid
     cursor: pointer
     transition: 0.1s linear
 
   #opponent-board &__cell:not(&__markup-cell)
     &:hover
-      border-color: $main-blue
+      border-color: $blue
 
-  
   &__markup-cell
     border-color: $white
     cursor: default

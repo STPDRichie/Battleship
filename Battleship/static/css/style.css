@@ -264,7 +264,6 @@ body {
 .game__board {
   width: 600px;
   height: 600px;
-  border-radius: 30px;
   display: flex;
   flex-wrap: wrap;
   text-align: center;
@@ -288,7 +287,6 @@ body {
   font-family: "Montserrat", sans-serif;
   font-weight: 800;
   color: #333333;
-  background-color: #ffffff;
   border: #999999 2px solid;
   cursor: pointer;
   transition: 0.1s linear;

@@ -40,6 +40,8 @@ const ship_direction_select_buttons_id = 'ship-direction-select-buttons';
 const ship_direction_buttons = document.getElementById(ship_direction_select_buttons_id).getElementsByTagName('*');
 const ship_direction_class_selected = 'game-panel__ship-direction_active'
 const ship_direction_class_not_selected = 'game-panel__ship-direction'
+const direction_vertical = 'Vertical';
+const direction_horizontal = 'Horizontal';
 let selected_ship_direction = 'Vertical';
 
 Array.prototype.forEach.call(ship_direction_buttons, function (element) {
@@ -59,11 +61,11 @@ function changeShipDirection(direction) {
     other_button.classList.add(ship_direction_class_not_selected);
     other_button.classList.remove(ship_direction_class_selected);
 
-    if (selected_ship_direction === 'Vertical') {
-      selected_ship_direction = 'Horizontal';
+    if (selected_ship_direction === direction_vertical) {
+      selected_ship_direction = direction_horizontal;
     }
-    else if (selected_ship_direction === 'Horizontal') {
-      selected_ship_direction = 'Vertical';
+    else if (selected_ship_direction === direction_horizontal) {
+      selected_ship_direction = direction_vertical;
     }
   }
 }
@@ -74,7 +76,7 @@ const ship_select_buttons = document.getElementById(ship_select_buttons_id).getE
 const ship_select_button_class_default = 'game-panel__ship-select-button'
 const ship_select_button_class_active = 'game-panel__ship-select-button_active';
 const ship_select_button_class_inactive = 'game-panel__ship-select-button_inactive';
-const ship_html_sep = ' - ';
+const ship_count_sep = ' - ';
 let selected_ship = 'Battleship'
 
 Array.prototype.forEach.call(ship_select_buttons, function (element) {
@@ -84,8 +86,8 @@ Array.prototype.forEach.call(ship_select_buttons, function (element) {
 });
 
 function changeSelectedShip(ship) {
-  let current_ships_count = parseInt(ship.innerHTML.split(ship_html_sep)[1]);
-  let current_ship = ship.innerHTML.split(ship_html_sep)[0];
+  let current_ships_count = parseInt(ship.innerHTML.split(ship_count_sep)[1]);
+  let current_ship = ship.innerHTML.split(ship_count_sep)[0];
   if (current_ships_count >= 0 && !ship.classList.contains(ship_select_button_class_inactive)) {
     let active_ship_button = Array
         .from(ship_select_buttons)
@@ -184,31 +186,31 @@ function handlePersonBoardClick(cell) {
       if (content['returned_ship'] !== '') {
         let returned_ship = Array
             .from(ship_select_buttons)
-            .find(button => button.innerHTML.split(ship_html_sep)[0] === content['returned_ship']);
-        if (returned_ship.innerHTML.split(ship_html_sep)[1] === '0') {
+            .find(button => button.innerHTML.split(ship_count_sep)[0] === content['returned_ship']);
+        if (returned_ship.innerHTML.split(ship_count_sep)[1] === '0') {
           returned_ship.classList.remove(ship_select_button_class_inactive);
           returned_ship.classList.add(ship_select_button_class_default);
         }
-        returned_ship.innerHTML = content['returned_ship'] + ship_html_sep + content['ship_count'];
+        returned_ship.innerHTML = content['returned_ship'] + ship_count_sep + content['ship_count'];
         return;
       }
 
       let current_ship_select_button = Array
           .from(ship_select_buttons)
-          .filter(button => button.innerHTML.split(ship_html_sep)[0] === selected_ship)[0];
-      current_ship_select_button.innerHTML = selected_ship + ship_html_sep + content['ship_count'];
+          .filter(button => button.innerHTML.split(ship_count_sep)[0] === selected_ship)[0];
+      current_ship_select_button.innerHTML = selected_ship + ship_count_sep + content['ship_count'];
       if (content['ship_count'] === 0) {
         current_ship_select_button.classList.remove(ship_select_button_class_active);
         current_ship_select_button.classList.add(ship_select_button_class_inactive);
         let next_ships = Array
             .from(ship_select_buttons)
-            .filter(button => button.innerHTML.split(ship_html_sep)[0] !== selected_ship
+            .filter(button => button.innerHTML.split(ship_count_sep)[0] !== selected_ship
                 && !button.classList.contains(ship_select_button_class_inactive));
         if (next_ships.length !== 0) {
-          selected_ship = next_ships[0].innerHTML.split(ship_html_sep)[0];
+          selected_ship = next_ships[0].innerHTML.split(ship_count_sep)[0];
           let next_ship_select_button = Array
               .from(ship_select_buttons)
-              .filter(button => button.innerHTML.split(ship_html_sep)[0] === selected_ship)[0];
+              .filter(button => button.innerHTML.split(ship_count_sep)[0] === selected_ship)[0];
           next_ship_select_button.classList.remove(ship_select_button_class_default);
           next_ship_select_button.classList.add(ship_select_button_class_active);
         }
