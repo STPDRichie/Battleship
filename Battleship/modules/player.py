@@ -36,11 +36,11 @@ def get_ship_neighbor_cells(ship_cells):
         neighbors_length = ship_cells[-1][0] - start_row + 2
         for r in range(start_row, start_row + neighbors_length):
             if 0 <= r <= 9:
-                neighbors.append([r, center_column])
+                neighbors.append((r, center_column))
                 if center_column - 1 >= 0:
-                    neighbors.append([r, center_column - 1])
+                    neighbors.append((r, center_column - 1))
                 if center_column + 1 <= 9:
-                    neighbors.append([r, center_column + 1])
+                    neighbors.append((r, center_column + 1))
 
     if ship_direction == direction_horizontal:
         start_column = ship_cells[0][1] - 1
@@ -48,11 +48,11 @@ def get_ship_neighbor_cells(ship_cells):
         neighbors_length = ship_cells[-1][1] - start_column + 2
         for c in range(start_column, start_column + neighbors_length):
             if 0 <= c <= 9:
-                neighbors.append([center_row, c])
+                neighbors.append((center_row, c))
                 if center_row - 1 >= 0:
-                    neighbors.append([center_row - 1, c])
+                    neighbors.append((center_row - 1, c))
                 if center_row + 1 <= 9:
-                    neighbors.append([center_row + 1, c])
+                    neighbors.append((center_row + 1, c))
 
     return neighbors
 
@@ -64,12 +64,12 @@ def get_ship_cells(cell, ship, ship_direction):
     if ship_direction == direction_vertical:
         for r in range(ship_range[0], ship_range[1] + 1):
             if 0 <= cell[0] + r <= 9:
-                cells.append([cell[0] + r, cell[1]])
+                cells.append((cell[0] + r, cell[1]))
 
     if ship_direction == direction_horizontal:
         for c in range(ship_range[0], ship_range[1] + 1):
             if 0 <= cell[1] + c <= 9:
-                cells.append([cell[0], cell[1] + c])
+                cells.append((cell[0], cell[1] + c))
 
     return cells
 
@@ -127,7 +127,7 @@ class Player:
             self.board[row][column] = cell_misfire
 
         if current_cell == cell_ship:
-            self.destroyed_ship_cells.append([row, column])
+            self.destroyed_ship_cells.append((row, column))
             fired_cell_status = cell_destroyed
             self.board[row][column] = cell_destroyed
             self.remaining_ship_cells_count -= 1

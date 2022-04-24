@@ -36,7 +36,6 @@ def change_game_status(current_status):
 
     app.person.__init__()
     app.robot.__init__()
-
     app.person.init_opponent(app.robot)
     app.robot.init_opponent(app.person)
     app.robot.init_board()
@@ -175,7 +174,7 @@ def cell_id_to_computing_format(cell_id):
     id_split = cell_id.split('-')
     column = int(column_numbers_and_letters[id_split[-2]]) - 1
     row = int(id_split[-1]) - 1
-    return [row, column]
+    return (row, column)
 
 
 def player_cells_to_id_format(cells, player):
