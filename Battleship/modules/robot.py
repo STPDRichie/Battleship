@@ -1,7 +1,5 @@
-import time
 from random import randint
 
-from modules import player
 from modules.player import Player
 
 direction_vertical = 'Vertical'
