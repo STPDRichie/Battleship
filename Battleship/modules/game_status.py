@@ -31,17 +31,21 @@ def change_game_status(current_status):
         return {'is_changed': False}
 
     game_status = status_place_ships
-
-    app.person.__init__()
-    app.robot.__init__()
-    app.person.init_opponent(app.robot)
-    app.robot.init_opponent(app.person)
-    app.robot.init_board()
+    init_game()
 
     return {
         'is_changed': True,
         'game_status': game_status
     }
+
+
+def init_game():
+    app.person.__init__()
+    app.robot.__init__()
+    app.person.init_opponent(app.robot)
+    app.robot.init_opponent(app.person)
+    app.robot.init_board()
+    return {'is_changed': True}
 
 
 def get_person_outline_cells(ship, ship_direction,

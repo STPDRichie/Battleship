@@ -1,22 +1,68 @@
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const color_white = '#ffffff';
+const color_lightgray = '#999999';
 const color_darkgray = '#333333';
 const color_green = '#95e1d3';
 const color_red = '#f38181';
-const color_gray = '#d8d8d8';
+const color_cell_hovered_gray = '#d8d8d8';
+const color_section_gray = '#eeeeee';
 
 const icon_destroyed = '<i class="fa-solid fa-circle-xmark"></i>'
+const icon_empty = '<i class="fa-solid"></i>'
 
 
 const game_status = document.getElementById('game-status');
+const ship_placing_buttons = document.getElementById('ship-placing-buttons');
 const game_status_active_class = 'game-panel__status';
 const game_status_inactive_class = 'game-panel__status_inactive'
+const game_status_placing_ships = 'Ships placing';
 const game_status_battle = 'Battle';
 const game_status_win = 'Win';
 const game_status_lose = 'Lose';
 
-const ship_placing_buttons_id = 'ship-placing-buttons';
+
+const ship_direction_buttons = document.getElementById('ship-direction-select-buttons').getElementsByTagName('*');
+const ship_direction_default_button = document.getElementById('ship-direction-vertical');
+const ship_direction_class_selected = 'game-panel__ship-direction_active'
+const ship_direction_class_not_selected = 'game-panel__ship-direction'
+const direction_vertical = 'Vertical';
+const direction_horizontal = 'Horizontal';
+let selected_ship_direction = 'Vertical';
+
+
+const ship_select_buttons = document.getElementById('ship-select-buttons').getElementsByTagName('*');
+const ship_select_default_button = document.getElementById('battleship-select-button');
+const battleship_select_button = document.getElementById('battleship-select-button');
+const cruiser_select_button = document.getElementById('cruiser-select-button');
+const submarine_select_button = document.getElementById('submarine-select-button');
+const destroyer_select_button = document.getElementById('destroyer-select-button');
+
+const ship_select_button_class_default = 'game-panel__ship-select-button'
+const ship_select_button_class_active = 'game-panel__ship-select-button_active';
+const ship_select_button_class_inactive = 'game-panel__ship-select-button_inactive';
+
+const battleship_select_button_default_inner = 'Battleship - 1';
+const cruiser_select_button_default_inner = 'Cruiser - 2';
+const submarine_select_button_default_inner = 'Submarine - 3';
+const destroyer_select_button_default_inner = 'Destroyer - 4';
+const ship_count_sep = ' - ';
+const ship_select_button_default = 'Battleship'
+let selected_ship = 'Battleship'
+
+
+const remaining_ships = document.getElementsByClassName('remaining-ship__count');
+const remaining_ship_panel = document.getElementById('remaining-ships-panel');
+const remaining_ship_count_id_template = '-remaining-ship-count__';
+
+const person_board = document.getElementById('person-board');
+const person_cells = person_board.getElementsByClassName('game__cell');
+const opponent_board = document.getElementById('opponent-board');
+const opponent_cells = opponent_board.getElementsByClassName('game__cell');
+const board_class_inactive = 'game__board_inactive';
+const markup_cell_class = 'game__markup-cell';
+let hovered_cells = [];
+
 
 game_status.addEventListener('click', function () {
   const game_status_click_response = $.post('/status_button_clicked', {
@@ -30,19 +76,72 @@ game_status.addEventListener('click', function () {
       game_status.classList.remove(game_status_active_class);
       game_status.classList.add(game_status_inactive_class);
 
-      document.getElementById(ship_placing_buttons_id).style.display = 'block';
+      ship_placing_buttons.style.display = 'block';
+      restart_button.style.display = 'flex';
     }
   });
 });
 
 
-const ship_direction_select_buttons_id = 'ship-direction-select-buttons';
-const ship_direction_buttons = document.getElementById(ship_direction_select_buttons_id).getElementsByTagName('*');
-const ship_direction_class_selected = 'game-panel__ship-direction_active'
-const ship_direction_class_not_selected = 'game-panel__ship-direction'
-const direction_vertical = 'Vertical';
-const direction_horizontal = 'Horizontal';
-let selected_ship_direction = 'Vertical';
+const restart_button = document.getElementById('game-restart-button');
+
+restart_button.addEventListener('click', function () {
+  const restart_button_click_response = $.get('/restart_button_clicked');
+
+  restart_button_click_response.done(function (data) {
+    const content = $(data).find('#content')['prevObject'][0];
+    if (content['is_changed']) {
+      resetGame();
+    }
+  });
+});
+
+function resetGame() {
+  game_status.innerHTML = game_status_placing_ships;
+  game_status.style.color = color_lightgray;
+  game_status.style.backgroundColor = color_section_gray;
+  ship_placing_buttons.style.display = 'block';
+  remaining_ship_panel.style.display = 'none';
+
+  changeShipDirection(ship_direction_default_button);
+  battleship_select_button.innerHTML = battleship_select_button_default_inner;
+  cruiser_select_button.innerHTML = cruiser_select_button_default_inner;
+  submarine_select_button.innerHTML = submarine_select_button_default_inner;
+  destroyer_select_button.innerHTML = destroyer_select_button_default_inner;
+  changeSelectedShip(ship_select_default_button);
+
+  document.getElementById('person-remaining-ship-count__battleship').innerHTML = '1';
+  document.getElementById('person-remaining-ship-count__cruiser').innerHTML = '2';
+  document.getElementById('person-remaining-ship-count__submarine').innerHTML = '3';
+  document.getElementById('person-remaining-ship-count__destroyer').innerHTML = '4';
+  document.getElementById('opponent-remaining-ship-count__battleship').innerHTML = '1';
+  document.getElementById('opponent-remaining-ship-count__cruiser').innerHTML = '2';
+  document.getElementById('opponent-remaining-ship-count__submarine').innerHTML = '3';
+  document.getElementById('opponent-remaining-ship-count__destroyer').innerHTML = '4';
+
+  Array.prototype.forEach.call(ship_select_buttons, function (button) {
+    button.classList.remove(ship_select_button_class_active);
+    button.classList.remove(ship_select_button_class_inactive);
+    button.classList.add(ship_select_button_class_default);
+  });
+  ship_select_default_button.classList.remove(ship_select_button_class_default);
+  ship_select_default_button.classList.add(ship_select_button_class_active);
+  selected_ship = ship_select_button_default;
+
+  person_board.classList.remove(board_class_inactive);
+  opponent_board.classList.remove(board_class_inactive);
+  Array.prototype.forEach.call(person_cells, function (cell) {
+    if (!cell.classList.contains(markup_cell_class)) {
+      cell.innerHTML = icon_empty;
+    }
+  });
+  Array.prototype.forEach.call(opponent_cells, function (cell) {
+    if (!cell.classList.contains(markup_cell_class)) {
+      cell.innerHTML = icon_empty;
+    }
+  });
+}
+
 
 Array.prototype.forEach.call(ship_direction_buttons, function (element) {
   element.addEventListener('click', function () {
@@ -71,14 +170,6 @@ function changeShipDirection(direction) {
 }
 
 
-const ship_select_buttons_id = 'ship-select-buttons';
-const ship_select_buttons = document.getElementById(ship_select_buttons_id).getElementsByTagName('*');
-const ship_select_button_class_default = 'game-panel__ship-select-button'
-const ship_select_button_class_active = 'game-panel__ship-select-button_active';
-const ship_select_button_class_inactive = 'game-panel__ship-select-button_inactive';
-const ship_count_sep = ' - ';
-let selected_ship = 'Battleship'
-
 Array.prototype.forEach.call(ship_select_buttons, function (element) {
   element.addEventListener('click', function () {
     changeSelectedShip(element);
@@ -102,20 +193,8 @@ function changeSelectedShip(ship) {
 }
 
 
-const remaining_ships = document.getElementsByClassName('remaining-ship__count');
-const remaining_ships_panel_id = 'remaining-ships-panel';
-const remaining_ship_count_id_template = '-remaining-ship-count__';
-
-const person_board = document.getElementById('person-board');
-const person_cells = person_board.getElementsByClassName('game__cell');
-const opponent_board = document.getElementById('opponent-board');
-const opponent_cells = opponent_board.getElementsByClassName('game__cell');
-const board_class_inactive = 'game__board_inactive';
-const markup_cell = 'game__markup-cell';
-let hovered_cells = [];
-
 Array.prototype.forEach.call(person_cells, function(element) {
-  if (!element.classList.contains(markup_cell)) {
+  if (!element.classList.contains(markup_cell_class)) {
     element.addEventListener('click', function () {
       handlePersonBoardClick(element);
     });
@@ -131,7 +210,7 @@ Array.prototype.forEach.call(person_cells, function(element) {
 });
 
 Array.prototype.forEach.call(opponent_cells, function(element) {
-  if (!element.classList.contains(markup_cell)) {
+  if (!element.classList.contains(markup_cell_class)) {
     element.addEventListener('click', async function () {
       if (game_status.innerHTML === game_status_battle) {
         handleOpponentBoardClick(element);
@@ -217,10 +296,8 @@ function handlePersonBoardClick(cell) {
       }
 
       if (game_status.innerHTML === game_status_battle) {
-        document.getElementById(ship_direction_select_buttons_id).style.display = 'none';
-        document.getElementById(ship_select_buttons_id).style.display = 'none';
-
-        document.getElementById(remaining_ships_panel_id).style.display = 'block';
+        ship_placing_buttons.style.display = 'none';
+        remaining_ship_panel.style.display = 'block';
       }
     }
   });
@@ -240,7 +317,7 @@ function handlePersonCellHover(cell) {
       for (let i = 0; i < content['cells'].length; i++) {
         let current_cell = Array.from(person_cells).find(cell => cell.id === content['cells'][i]);
         hovered_cells.push(current_cell)
-        current_cell.style.backgroundColor = color_gray;
+        current_cell.style.backgroundColor = color_cell_hovered_gray;
       }
     }
   });

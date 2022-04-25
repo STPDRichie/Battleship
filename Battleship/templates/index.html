@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <section class="header">
+    <header class="header">
         <div class="section-wrapper">
             <div class="header__title">Battleship</div>
             <div class="header__contact">
@@ -30,27 +30,30 @@
                 </div>
             </div>
         </div>
-    </section>
+    </header>
 
     <section class="game-panel">
         <div class="section-wrapper">
-            <h1 id="game-status" class="game-panel__status">{{ game_panel_text }}</h1>
-            <div id="ship-placing-buttons" class="game-panel__ship-placing-buttons">
+            <div class="game-panel__main-buttons">
+                <h1 id="game-status" class="game-panel__status">{{ game_panel_text }}</h1>
+                <div id="game-restart-button" style="display: none;" class="game-panel__restart-button"><i class="fa-solid fa-rotate-left"></i></div>
+            </div>
+            <div id="ship-placing-buttons" style="display: none;" class="game-panel__ship-placing-buttons">
                 <div id="ship-direction-select-buttons" class="game-panel__ship-direction-select-buttons">
-                    <div class="game-panel__ship-direction_active">Vertical</div>
-                    <div class="game-panel__ship-direction">Horizontal</div>
+                    <div id="ship-direction-vertical" class="game-panel__ship-direction_active">Vertical</div>
+                    <div id="ship-direction-horizontal" class="game-panel__ship-direction">Horizontal</div>
                 </div>
                 <div id="ship-select-buttons" class="game-panel__ship-select-buttons">
-                    <div class="game-panel__ship-select-button_active">Battleship - 1</div>
-                    <div class="game-panel__ship-select-button">Cruiser - 2</div>
-                    <div class="game-panel__ship-select-button">Submarine - 3</div>
-                    <div class="game-panel__ship-select-button">Destroyer - 4</div>
+                    <div id="battleship-select-button" class="game-panel__ship-select-button_active">Battleship - 1</div>
+                    <div id="cruiser-select-button" class="game-panel__ship-select-button">Cruiser - 2</div>
+                    <div id="submarine-select-button" class="game-panel__ship-select-button">Submarine - 3</div>
+                    <div id="destroyer-select-button" class="game-panel__ship-select-button">Destroyer - 4</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="remaining-ships-panel" class="remaining-ships">
+    <section id="remaining-ships-panel" style="display: none;" class="remaining-ships">
         <div class="section-wrapper">
             <div class="remaining-ships__player">
                 <div class="remaining-ship">

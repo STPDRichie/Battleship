@@ -66,5 +66,10 @@ def get_opponent_remaining_ship_cells():
     return game_status.get_opponent_remaining_ship_cells()
 
 
+@app.route('/restart_button_clicked', methods=['GET'])
+def restart_game():
+    return game_status.init_game()
+
+
 if __name__ == '__main__':
     app.run(debug=True)

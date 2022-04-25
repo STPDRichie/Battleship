@@ -45,7 +45,6 @@ body {
 
 .section-wrapper {
   width: 1400px;
-  padding: 0 15px;
   margin: 0 auto;
   border-radius: 50px;
 }
@@ -102,8 +101,8 @@ body {
   display: flex;
   flex-direction: column;
 }
-.game-panel__ship-placing-buttons {
-  display: none;
+.game-panel__main-buttons {
+  position: relative;
 }
 .game-panel__status {
   width: 400px;
@@ -128,6 +127,32 @@ body {
   background-color: #eeeeee;
   border-radius: 35px;
   user-select: none;
+}
+.game-panel__restart-button {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 27px;
+  border-radius: 50%;
+  background-color: #4c97fc;
+  transition: 0.1s ease-in-out background-color;
+  font-size: 27px;
+  color: #ffffff;
+}
+.game-panel__restart-button i {
+  transition: 0.5s ease-in-out all;
+}
+.game-panel__restart-button:hover {
+  background-color: #3e89ec;
+}
+.game-panel__restart-button:active i {
+  transition: 10ms ease-in-out all;
+  transform: rotateZ(720deg);
 }
 .game-panel__ship-select-buttons {
   width: 900px;
@@ -207,7 +232,6 @@ body {
 
 .remaining-ships {
   margin: 30px auto 0;
-  display: none;
 }
 .remaining-ships .section-wrapper {
   background-color: #ffffff;
