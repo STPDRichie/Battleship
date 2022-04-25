@@ -21,6 +21,8 @@ const game_status_battle = 'Battle';
 const game_status_win = 'Win';
 const game_status_lose = 'Lose';
 
+const restart_button = document.getElementById('game-restart-button');
+
 
 const ship_direction_buttons = document.getElementById('ship-direction-select-buttons').getElementsByTagName('*');
 const ship_direction_default_button = document.getElementById('ship-direction-vertical');
@@ -82,8 +84,6 @@ game_status.addEventListener('click', function () {
   });
 });
 
-
-const restart_button = document.getElementById('game-restart-button');
 
 restart_button.addEventListener('click', function () {
   const restart_button_click_response = $.get('/restart_button_clicked');
@@ -209,40 +209,6 @@ Array.prototype.forEach.call(person_cells, function(element) {
   }
 });
 
-Array.prototype.forEach.call(opponent_cells, function(element) {
-  if (!element.classList.contains(markup_cell_class)) {
-    element.addEventListener('click', async function () {
-      if (game_status.innerHTML === game_status_battle) {
-        handleOpponentBoardClick(element);
-        await sleep(100);
-        if (game_status.innerHTML === game_status_win) {
-          opponent_board.classList.add(board_class_inactive);
-          person_board.classList.add(board_class_inactive);
-          game_status.style.color = color_white;
-          game_status.style.backgroundColor = color_green;
-        }
-
-        opponent_board.classList.add(board_class_inactive);
-        await sleep(700);
-        if (game_status.innerHTML !== game_status_win && game_status.innerHTML !== game_status_lose) {
-          getOpponentTurn();
-          await sleep(100);
-          opponent_board.classList.remove(board_class_inactive);
-        }
-
-        await sleep(100);
-        if (game_status.innerHTML === game_status_lose) {
-          opponent_board.classList.add(board_class_inactive);
-          person_board.classList.add(board_class_inactive);
-          game_status.style.color = color_white;
-          game_status.style.backgroundColor = color_red;
-          showOpponentRemainingShipCells();
-        }
-      }
-    });
-  }
-});
-
 function handlePersonBoardClick(cell) {
   const person_board_click_response = $.post('/person_cell_clicked', {
     direction: selected_ship_direction,
@@ -330,6 +296,41 @@ function handlePersonCellUnhover() {
   }
   hovered_cells = []
 }
+
+
+Array.prototype.forEach.call(opponent_cells, function(element) {
+  if (!element.classList.contains(markup_cell_class)) {
+    element.addEventListener('click', async function () {
+      if (game_status.innerHTML === game_status_battle) {
+        handleOpponentBoardClick(element);
+        await sleep(100);
+        if (game_status.innerHTML === game_status_win) {
+          opponent_board.classList.add(board_class_inactive);
+          person_board.classList.add(board_class_inactive);
+          game_status.style.color = color_white;
+          game_status.style.backgroundColor = color_green;
+        }
+
+        opponent_board.classList.add(board_class_inactive);
+        await sleep(700);
+        if (game_status.innerHTML !== game_status_win && game_status.innerHTML !== game_status_lose) {
+          getOpponentTurn();
+          await sleep(100);
+          opponent_board.classList.remove(board_class_inactive);
+        }
+
+        await sleep(100);
+        if (game_status.innerHTML === game_status_lose) {
+          opponent_board.classList.add(board_class_inactive);
+          person_board.classList.add(board_class_inactive);
+          game_status.style.color = color_white;
+          game_status.style.backgroundColor = color_red;
+          showOpponentRemainingShipCells();
+        }
+      }
+    });
+  }
+});
 
 function handleOpponentBoardClick(cell) {
   const opponent_board_click_response = $.post('/opponent_cell_clicked', {
