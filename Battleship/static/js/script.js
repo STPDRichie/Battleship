@@ -72,9 +72,8 @@ game_status.addEventListener('click', function () {
   });
 
   game_status_click_response.done(function (data) {
-    const content = $(data).find('#content')['prevObject'][0];
-    if (content['is_changed']) {
-      game_status.innerHTML = content['game_status'];
+    if (data['is_changed']) {
+      game_status.innerHTML = data['game_status'];
       game_status.classList.remove(game_status_active_class);
       game_status.classList.add(game_status_inactive_class);
 
@@ -89,8 +88,7 @@ restart_button.addEventListener('click', function () {
   const restart_button_click_response = $.get('/restart_button_clicked');
 
   restart_button_click_response.done(function (data) {
-    const content = $(data).find('#content')['prevObject'][0];
-    if (content['is_changed']) {
+    if (data['is_changed']) {
       resetGame();
     }
   });
@@ -219,32 +217,31 @@ function handlePersonBoardClick(cell) {
   });
 
   person_board_click_response.done(function (data) {
-    const content = $(data).find('#content')['prevObject'][0];
-    if (content['is_changed']) {
-      game_status.innerHTML = content['game_status'];
+    if (data['is_changed']) {
+      game_status.innerHTML = data['game_status'];
 
-      for (let i = 0; i < content['cells'].length; i++) {
-        let current_cell = Array.from(person_cells).find(cell => cell.id === content['cells'][i]);
-        current_cell.innerHTML = content['cells_icon'];
+      for (let i = 0; i < data['cells'].length; i++) {
+        let current_cell = Array.from(person_cells).find(cell => cell.id === data['cells'][i]);
+        current_cell.innerHTML = data['icon'];
       }
 
-      if (content['returned_ship'] !== '') {
+      if (data['returned_ship'] !== '') {
         let returned_ship = Array
             .from(ship_select_buttons)
-            .find(button => button.innerHTML.split(ship_count_sep)[0] === content['returned_ship']);
+            .find(button => button.innerHTML.split(ship_count_sep)[0] === data['returned_ship']);
         if (returned_ship.innerHTML.split(ship_count_sep)[1] === '0') {
           returned_ship.classList.remove(ship_select_button_class_inactive);
           returned_ship.classList.add(ship_select_button_class_default);
         }
-        returned_ship.innerHTML = content['returned_ship'] + ship_count_sep + content['ship_count'];
+        returned_ship.innerHTML = data['returned_ship'] + ship_count_sep + data['ship_count'];
         return;
       }
 
       let current_ship_select_button = Array
           .from(ship_select_buttons)
           .filter(button => button.innerHTML.split(ship_count_sep)[0] === selected_ship)[0];
-      current_ship_select_button.innerHTML = selected_ship + ship_count_sep + content['ship_count'];
-      if (content['ship_count'] === 0) {
+      current_ship_select_button.innerHTML = selected_ship + ship_count_sep + data['ship_count'];
+      if (data['ship_count'] === 0) {
         current_ship_select_button.classList.remove(ship_select_button_class_active);
         current_ship_select_button.classList.add(ship_select_button_class_inactive);
         let next_ships = Array
@@ -278,10 +275,9 @@ function handlePersonCellHover(cell) {
   });
 
   person_cell_hover_response.done(function (data) {
-    const content = $(data).find('#content')['prevObject'][0];
-    if (content['is_changed']) {
-      for (let i = 0; i < content['cells'].length; i++) {
-        let current_cell = Array.from(person_cells).find(cell => cell.id === content['cells'][i]);
+    if (data['is_changed']) {
+      for (let i = 0; i < data['cells'].length; i++) {
+        let current_cell = Array.from(person_cells).find(cell => cell.id === data['cells'][i]);
         hovered_cells.push(current_cell)
         current_cell.style.backgroundColor = color_cell_hovered_gray;
       }
@@ -339,15 +335,14 @@ function handleOpponentBoardClick(cell) {
   });
 
   opponent_board_click_response.done(function (data) {
-    const content = $(data).find('#content')['prevObject'][0];
-    if (content['is_changed']) {
-      game_status.innerHTML = content['game_status'];
+    if (data['is_changed']) {
+      game_status.innerHTML = data['game_status'];
 
-      if (content['is_ship_destroyed'] && cell.innerHTML !== icon_destroyed) {
-        changeRemainingShipCount('opponent', content['destroyed_ship'].toLowerCase(), color_green).then(r => r);
+      if (data['is_ship_destroyed'] && cell.innerHTML !== icon_destroyed) {
+        changeRemainingShipCount('opponent', data['destroyed_ship'].toLowerCase(), color_green).then(r => r);
       }
 
-      cell.innerHTML = content['cell_icon'];
+      cell.innerHTML = data['icon'];
     }
   });
 }
@@ -358,16 +353,15 @@ function getOpponentTurn() {
   });
 
   opponent_fire.done(function (data) {
-    const content = $(data).find('#content')['prevObject'][0];
-    if (content['is_changed']) {
-      game_status.innerHTML = content['game_status'];
-      let fired_cell = Array.from(person_cells).find(cell => cell.id === content['cell']);
+    if (data['is_changed']) {
+      game_status.innerHTML = data['game_status'];
+      let fired_cell = Array.from(person_cells).find(cell => cell.id === data['cells']);
 
-      if (content['is_ship_destroyed'] && fired_cell.innerHTML !== icon_destroyed) {
-        changeRemainingShipCount('person', content['destroyed_ship'].toLowerCase(), color_red).then(r => r);
+      if (data['is_ship_destroyed'] && fired_cell.innerHTML !== icon_destroyed) {
+        changeRemainingShipCount('person', data['destroyed_ship'].toLowerCase(), color_red).then(r => r);
       }
 
-      fired_cell.innerHTML = content['cell_icon']
+      fired_cell.innerHTML = data['icon']
     }
   });
 }
@@ -389,12 +383,11 @@ function showOpponentRemainingShipCells() {
   const opponent_remaining_ships = $.get('/get_opponent_remaining_ships');
 
   opponent_remaining_ships.done(function (data) {
-    const content = $(data).find('#content')['prevObject'][0];
-    const remaining_ship_cells = content['cells'];
+    const remaining_ship_cells = data['cells'];
 
     for (let i = 0; i < remaining_ship_cells.length; i++) {
       let current_cell = Array.from(opponent_cells).find(cell => cell.id === remaining_ship_cells[i]);
-      current_cell.innerHTML = content['cell_icon'];
+      current_cell.innerHTML = data['icon'];
     }
   });
 }

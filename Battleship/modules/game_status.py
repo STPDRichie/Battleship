@@ -1,6 +1,7 @@
-from modules.domain import GameStatus, PlayerName, CellStatus, CellIcon
+from dataclasses import dataclass
 
 import app
+from modules.domain import GameStatus, PlayerName, CellStatus, CellIcon
 from modules.player import get_ship_cells, ships_ranges
 
 
@@ -20,15 +21,12 @@ column_numbers_and_letters = {
 
 def change_game_status(current_status):
     if current_status != GameStatus.START.value:
-        return {'is_changed': False}
+        return Response().to_dict()
 
     game_status = GameStatus.PLACE_SHIPS.value
     init_game()
 
-    return {
-        'is_changed': True,
-        'game_status': game_status
-    }
+    return Response(is_changed=True, game_status=game_status).to_dict()
 
 
 def init_game():
@@ -37,33 +35,30 @@ def init_game():
     app.person.init_opponent(app.robot)
     app.robot.init_opponent(app.person)
     app.robot.init_board()
-    return {'is_changed': True}
+    return Response(is_changed=True).to_dict()
 
 
 def get_person_outline_cells(ship, ship_direction,
                              cell_id, current_status):
     if current_status != GameStatus.PLACE_SHIPS.value:
-        return {'is_changed': False}
+        return Response().to_dict()
 
     cell = cell_id_to_computing_format(cell_id)
     cells = get_ship_cells(cell, ship, ship_direction)
 
     ship_length = abs(ships_ranges[ship][0]) + ships_ranges[ship][1] + 1
     if len(cells) != ship_length:
-        return {'is_changed': False}
+        return Response().to_dict()
 
     cells_ids = player_cells_to_id_format(cells, PlayerName.PERSON.value)
 
-    return {
-        'is_changed': True,
-        'cells': cells_ids
-    }
+    return Response(is_changed=True, cells=cells_ids).to_dict()
 
 
 def change_person_cells(cell_icon, cell_id, ship,
                         ship_direction, current_status):
     if current_status != GameStatus.PLACE_SHIPS.value:
-        return {'is_changed': False}
+        return Response().to_dict()
 
     cell = cell_id_to_computing_format(cell_id)
 
@@ -71,7 +66,7 @@ def change_person_cells(cell_icon, cell_id, ship,
         returned_ship = ''
         ship_cells = app.person.place_ship(cell, ship, ship_direction)
         if not ship_cells:
-            return {'is_changed': False}
+            return Response().to_dict()
         new_game_status = app.person.check_game_status()
         cells_ids = player_cells_to_id_format(ship_cells,
                                               PlayerName.PERSON.value)
@@ -86,21 +81,16 @@ def change_person_cells(cell_icon, cell_id, ship,
         ship_count = app.person.get_ship_count(returned_ship)
         new_icon = CellIcon.EMPTY.value
     else:
-        return {'is_changed': False}
+        return Response().to_dict()
 
-    return {
-        'is_changed': True,
-        'game_status': new_game_status,
-        'ship_count': ship_count,
-        'returned_ship': returned_ship,
-        'cells': cells_ids,
-        'cells_icon': new_icon
-    }
+    return Response(is_changed=True, game_status=new_game_status,
+                    ship_count=ship_count, returned_ship=returned_ship,
+                    cells=cells_ids, icon=new_icon).to_dict()
 
 
 def fire_opponent_cell(cell_id, current_status):
     if current_status != GameStatus.BATTLE.value:
-        return {'is_changed': False}
+        return Response().to_dict()
 
     cell = cell_id_to_computing_format(cell_id)
     fired_cell_status = app.person.fire(cell)
@@ -117,18 +107,14 @@ def fire_opponent_cell(cell_id, current_status):
     if is_ship_destroyed:
         destroyed_ship = app.robot.get_ship(cell)
 
-    return {
-        'is_changed': True,
-        'game_status': new_game_status,
-        'cell_icon': new_icon,
-        'is_ship_destroyed': is_ship_destroyed,
-        'destroyed_ship': destroyed_ship
-    }
+    return Response(is_changed=True, game_status=new_game_status,
+                    icon=new_icon, is_ship_destroyed=is_ship_destroyed,
+                    destroyed_ship=destroyed_ship).to_dict()
 
 
 def fire_person_cell(current_status):
     if current_status != GameStatus.BATTLE.value:
-        return {'is_changed': False}
+        return Response().to_dict()
 
     fired_cell, fired_cell_status = app.robot.random_fire()
     new_game_status = app.person.check_game_status()
@@ -146,24 +132,17 @@ def fire_person_cell(current_status):
     if is_ship_destroyed:
         destroyed_ship = app.person.get_ship(fired_cell)
 
-    return {
-        'is_changed': True,
-        'game_status': new_game_status,
-        'cell': fired_cell_id,
-        'cell_icon': new_icon,
-        'is_ship_destroyed': is_ship_destroyed,
-        'destroyed_ship': destroyed_ship
-    }
+    return Response(is_changed=True, game_status=new_game_status,
+                    cells=fired_cell_id, icon=new_icon,
+                    is_ship_destroyed=is_ship_destroyed,
+                    destroyed_ship=destroyed_ship).to_dict()
 
 
 def get_opponent_remaining_ship_cells():
     remaining_cells = app.robot.get_remaining_ship_cells()
     cells_ids = player_cells_to_id_format(remaining_cells,
                                           PlayerName.OPPONENT.value)
-    return {
-        'cells': cells_ids,
-        'cell_icon': CellIcon.SHIP.value
-    }
+    return Response(cells=cells_ids, icon=CellIcon.SHIP.value).to_dict()
 
 
 def cell_id_to_computing_format(cell_id):
@@ -181,3 +160,41 @@ def player_cells_to_id_format(cells, player):
             f'{column_numbers_and_letters[cell[1] + 1]}-{cell[0] + 1}')
 
     return cells_ids
+
+
+@dataclass
+class Response:
+    is_changed: bool
+    game_status: str
+    cells: list
+    icon: str = CellIcon.EMPTY.value
+    is_ship_destroyed: bool = False
+    destroyed_ship: str = ''
+    ship_count: int = 0
+    returned_ship: str = ''
+
+    def __init__(self, is_changed=False,
+                 game_status=GameStatus.START.value,
+                 cells=None, icon=CellIcon.EMPTY.value,
+                 is_ship_destroyed=False, destroyed_ship='', ship_count=0,
+                 returned_ship=''):
+        self.is_changed = is_changed
+        self.game_status = game_status
+        self.cells = cells
+        self.icon = icon
+        self.is_ship_destroyed = is_ship_destroyed
+        self.destroyed_ship = destroyed_ship
+        self.ship_count = ship_count
+        self.returned_ship = returned_ship
+
+    def to_dict(self):
+        return {
+            'is_changed': self.is_changed,
+            'game_status': self.game_status,
+            'cells': self.cells,
+            'icon': self.icon,
+            'is_ship_destroyed': self.is_ship_destroyed,
+            'destroyed_ship': self.destroyed_ship,
+            'ship_count': self.ship_count,
+            'returned_ship': self.returned_ship
+        }
