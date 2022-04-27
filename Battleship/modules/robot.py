@@ -1,23 +1,11 @@
 from random import randint
 
+import modules.game_status as gs
 from modules.player import Player
 
-direction_vertical = 'Vertical'
-direction_horizontal = 'Horizontal'
-
-cell_empty = 'Empty'
-cell_ship = 'Ship'
-cell_neighbor = 'Neighbor'
-cell_misfire = 'Misfire'
-cell_destroyed = 'Destroyed'
-
-status_place_ships = 'Ships placing'
-status_battle = 'Battle'
-status_win = 'Win'
-status_lose = 'Lose'
-
-ship_list = ['Battleship', 'Cruiser', 'Submarine', 'Destroyer']
-directions = ['Vertical', 'Horizontal']
+ship_list = [gs.ShipName.BATTLESHIP.value, gs.ShipName.CRUISER.value,
+             gs.ShipName.SUBMARINE.value, gs.ShipName.DESTROYER.value]
+directions = [gs.ShipDirection.VERTICAL, gs.ShipDirection.HORIZONTAL]
 
 
 class Robot(Player):
@@ -56,7 +44,7 @@ class Robot(Player):
         fired_cell_status, is_one_more = self.opponent.get_fired(cell)
         self.opponent_not_empty_cells.add(cell)
 
-        if fired_cell_status == cell_destroyed:
+        if fired_cell_status == gs.CellStatus.DESTROYED:
             self.update_cells_to_fire_by_destroyed(cell)
             self.last_destroyed_cell = cell
             if is_one_more:

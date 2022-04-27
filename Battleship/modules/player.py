@@ -1,3 +1,5 @@
+import modules.game_status as gs
+
 ships_ranges = {
     'Battleship': [-1, 2],
     'Cruiser': [-1, 1],
@@ -5,32 +7,18 @@ ships_ranges = {
     'Destroyer': [0, 0]
 }
 
-direction_vertical = 'Vertical'
-direction_horizontal = 'Horizontal'
-
-cell_empty = 'Empty'
-cell_ship = 'Ship'
-cell_neighbor = 'Neighbor'
-cell_misfire = 'Misfire'
-cell_destroyed = 'Destroyed'
-
-status_place_ships = 'Ships placing'
-status_battle = 'Battle'
-status_win = 'Win'
-status_lose = 'Lose'
-
 
 def get_ship_direction(ship_cells):
     if len(ship_cells) == 1 or ship_cells[0][0] == ship_cells[1][0]:
-        return direction_horizontal
-    return direction_vertical
+        return gs.ShipDirection.HORIZONTAL.value
+    return gs.ShipDirection.VERTICAL.value
 
 
 def get_ship_neighbor_cells(ship_cells):
     ship_direction = get_ship_direction(ship_cells)
     neighbors = []
 
-    if ship_direction == direction_vertical:
+    if ship_direction == gs.ShipDirection.VERTICAL.value:
         start_row = ship_cells[0][0] - 1
         center_column = ship_cells[0][1]
         neighbors_length = ship_cells[-1][0] - start_row + 2
@@ -42,7 +30,7 @@ def get_ship_neighbor_cells(ship_cells):
                 if center_column + 1 <= 9:
                     neighbors.append((r, center_column + 1))
 
-    if ship_direction == direction_horizontal:
+    if ship_direction == gs.ShipDirection.HORIZONTAL.value:
         start_column = ship_cells[0][1] - 1
         center_row = ship_cells[0][0]
         neighbors_length = ship_cells[-1][1] - start_column + 2
@@ -61,12 +49,12 @@ def get_ship_cells(cell, ship, ship_direction):
     cells = []
     ship_range = ships_ranges[ship]
 
-    if ship_direction == direction_vertical:
+    if ship_direction == gs.ShipDirection.VERTICAL.value:
         for r in range(ship_range[0], ship_range[1] + 1):
             if 0 <= cell[0] + r <= 9:
                 cells.append((cell[0] + r, cell[1]))
 
-    if ship_direction == direction_horizontal:
+    if ship_direction == gs.ShipDirection.HORIZONTAL.value:
         for c in range(ship_range[0], ship_range[1] + 1):
             if 0 <= cell[1] + c <= 9:
                 cells.append((cell[0], cell[1] + c))
@@ -77,7 +65,7 @@ def get_ship_cells(cell, ship, ship_direction):
 class Player:
     def __init__(self):
         self.board = \
-            [[cell_empty for _ in range(10)] for _ in range(10)]
+            [[gs.CellStatus.EMPTY.value for _ in range(10)] for _ in range(10)]
         self.neighbors_board = \
             [[0 for _ in range(10)] for _ in range(10)]
 
@@ -117,19 +105,20 @@ class Player:
         row, column = cell[0], cell[1]
         current_cell = self.board[row][column]
 
-        fired_cell_status = cell_misfire
+        fired_cell_status = gs.CellStatus.MISFIRE.value
         is_one_more = False
 
-        if current_cell == cell_destroyed:
-            fired_cell_status = cell_destroyed
+        if current_cell == gs.CellStatus.DESTROYED.value:
+            fired_cell_status = gs.CellStatus.DESTROYED.value
 
-        if current_cell in (cell_empty, cell_neighbor):
-            self.board[row][column] = cell_misfire
+        if current_cell in (gs.CellStatus.EMPTY.value,
+                            gs.CellStatus.NEIGHBOR.value):
+            self.board[row][column] = gs.CellStatus.MISFIRE.value
 
-        if current_cell == cell_ship:
+        if current_cell == gs.CellStatus.SHIP.value:
             self.destroyed_ship_cells.append((row, column))
-            fired_cell_status = cell_destroyed
-            self.board[row][column] = cell_destroyed
+            fired_cell_status = gs.CellStatus.DESTROYED.value
+            self.board[row][column] = gs.CellStatus.DESTROYED.value
             self.remaining_ship_cells_count -= 1
             is_one_more = True
 
@@ -142,12 +131,12 @@ class Player:
         ship_cells = get_ship_cells(cell, ship, ship_direction)
         neighbor_cells = get_ship_neighbor_cells(ship_cells)
 
-        for neighbor_cell in neighbor_cells:
-            self.board[neighbor_cell[0]][neighbor_cell[1]] = cell_neighbor
+        for nbr_cell in neighbor_cells:
+            self.board[nbr_cell[0]][nbr_cell[1]] = gs.CellStatus.NEIGHBOR.value
         for ship_cell in ship_cells:
-            self.board[ship_cell[0]][ship_cell[1]] = cell_ship
-        for neighbor_cell in neighbor_cells:
-            self.neighbors_board[neighbor_cell[0]][neighbor_cell[1]] += 1
+            self.board[ship_cell[0]][ship_cell[1]] = gs.CellStatus.SHIP.value
+        for nbr_cell in neighbor_cells:
+            self.neighbors_board[nbr_cell[0]][nbr_cell[1]] += 1
 
         self.non_placed_ships_count -= 1
         self.ships_remains_to_place[ship] -= 1
@@ -163,18 +152,22 @@ class Player:
         column = cell[1]
         ship_range = ships_ranges[ship]
 
-        if ship_direction == direction_vertical:
+        if ship_direction == gs.ShipDirection.VERTICAL.value:
             if row + ship_range[0] < 0 or row + ship_range[1] > 9:
                 return False
             for r in range(ship_range[0], ship_range[1] + 1):
-                if self.board[row + r][column] in (cell_neighbor, cell_ship):
+                if self.board[row + r][column] in \
+                        (gs.CellStatus.NEIGHBOR.value,
+                         gs.CellStatus.SHIP.value):
                     return False
 
-        if ship_direction == direction_horizontal:
+        if ship_direction == gs.ShipDirection.HORIZONTAL.value:
             if column + ship_range[0] < 0 or column + ship_range[1] > 9:
                 return False
             for c in range(ship_range[0], ship_range[1] + 1):
-                if self.board[row][column + c] in (cell_neighbor, cell_ship):
+                if self.board[row][column + c] in \
+                        (gs.CellStatus.NEIGHBOR.value,
+                         gs.CellStatus.SHIP.value):
                     return False
 
         return True
@@ -198,25 +191,25 @@ class Player:
         ship_direction = get_ship_direction(cells)
         reset_length = abs(ship_range[0]) + ship_range[1] + 3
 
-        if ship_direction == direction_vertical:
+        if ship_direction == gs.ShipDirection.VERTICAL.value:
             start_r = cells[0][0] - 1
             center_c = cells[0][1]
             for r in range(start_r, start_r + reset_length):
                 if 0 <= r <= 9:
                     self.neighbors_board[r][center_c] -= 1
-                    self.board[r][center_c] = cell_empty
+                    self.board[r][center_c] = gs.CellStatus.EMPTY.value
                     if center_c - 1 >= 0:
                         self._uninit_cell(r, center_c - 1)
                     if center_c + 1 <= 9:
                         self._uninit_cell(r, center_c + 1)
 
-        if ship_direction == direction_horizontal:
+        if ship_direction == gs.ShipDirection.HORIZONTAL.value:
             start_c = cells[0][1] - 1
             center_r = cells[0][0]
             for c in range(start_c, start_c + reset_length):
                 if 0 <= c <= 9:
                     self.neighbors_board[center_r][c] -= 1
-                    self.board[center_r][c] = cell_empty
+                    self.board[center_r][c] = gs.CellStatus.EMPTY.value
                     if center_r - 1 >= 0:
                         self._uninit_cell(center_r - 1, c)
                     if center_r + 1 <= 9:
@@ -224,21 +217,21 @@ class Player:
 
     def _uninit_cell(self, row, column):
         self.neighbors_board[row][column] -= 1
-        if self.board[row][column] == cell_ship or \
+        if self.board[row][column] == gs.CellStatus.SHIP.value or \
                 self.neighbors_board[row][column] == 0:
-            self.board[row][column] = cell_empty
+            self.board[row][column] = gs.CellStatus.EMPTY.value
 
     def check_game_status(self):
         if self.non_placed_ships_count > 0:
-            return status_place_ships
+            return gs.GameStatus.PLACE_SHIPS.value
 
         if self.opponent_remaining_ship_cells_count == 0:
-            return status_win
+            return gs.GameStatus.WIN.value
 
         if self.remaining_ship_cells_count == 0:
-            return status_lose
+            return gs.GameStatus.LOSE.value
 
-        return status_battle
+        return gs.GameStatus.BATTLE.value
 
     def get_ship_count(self, ship):
         return self.ships_remains_to_place[ship]
@@ -263,7 +256,8 @@ class Player:
             return False
 
         for ship_cell in ship_cells:
-            if self.board[ship_cell[0]][ship_cell[1]] == cell_ship:
+            if self.board[ship_cell[0]][ship_cell[1]] == \
+                    gs.CellStatus.SHIP.value:
                 return False
 
         return True

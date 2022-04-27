@@ -1,16 +1,48 @@
+from enum import Enum
+
 import app
 from modules.player import get_ship_cells, ships_ranges
 
-status_start = 'Start game'
-status_place_ships = 'Ships placing'
-status_battle = 'Battle'
-status_win = 'Win'
-status_lose = 'Lose'
 
-icon_empty = '<i class="fa-solid"></i>'
-icon_ship = '<i class="fa-solid fa-circle"></i>'
-icon_destroyed = '<i class="fa-solid fa-circle-xmark"></i>'
-icon_misfire = '<i class="fa-regular fa-circle"></i>'
+class GameStatus(Enum):
+    START = 'Start game'
+    PLACE_SHIPS = 'Ships placing'
+    BATTLE = 'Battle'
+    WIN = 'Win'
+    LOSE = 'Lose'
+
+
+class ShipName(Enum):
+    BATTLESHIP = 'Battleship'
+    CRUISER = 'Cruiser'
+    SUBMARINE = 'Submarine'
+    DESTROYER = 'Destroyer'
+
+
+class ShipDirection(Enum):
+    VERTICAL = 'Vertical'
+    HORIZONTAL = 'Horizontal'
+
+
+class CellStatus(Enum):
+    EMPTY = 'Empty'
+    SHIP = 'Ship'
+    NEIGHBOR = 'Neighbor'
+    MISFIRE = 'Misfire'
+    DESTROYED = 'Destroyed'
+
+
+class CellIcon(Enum):
+    EMPTY = '<i class="fa-solid"></i>'
+    SHIP = '<i class="fa-solid fa-circle"></i>'
+    MISFIRE = '<i class="fa-regular fa-circle"></i>'
+    DESTROYED = '<i class="fa-solid fa-circle-xmark"></i>'
+
+
+class PlayerName(Enum):
+    PERSON = 'person'
+    OPPONENT = 'opponent'
+
 
 column_numbers_and_letters = {
     'a': 1, 1: 'a',
@@ -27,10 +59,10 @@ column_numbers_and_letters = {
 
 
 def change_game_status(current_status):
-    if current_status != status_start:
+    if current_status != GameStatus.START:
         return {'is_changed': False}
 
-    game_status = status_place_ships
+    game_status = GameStatus.PLACE_SHIPS
     init_game()
 
     return {
@@ -50,7 +82,7 @@ def init_game():
 
 def get_person_outline_cells(ship, ship_direction,
                              cell_id, current_status):
-    if current_status != status_place_ships:
+    if current_status != GameStatus.PLACE_SHIPS:
         return {'is_changed': False}
 
     cell = cell_id_to_computing_format(cell_id)
@@ -60,7 +92,7 @@ def get_person_outline_cells(ship, ship_direction,
     if len(cells) != ship_length:
         return {'is_changed': False}
 
-    cells_ids = player_cells_to_id_format(cells, 'person')
+    cells_ids = player_cells_to_id_format(cells, PlayerName.PERSON)
 
     return {
         'is_changed': True,
@@ -70,27 +102,27 @@ def get_person_outline_cells(ship, ship_direction,
 
 def change_person_cells(cell_icon, cell_id, ship,
                         ship_direction, current_status):
-    if current_status != status_place_ships:
+    if current_status != GameStatus.PLACE_SHIPS:
         return {'is_changed': False}
 
     cell = cell_id_to_computing_format(cell_id)
 
-    if cell_icon == icon_empty:
+    if cell_icon == CellIcon.EMPTY:
         returned_ship = ''
         ship_cells = app.person.place_ship(cell, ship, ship_direction)
         if not ship_cells:
             return {'is_changed': False}
         new_game_status = app.person.check_game_status()
-        cells_ids = player_cells_to_id_format(ship_cells, 'person')
+        cells_ids = player_cells_to_id_format(ship_cells, PlayerName.PERSON)
         ship_count = app.person.get_ship_count(ship)
-        new_icon = icon_ship
-    elif cell_icon == icon_ship:
+        new_icon = CellIcon.SHIP
+    elif cell_icon == CellIcon.SHIP:
         returned_ship = app.person.get_ship(cell)
         ship_cells = app.person.get_ship_cells(cell)
         new_game_status = app.person.check_game_status()
-        cells_ids = player_cells_to_id_format(ship_cells, 'person')
+        cells_ids = player_cells_to_id_format(ship_cells, PlayerName.PERSON)
         ship_count = app.person.get_ship_count(returned_ship)
-        new_icon = icon_empty
+        new_icon = CellIcon.EMPTY
     else:
         return {'is_changed': False}
 
@@ -105,18 +137,18 @@ def change_person_cells(cell_icon, cell_id, ship,
 
 
 def fire_opponent_cell(cell_id, current_status):
-    if current_status != status_battle:
+    if current_status != GameStatus.BATTLE:
         return {'is_changed': False}
 
     cell = cell_id_to_computing_format(cell_id)
     fired_cell_status = app.person.fire(cell)
     new_game_status = app.person.check_game_status()
 
-    if fired_cell_status == 'Destroyed':
-        new_icon = icon_destroyed
+    if fired_cell_status == CellStatus.DESTROYED:
+        new_icon = CellIcon.DESTROYED
         is_ship_destroyed = app.robot.is_ship_destroyed(cell)
     else:
-        new_icon = icon_misfire
+        new_icon = CellIcon.MISFIRE
         is_ship_destroyed = False
 
     destroyed_ship = ''
@@ -133,18 +165,19 @@ def fire_opponent_cell(cell_id, current_status):
 
 
 def fire_person_cell(current_status):
-    if current_status != status_battle:
+    if current_status != GameStatus.BATTLE:
         return {'is_changed': False}
 
     fired_cell, fired_cell_status = app.robot.random_fire()
     new_game_status = app.person.check_game_status()
-    fired_cell_id = player_cells_to_id_format([fired_cell], 'person')[0]
+    fired_cell_id = \
+        player_cells_to_id_format([fired_cell], PlayerName.PERSON)[0]
 
-    if fired_cell_status == 'Destroyed':
-        new_icon = icon_destroyed
+    if fired_cell_status == CellStatus.DESTROYED:
+        new_icon = CellIcon.DESTROYED
         is_ship_destroyed = app.person.is_ship_destroyed(fired_cell)
     else:
-        new_icon = icon_misfire
+        new_icon = CellIcon.MISFIRE
         is_ship_destroyed = False
 
     destroyed_ship = ''
@@ -163,10 +196,10 @@ def fire_person_cell(current_status):
 
 def get_opponent_remaining_ship_cells():
     remaining_cells = app.robot.get_remaining_ship_cells()
-    cells_ids = player_cells_to_id_format(remaining_cells, 'opponent')
+    cells_ids = player_cells_to_id_format(remaining_cells, PlayerName.OPPONENT)
     return {
         'cells': cells_ids,
-        'cell_icon': icon_ship
+        'cell_icon': CellIcon.SHIP
     }
 
 

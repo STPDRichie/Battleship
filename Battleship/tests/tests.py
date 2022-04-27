@@ -1,27 +1,7 @@
 from unittest import TestCase, main
 
 import app
-from modules import game_status
-
-status_start = 'Start game'
-status_place_ships = 'Ships placing'
-status_battle = 'Battle'
-status_win = 'Win'
-status_lose = 'Lose'
-
-direction_vertical = 'Vertical'
-direction_horizontal = 'Horizontal'
-
-icon_empty = '<i class="fa-solid"></i>'
-icon_ship = '<i class="fa-solid fa-circle"></i>'
-icon_destroyed = '<i class="fa-solid fa-circle-xmark"></i>'
-icon_misfire = '<i class="fa-regular fa-circle"></i>'
-
-cell_empty = 'Empty'
-cell_ship = 'Ship'
-cell_neighbor = 'Neighbor'
-cell_misfire = 'Misfire'
-cell_destroyed = 'Destroyed'
+import modules.game_status as gs
 
 
 def init_battle():
@@ -35,18 +15,18 @@ def init_battle():
 
 class ChangeGameStatusTest(TestCase):
     def test_correct_changing_status_start_to_place_ships(self):
-        response = game_status.change_game_status(status_start)
+        response = gs.change_game_status(gs.GameStatus.START)
 
         self.assertEqual(True, response['is_changed'])
-        self.assertEqual(status_place_ships, response['game_status'])
+        self.assertEqual(gs.GameStatus.PLACE_SHIPS, response['game_status'])
 
     def test_dont_change_status_from_not_start(self):
-        battle_response = game_status.change_game_status(status_battle)
-        place_ships_response = game_status\
-            .change_game_status(status_place_ships)
-        win_response = game_status.change_game_status(status_win)
-        lose_response = game_status.change_game_status(status_lose)
-        random_response = game_status.change_game_status('blablabla')
+        battle_response = gs.change_game_status(gs.GameStatus.BATTLE)
+        place_ships_response = gs\
+            .change_game_status(gs.GameStatus.PLACE_SHIPS)
+        win_response = gs.change_game_status(gs.GameStatus.WIN)
+        lose_response = gs.change_game_status(gs.GameStatus.LOSE)
+        random_response = gs.change_game_status('blablabla')
 
         self.assertEqual(False, battle_response['is_changed'])
         self.assertEqual(False, place_ships_response['is_changed'])
@@ -60,33 +40,39 @@ class ShipPlacingTest(TestCase):
         app.person.__init__()
         cell = (5, 5)
         neighbor_cell = (6, 5)
-        app.person.place_ship(cell, 'Submarine', direction_vertical)
+        app.person.place_ship(cell, gs.ShipName.SUBMARINE,
+                              gs.ShipDirection.VERTICAL)
 
-        neighbor_cell_id = game_status\
-            .player_cells_to_id_format([neighbor_cell], 'person')[0]
-        incorrect_game_status_response = game_status\
-            .change_person_cells(icon_empty, neighbor_cell_id, 'Destroyer',
-                                 direction_vertical, status_start)
+        neighbor_cell_id = gs\
+            .player_cells_to_id_format([neighbor_cell],
+                                       gs.PlayerName.PERSON)[0]
+        incorrect_game_status_response = gs\
+            .change_person_cells(gs.CellIcon.EMPTY, neighbor_cell_id,
+                                 gs.ShipName.DESTROYER,
+                                 gs.ShipDirection.VERTICAL,
+                                 gs.GameStatus.START)
 
         self.assertEqual({'is_changed': False}, incorrect_game_status_response)
 
     def test_correct_ship_place(self):
         app.person.__init__()
         cell = (7, 3)
-        cell_id = game_status.player_cells_to_id_format([cell], 'person')[0]
+        cell_id = gs\
+            .player_cells_to_id_format([cell], gs.PlayerName.PERSON)[0]
         cruiser_cells = [(6, 3), (7, 3), (8, 3)]
 
-        cruiser_cells_ids = game_status\
+        cruiser_cells_ids = gs\
             .player_cells_to_id_format(cruiser_cells, 'person')
-        correct_ship_place_response = game_status\
-            .change_person_cells(icon_empty, cell_id, 'Cruiser',
-                                 direction_vertical, status_place_ships)
+        correct_ship_place_response = gs\
+            .change_person_cells(gs.CellIcon.EMPTY, cell_id, 'Cruiser',
+                                 gs.ShipDirection.VERTICAL,
+                                 gs.GameStatus.PLACE_SHIPS)
 
         self.assertEqual({'is_changed': True,
-                          'game_status': status_place_ships,
+                          'game_status': gs.GameStatus.PLACE_SHIPS,
                           'ship_count': 1, 'returned_ship': '',
                           'cells': cruiser_cells_ids,
-                          'cells_icon': icon_ship},
+                          'cells_icon': gs.CellIcon.SHIP},
                          correct_ship_place_response)
 
     def test_dont_place_ship_on_other_ship(self):
@@ -94,33 +80,42 @@ class ShipPlacingTest(TestCase):
         cell = (5, 5)
         neighbor_cell = (6, 5)
 
-        neighbor_cell_id = game_status\
-            .player_cells_to_id_format([neighbor_cell], 'person')[0]
-        app.person.place_ship(cell, 'Submarine', direction_vertical)
-        incorrect_ship_place_response = game_status\
-            .change_person_cells(icon_empty, neighbor_cell_id, 'Destroyer',
-                                 direction_vertical, status_place_ships)
+        neighbor_cell_id = gs\
+            .player_cells_to_id_format([neighbor_cell],
+                                       gs.PlayerName.PERSON)[0]
+        app.person.place_ship(cell, gs.ShipName.SUBMARINE,
+                              gs.ShipDirection.VERTICAL)
+        incorrect_ship_place_response = gs\
+            .change_person_cells(gs.CellIcon.EMPTY, neighbor_cell_id,
+                                 gs.ShipName.DESTROYER,
+                                 gs.ShipDirection.VERTICAL,
+                                 gs.GameStatus.PLACE_SHIPS)
 
         self.assertEqual({'is_changed': False}, incorrect_ship_place_response)
 
     def test_correct_ship_remove(self):
         app.person.__init__()
         cell = (5, 5)
-        cell_id = game_status.player_cells_to_id_format([cell], 'person')[0]
-        app.person.place_ship(cell, 'Submarine', direction_vertical)
+        cell_id = gs\
+            .player_cells_to_id_format([cell], gs.PlayerName.PERSON)[0]
+        app.person.place_ship(cell, gs.ShipName.SUBMARINE,
+                              gs.ShipDirection.VERTICAL)
         submarine_cells = [(5, 5), (6, 5)]
 
-        submarine_cells_ids = game_status\
-            .player_cells_to_id_format(submarine_cells, 'person')
-        remove_ship_response = game_status\
-            .change_person_cells(icon_ship, cell_id, 'Destroyer',
-                                 direction_horizontal, status_place_ships)
+        submarine_cells_ids = gs\
+            .player_cells_to_id_format(submarine_cells, gs.PlayerName.PERSON)
+        remove_ship_response = gs\
+            .change_person_cells(gs.CellIcon.SHIP, cell_id,
+                                 gs.ShipName.DESTROYER,
+                                 gs.ShipDirection.HORIZONTAL,
+                                 gs.GameStatus.PLACE_SHIPS)
 
         self.assertEqual({'is_changed': True,
-                          'game_status': status_place_ships,
-                          'ship_count': 3, 'returned_ship': 'Submarine',
+                          'game_status': gs.GameStatus.PLACE_SHIPS,
+                          'ship_count': 3,
+                          'returned_ship': gs.ShipName.SUBMARINE,
                           'cells': submarine_cells_ids,
-                          'cells_icon': icon_empty},
+                          'cells_icon': gs.CellIcon.EMPTY},
                          remove_ship_response)
 
 
@@ -129,10 +124,10 @@ class FireTest(TestCase):
         app.person.__init__()
         app.robot.__init__()
         app.person.init_opponent(app.robot)
-        app.robot.place_ship((5, 5), 'Submarine', direction_vertical)
+        app.robot.place_ship((5, 5), 'Submarine', gs.ShipDirection.VERTICAL)
         cell_status = app.person.fire((5, 5))
 
-        self.assertEqual(cell_destroyed, cell_status)
+        self.assertEqual(gs.CellStatus.DESTROYED, cell_status)
         self.assertEqual(19, app.person.opponent_remaining_ship_cells_count)
         self.assertEqual(19, app.robot.remaining_ship_cells_count)
 
@@ -140,10 +135,10 @@ class FireTest(TestCase):
         app.person.__init__()
         app.robot.__init__()
         app.person.init_opponent(app.robot)
-        app.robot.place_ship((5, 5), 'Submarine', direction_vertical)
+        app.robot.place_ship((5, 5), 'Submarine', gs.ShipDirection.VERTICAL)
         cell_status = app.person.fire((7, 5))
 
-        self.assertEqual(cell_misfire, cell_status)
+        self.assertEqual(gs.CellStatus.MISFIRE, cell_status)
         self.assertEqual(20, app.person.opponent_remaining_ship_cells_count)
         self.assertEqual(20, app.robot.remaining_ship_cells_count)
 
@@ -151,28 +146,29 @@ class FireTest(TestCase):
 class GetFiredTest(TestCase):
     def test_correct_destroy(self):
         app.person.__init__()
-        app.person.place_ship((5, 5), 'Submarine', direction_vertical)
+        app.person.place_ship((5, 5), 'Submarine', gs.ShipDirection.VERTICAL)
         destroyed_response, one_more = app.person.get_fired((5, 5))
 
-        self.assertEqual([cell_destroyed, True],
+        self.assertEqual([gs.CellStatus.DESTROYED, True],
                          [destroyed_response, one_more])
         self.assertEqual(19, app.person.remaining_ship_cells_count)
 
     def test_correct_misfire(self):
         app.person.__init__()
-        app.person.place_ship((5, 5), 'Submarine', direction_vertical)
+        app.person.place_ship((5, 5), 'Submarine', gs.ShipDirection.VERTICAL)
         misfire_response, one_more = app.person.get_fired((5, 6))
 
-        self.assertEqual((cell_misfire, False), (misfire_response, one_more))
+        self.assertEqual((gs.CellStatus.MISFIRE, False),
+                         (misfire_response, one_more))
         self.assertEqual(20, app.person.remaining_ship_cells_count)
 
     def test_correct_fire_already_destroyed(self):
         app.person.__init__()
-        app.person.place_ship((5, 5), 'Submarine', direction_vertical)
+        app.person.place_ship((5, 5), 'Submarine', gs.ShipDirection.VERTICAL)
         app.person.get_fired((5, 5))
         fire_to_destroyed_response, one_more = app.person.get_fired((5, 5))
 
-        self.assertEqual((cell_destroyed, False),
+        self.assertEqual((gs.CellStatus.DESTROYED, False),
                          (fire_to_destroyed_response, one_more))
         self.assertEqual(19, app.person.remaining_ship_cells_count)
 
@@ -183,7 +179,10 @@ class RobotTest(TestCase):
         app.robot.init_board()
 
         robot_ships_cells = []
-        for ship_name in ['Battleship', 'Cruiser', 'Submarine', 'Destroyer']:
+        for ship_name in [gs.ShipName.BATTLESHIP.value,
+                          gs.ShipName.CRUISER.value,
+                          gs.ShipName.SUBMARINE.value,
+                          gs.ShipName.DESTROYER.value]:
             for ship in app.robot.ships[ship_name]:
                 for cell in ship:
                     robot_ships_cells.append(cell)
@@ -191,30 +190,39 @@ class RobotTest(TestCase):
         self.assertEqual(20, len(robot_ships_cells))
         self.assertEqual(0, app.robot.non_placed_ships_count)
 
-        self.assertEqual(1, len(app.robot.ships['Battleship']))
-        self.assertEqual(2, len(app.robot.ships['Cruiser']))
-        self.assertEqual(3, len(app.robot.ships['Submarine']))
-        self.assertEqual(4, len(app.robot.ships['Destroyer']))
+        self.assertEqual(1, len(app.robot.ships[gs.ShipName.BATTLESHIP.value]))
+        self.assertEqual(2, len(app.robot.ships[gs.ShipName.CRUISER.value]))
+        self.assertEqual(3, len(app.robot.ships[gs.ShipName.SUBMARINE.value]))
+        self.assertEqual(4, len(app.robot.ships[gs.ShipName.DESTROYER.value]))
 
-        self.assertEqual(4, len(app.robot.ships['Battleship'][0]))
+        self.assertEqual(4,
+                         len(app.robot.ships[gs.ShipName.BATTLESHIP.value][0]))
 
-        self.assertEqual(3, len(app.robot.ships['Cruiser'][0]))
-        self.assertEqual(3, len(app.robot.ships['Cruiser'][1]))
+        self.assertEqual(3, len(app.robot.ships[gs.ShipName.CRUISER.value][0]))
+        self.assertEqual(3, len(app.robot.ships[gs.ShipName.CRUISER.value][1]))
 
-        self.assertEqual(2, len(app.robot.ships['Submarine'][0]))
-        self.assertEqual(2, len(app.robot.ships['Submarine'][1]))
-        self.assertEqual(2, len(app.robot.ships['Submarine'][2]))
+        self.assertEqual(2,
+                         len(app.robot.ships[gs.ShipName.SUBMARINE.value][0]))
+        self.assertEqual(2,
+                         len(app.robot.ships[gs.ShipName.SUBMARINE.value][1]))
+        self.assertEqual(2,
+                         len(app.robot.ships[gs.ShipName.SUBMARINE.value][2]))
 
-        self.assertEqual(1, len(app.robot.ships['Destroyer'][0]))
-        self.assertEqual(1, len(app.robot.ships['Destroyer'][1]))
-        self.assertEqual(1, len(app.robot.ships['Destroyer'][2]))
-        self.assertEqual(1, len(app.robot.ships['Destroyer'][3]))
+        self.assertEqual(1,
+                         len(app.robot.ships[gs.ShipName.DESTROYER.value][0]))
+        self.assertEqual(1,
+                         len(app.robot.ships[gs.ShipName.DESTROYER.value][1]))
+        self.assertEqual(1,
+                         len(app.robot.ships[gs.ShipName.DESTROYER.value][2]))
+        self.assertEqual(1,
+                         len(app.robot.ships[gs.ShipName.DESTROYER.value][3]))
 
     def test_random_fire(self):
         app.person.__init__()
         app.robot.__init__()
         app.robot.init_opponent(app.person)
-        app.person.place_ship((5, 5), 'Submarine', direction_vertical)
+        app.person.place_ship((5, 5), gs.ShipName.SUBMARINE.value,
+                              gs.ShipDirection.VERTICAL.value)
         ship_cells = [(5, 5), (5, 6)]
 
         self.assertEqual(0, len(app.robot.opponent_not_empty_cells))
@@ -222,11 +230,11 @@ class RobotTest(TestCase):
         self.assertEqual(1, len(app.robot.opponent_not_empty_cells))
 
         if fired_cell in ship_cells:
-            self.assertEqual(cell_destroyed, cell_status)
+            self.assertEqual(gs.CellStatus.DESTROYED.value, cell_status)
             self.assertEqual(19, app.robot.opponent_remaining_ship_cells_count)
             self.assertEqual(19, app.person.remaining_ship_cells_count)
         else:
-            self.assertEqual(cell_misfire, cell_status)
+            self.assertEqual(gs.CellStatus.MISFIRE.value, cell_status)
             self.assertEqual(20, app.robot.opponent_remaining_ship_cells_count)
             self.assertEqual(20, app.person.remaining_ship_cells_count)
 
@@ -255,11 +263,11 @@ class RobotTest(TestCase):
 class GameStatusTest(TestCase):
     def test_correct_convert_cell_to_id_format(self):
         cells = [(6, 5), (1, 9)]
-        person_cells_ids = game_status\
-            .player_cells_to_id_format(cells, 'person')
+        person_cells_ids = gs\
+            .player_cells_to_id_format(cells, gs.PlayerName.PERSON)
 
-        opponent_cells_ids = game_status\
-            .player_cells_to_id_format(cells, 'opponent')
+        opponent_cells_ids = gs\
+            .player_cells_to_id_format(cells, gs.PlayerName.OPPONENT)
 
         self.assertEqual(
             ['person-board__cell_f-7', 'person-board__cell_j-2'],
@@ -271,39 +279,48 @@ class GameStatusTest(TestCase):
     def test_correct_convert_cell_to_computing_format(self):
         cells = ['person-board__cell_f-7', 'opponent-board__cell_j-2']
 
-        person_cell = game_status.cell_id_to_computing_format(cells[0])
-        opponent_cell = game_status.cell_id_to_computing_format(cells[1])
+        person_cell = gs.cell_id_to_computing_format(cells[0])
+        opponent_cell = gs.cell_id_to_computing_format(cells[1])
 
         self.assertEqual((6, 5), person_cell)
         self.assertEqual((1, 9), opponent_cell)
 
     def test_dont_outline_cells_when_status_not_placing_ships(self):
         cell = (5, 5)
-        cell_id = game_status.player_cells_to_id_format([cell], 'person')[0]
+        cell_id = gs\
+            .player_cells_to_id_format([cell], gs.PlayerName.PERSON)[0]
 
-        dont_outline_cells_response = game_status.get_person_outline_cells(
-            'Submarine', direction_vertical, cell_id, status_start)
+        dont_outline_cells_response = gs\
+            .get_person_outline_cells(gs.ShipName.SUBMARINE,
+                                      gs.ShipDirection.VERTICAL,
+                                      cell_id, gs.GameStatus.START)
 
         self.assertEqual({'is_changed': False}, dont_outline_cells_response)
 
     def test_dont_outline_cells_incorrect_to_place(self):
         cell = (0, 0)
-        cell_id = game_status.player_cells_to_id_format([cell], 'person')[0]
+        cell_id = gs\
+            .player_cells_to_id_format([cell], gs.PlayerName.PERSON)[0]
 
-        dont_outline_cells_response = game_status.get_person_outline_cells(
-            'Battleship', direction_vertical, cell_id, status_place_ships)
+        dont_outline_cells_response = gs\
+            .get_person_outline_cells(gs.ShipName.BATTLESHIP,
+                                      gs.ShipDirection.VERTICAL,
+                                      cell_id, gs.GameStatus.PLACE_SHIPS)
 
         self.assertEqual({'is_changed': False}, dont_outline_cells_response)
 
     def test_correct_getting_outline_cells(self):
         cell = (5, 5)
         submarine_cells = [(5, 5), (6, 5)]
-        cell_id = game_status.player_cells_to_id_format([cell], 'person')[0]
-        submarine_cells_ids = game_status\
-            .player_cells_to_id_format(submarine_cells, 'person')
+        cell_id = gs\
+            .player_cells_to_id_format([cell], gs.PlayerName.PERSON)[0]
+        submarine_cells_ids = gs\
+            .player_cells_to_id_format(submarine_cells, gs.PlayerName.PERSON)
 
-        outline_cells_response = game_status.get_person_outline_cells(
-            'Submarine', direction_vertical, cell_id, status_place_ships)
+        outline_cells_response = gs\
+            .get_person_outline_cells(gs.ShipName.SUBMARINE,
+                                      gs.ShipDirection.VERTICAL,
+                                      cell_id, gs.GameStatus.PLACE_SHIPS)
 
         self.assertEqual({'is_changed': True, 'cells': submarine_cells_ids},
                          outline_cells_response)
@@ -311,26 +328,31 @@ class GameStatusTest(TestCase):
     def test_correct_get_opponent_remaining_cells(self):
         app.robot.__init__()
         submarine_cells = [(5, 5), (6, 5)]
-        remaining_cell_id = game_status.player_cells_to_id_format(
-            [submarine_cells[1]], 'opponent')
+        remaining_cell_id = gs.player_cells_to_id_format(
+            [submarine_cells[1]], gs.PlayerName.OPPONENT)
         app.robot.place_ship(submarine_cells[0],
-                             'Submarine', direction_vertical)
+                             gs.ShipName.SUBMARINE, gs.ShipDirection.VERTICAL)
         app.robot.get_fired(submarine_cells[0])
 
-        response = game_status.get_opponent_remaining_ship_cells()
+        response = gs.get_opponent_remaining_ship_cells()
 
         self.assertEqual(
-            {'cells': remaining_cell_id, 'cell_icon': icon_ship}, response)
+            {'cells': remaining_cell_id, 'cell_icon': gs.CellIcon.SHIP},
+            response)
 
 
 class GameStatusChangePersonCellTest(TestCase):
     def test_dont_change_person_cell_when_status_not_ships_placing(self):
         app.person.__init__()
         cell = (5, 5)
-        cell_id = game_status.player_cells_to_id_format([cell], 'person')[0]
+        cell_id = gs\
+            .player_cells_to_id_format([cell], gs.PlayerName.PERSON)[0]
 
-        dont_change_cell_response = game_status.change_person_cells(
-            icon_empty, cell_id, 'Destroyer', direction_vertical, status_start)
+        dont_change_cell_response = gs\
+            .change_person_cells(gs.CellIcon.EMPTY, cell_id,
+                                 gs.ShipName.DESTROYER,
+                                 gs.ShipDirection.VERTICAL,
+                                 gs.GameStatus.START)
 
         self.assertEqual({'is_changed': False}, dont_change_cell_response)
 
@@ -338,33 +360,38 @@ class GameStatusChangePersonCellTest(TestCase):
         app.person.__init__()
         cell = (5, 5)
         submarine_cells = [(5, 5), (6, 5)]
-        cell_id = game_status.player_cells_to_id_format([cell], 'person')[0]
-        submarine_cells_ids = game_status\
-            .player_cells_to_id_format(submarine_cells, 'person')
+        cell_id = gs\
+            .player_cells_to_id_format([cell], gs.PlayerName.PERSON)[0]
+        submarine_cells_ids = gs\
+            .player_cells_to_id_format(submarine_cells, gs.PlayerName.PERSON)
 
-        place_ship_response = game_status.change_person_cells(
-            icon_empty, cell_id, 'Submarine',
-            direction_vertical, status_place_ships)
+        place_ship_response = gs\
+            .change_person_cells(gs.CellIcon.EMPTY, cell_id,
+                                 gs.ShipName.SUBMARINE,
+                                 gs.ShipDirection.VERTICAL,
+                                 gs.GameStatus.PLACE_SHIPS)
 
-        remove_ship_response = game_status.change_person_cells(
-            icon_ship, cell_id, 'Destroyer',
-            direction_horizontal, status_place_ships)
+        remove_ship_response = gs\
+            .change_person_cells(gs.CellIcon.SHIP, cell_id,
+                                 gs.ShipName.DESTROYER,
+                                 gs.ShipDirection.HORIZONTAL,
+                                 gs.GameStatus.PLACE_SHIPS)
 
         self.assertEqual(
             {'is_changed': True,
-             'game_status': status_place_ships,
+             'game_status': gs.GameStatus.PLACE_SHIPS,
              'ship_count': 2,
              'returned_ship': '',
              'cells': submarine_cells_ids,
-             'cells_icon': icon_ship},
+             'cells_icon': gs.CellIcon.SHIP},
             place_ship_response)
         self.assertEqual(
             {'is_changed': True,
-             'game_status': status_place_ships,
+             'game_status': gs.GameStatus.PLACE_SHIPS,
              'ship_count': 3,
              'returned_ship': 'Submarine',
              'cells': submarine_cells_ids,
-             'cells_icon': icon_empty},
+             'cells_icon': gs.CellIcon.EMPTY},
             remove_ship_response)
 
 
@@ -373,10 +400,11 @@ class GameStatusFireTest(TestCase):
         app.person.__init__()
         app.robot.__init__()
         cell = (5, 5)
-        cell_id = game_status.player_cells_to_id_format([cell], 'person')[0]
+        cell_id = gs\
+            .player_cells_to_id_format([cell], gs.PlayerName.PERSON)[0]
 
-        dont_fire_response = game_status\
-            .fire_opponent_cell(cell_id, status_start)
+        dont_fire_response = gs\
+            .fire_opponent_cell(cell_id, gs.GameStatus.START)
 
         self.assertEqual({'is_changed': False}, dont_fire_response)
 
@@ -384,44 +412,44 @@ class GameStatusFireTest(TestCase):
         init_battle()
         submarine_cells = [(5, 5), (6, 5)]
         other_cell = (7, 7)
-        submarine_cells_ids = game_status.player_cells_to_id_format(
-            submarine_cells, 'opponent')
-        other_cell_id = game_status.player_cells_to_id_format(
-            [other_cell], 'opponent')[0]
+        submarine_cells_ids = gs.player_cells_to_id_format(
+            submarine_cells, gs.PlayerName.OPPONENT)
+        other_cell_id = gs.player_cells_to_id_format(
+            [other_cell], gs.PlayerName.OPPONENT)[0]
         app.robot.place_ship(submarine_cells[0],
-                             'Submarine', direction_vertical)
+                             gs.ShipName.SUBMARINE, gs.ShipDirection.VERTICAL)
 
-        hit_response = game_status.fire_opponent_cell(submarine_cells_ids[0],
-                                                      status_battle)
-        misfire_response = game_status.fire_opponent_cell(other_cell_id,
-                                                          status_battle)
-        destroy_response = game_status.fire_opponent_cell(
-            submarine_cells_ids[1], status_battle)
+        hit_response = gs\
+            .fire_opponent_cell(submarine_cells_ids[0], gs.GameStatus.BATTLE)
+        misfire_response = gs\
+            .fire_opponent_cell(other_cell_id, gs.GameStatus.BATTLE)
+        destroy_response = gs\
+            .fire_opponent_cell(submarine_cells_ids[1], gs.GameStatus.BATTLE)
 
         self.assertEqual(
             {'is_changed': True,
-             'game_status': status_battle,
-             'cell_icon': icon_destroyed,
+             'game_status': gs.GameStatus.BATTLE,
+             'cell_icon': gs.CellIcon.DESTROYED,
              'is_ship_destroyed': False,
              'destroyed_ship': ''},
             hit_response)
         self.assertEqual(
             {'is_changed': True,
-             'game_status': status_battle,
-             'cell_icon': icon_misfire,
+             'game_status': gs.GameStatus.BATTLE,
+             'cell_icon': gs.CellIcon.MISFIRE,
              'is_ship_destroyed': False,
              'destroyed_ship': ''},
             misfire_response)
         self.assertEqual(
             {'is_changed': True,
-             'game_status': status_battle,
-             'cell_icon': icon_destroyed,
+             'game_status': gs.GameStatus.BATTLE,
+             'cell_icon': gs.CellIcon.DESTROYED,
              'is_ship_destroyed': True,
              'destroyed_ship': 'Submarine'},
             destroy_response)
 
     def test_dont_fire_person_cell_when_status_not_battle(self):
-        dont_fire_response = game_status.fire_person_cell(status_win)
+        dont_fire_response = gs.fire_person_cell(gs.GameStatus.WIN)
 
         self.assertEqual({'is_changed': False}, dont_fire_response)
 
@@ -429,18 +457,18 @@ class GameStatusFireTest(TestCase):
         init_battle()
         submarine_cells = [(5, 5), (6, 5)]
         app.person.place_ship(submarine_cells[0],
-                              'Submarine', direction_vertical)
+                              'Submarine', gs.ShipDirection.VERTICAL)
 
-        fire_response = game_status.fire_person_cell(status_battle)
-        fired_cell = game_status.cell_id_to_computing_format(
+        fire_response = gs.fire_person_cell(gs.GameStatus.BATTLE)
+        fired_cell = gs.cell_id_to_computing_format(
             fire_response['cell'])
 
         self.assertEqual(False, fire_response['is_ship_destroyed'])
         self.assertEqual('', fire_response['destroyed_ship'])
         if fired_cell in submarine_cells:
-            self.assertEqual(icon_destroyed, fire_response['cell_icon'])
+            self.assertEqual(gs.CellIcon.DESTROYED, fire_response['cell_icon'])
         else:
-            self.assertEqual(icon_misfire, fire_response['cell_icon'])
+            self.assertEqual(gs.CellIcon.MISFIRE, fire_response['cell_icon'])
 
 
 if __name__ == '__main__':
