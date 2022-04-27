@@ -1,11 +1,11 @@
 from random import randint
 
-import modules.game_status as gs
+from modules.domain import CellStatus, ShipName, ShipDirection
 from modules.player import Player
 
-ship_list = [gs.ShipName.BATTLESHIP.value, gs.ShipName.CRUISER.value,
-             gs.ShipName.SUBMARINE.value, gs.ShipName.DESTROYER.value]
-directions = [gs.ShipDirection.VERTICAL, gs.ShipDirection.HORIZONTAL]
+ship_list = [ShipName.BATTLESHIP.value, ShipName.CRUISER.value,
+             ShipName.SUBMARINE.value, ShipName.DESTROYER.value]
+directions = [ShipDirection.VERTICAL.value, ShipDirection.HORIZONTAL.value]
 
 
 class Robot(Player):
@@ -44,7 +44,7 @@ class Robot(Player):
         fired_cell_status, is_one_more = self.opponent.get_fired(cell)
         self.opponent_not_empty_cells.add(cell)
 
-        if fired_cell_status == gs.CellStatus.DESTROYED:
+        if fired_cell_status == CellStatus.DESTROYED.value:
             self.update_cells_to_fire_by_destroyed(cell)
             self.last_destroyed_cell = cell
             if is_one_more:
