@@ -5,6 +5,7 @@ from modules.player import Player
 
 ship_list = [ShipName.BATTLESHIP.value, ShipName.CRUISER.value,
              ShipName.SUBMARINE.value, ShipName.DESTROYER.value]
+
 directions = [ShipDirection.VERTICAL.value, ShipDirection.HORIZONTAL.value]
 
 

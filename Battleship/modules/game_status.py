@@ -70,15 +70,15 @@ def change_person_cells(cell_icon, cell_id, ship,
         new_game_status = app.person.check_game_status()
         cells_ids = player_cells_to_id_format(ship_cells,
                                               PlayerName.PERSON.value)
-        ship_count = app.person.get_ship_count(ship)
+        ship_count = app.person.get_remains_to_place_ship_count(ship)
         new_icon = CellIcon.SHIP.value
     elif cell_icon == CellIcon.SHIP.value:
-        returned_ship = app.person.get_ship(cell)
-        ship_cells = app.person.get_ship_cells(cell)
+        returned_ship = app.person.get_ship_name(cell)
+        ship_cells = app.person.uninit_and_get_ship_cells(cell)
         new_game_status = app.person.check_game_status()
         cells_ids = player_cells_to_id_format(ship_cells,
                                               PlayerName.PERSON.value)
-        ship_count = app.person.get_ship_count(returned_ship)
+        ship_count = app.person.get_remains_to_place_ship_count(returned_ship)
         new_icon = CellIcon.EMPTY.value
     else:
         return Response().to_dict()
@@ -105,7 +105,7 @@ def fire_opponent_cell(cell_id, current_status):
 
     destroyed_ship = ''
     if is_ship_destroyed:
-        destroyed_ship = app.robot.get_ship(cell)
+        destroyed_ship = app.robot.get_ship_name(cell)
 
     return Response(is_changed=True, game_status=new_game_status,
                     icon=new_icon, is_ship_destroyed=is_ship_destroyed,
@@ -130,7 +130,7 @@ def fire_person_cell(current_status):
 
     destroyed_ship = ''
     if is_ship_destroyed:
-        destroyed_ship = app.person.get_ship(fired_cell)
+        destroyed_ship = app.person.get_ship_name(fired_cell)
 
     return Response(is_changed=True, game_status=new_game_status,
                     cells=fired_cell_id, icon=new_icon,
