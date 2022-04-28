@@ -96,12 +96,11 @@ def fire_opponent_cell(cell_id, current_status):
     fired_cell_status = app.person.fire(cell)
     new_game_status = app.person.check_game_status()
 
+    is_ship_destroyed = app.robot.is_ship_destroyed(cell)
     if fired_cell_status == CellStatus.DESTROYED.value:
         new_icon = CellIcon.DESTROYED.value
-        is_ship_destroyed = app.robot.is_ship_destroyed(cell)
     else:
         new_icon = CellIcon.MISFIRE.value
-        is_ship_destroyed = False
 
     destroyed_ship = ''
     if is_ship_destroyed:
@@ -121,12 +120,11 @@ def fire_person_cell(current_status):
     fired_cell_id = \
         player_cells_to_id_format([fired_cell], PlayerName.PERSON.value)[0]
 
+    is_ship_destroyed = app.person.is_ship_destroyed(fired_cell)
     if fired_cell_status == CellStatus.DESTROYED.value:
         new_icon = CellIcon.DESTROYED.value
-        is_ship_destroyed = app.person.is_ship_destroyed(fired_cell)
     else:
         new_icon = CellIcon.MISFIRE.value
-        is_ship_destroyed = False
 
     destroyed_ship = ''
     if is_ship_destroyed:
