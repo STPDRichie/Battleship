@@ -12,6 +12,26 @@ const icon_destroyed = '<i class="fa-solid fa-circle-xmark"></i>'
 const icon_empty = '<i class="fa-solid"></i>'
 
 
+const play_with_robot_block = document.getElementById('play-with-robot-block');
+const game_select_block = document.getElementById('game-select-block');
+const host_block = document.getElementById('host-block');
+const join_block = document.getElementById('join-block');
+const lobby_block = document.getElementById('lobby-block');
+
+const play_with_robot_button = document.getElementById('play-with-robot-button');
+const username = document.getElementById('username');
+const host_button = document.getElementById('host-button');
+const join_button = document.getElementById('join-button');
+const session_key = document.getElementById('user-session-key');
+const start_button = document.getElementById('start-button');
+const session_key_input = document.getElementById('session-key-input');
+const connect_button = document.getElementById('connect-button');
+
+play_with_robot_button.addEventListener('click', function () {
+
+});
+
+
 const game_status = document.getElementById('game-status');
 const ship_placing_buttons = document.getElementById('ship-placing-buttons');
 const game_status_active_class = 'game-panel__status';

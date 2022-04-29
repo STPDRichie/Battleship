@@ -1,0 +1,95 @@
+.game-session
+  margin: 100px auto 0
+
+  .section-wrapper
+    width: 400px
+    display: flex
+    flex-direction: column
+    align-items: center
+
+  .block-wrapper
+    width: 500px
+    background-color: $white
+    border-radius: 30px
+    padding: 10px 0
+    margin-bottom: 30px
+    display: flex
+    flex-direction: column
+    align-items: center
+    text-align: center
+    & > *
+      margin: 10px 0
+
+  &__button
+    width: 350px
+    font-size: 30px
+    +f-mont-bold
+    padding: 15px 0
+    text-align: center
+    background-color: $blue
+    color: $white
+    border-radius: 50px
+    user-select: none
+    cursor: pointer
+    transition: 0.1s ease-in-out
+    transition-property: background-color
+    &:hover
+      background-color: $blue_darker
+
+  &__button_inactive
+    width: 350px
+    font-size: 30px
+    +f-mont-bold
+    padding: 15px 0
+    text-align: center
+    background-color: $section-gray
+    color: $lightgray
+    border-radius: 50px
+    user-select: none
+    cursor: pointer
+    transition: 0.1s ease-in-out
+    transition-property: background-color
+
+  &__robot-button
+    margin: 20px 0
+
+  &__block-title
+    font-size: 25px
+    color: $lightgray
+    user-select: none
+
+  &__user-key
+    width: 350px
+    font-size: 25px
+    padding: 15px 0
+    text-align: center
+    background-color: $blue-active
+    color: $white
+    border-radius: 50px
+    &::selection
+      background: $blue
+
+  &__opponent
+    width: 350px
+    font-size: 25px
+    padding: 15px 0
+    text-align: center
+    background-color: $section-gray
+    color: $lightgray
+    border-radius: 50px
+    user-select: none
+
+  &__input
+    width: 350px
+    font-size: 25px
+    padding: 15px 0
+    text-align: center
+    background-color: $blue_active
+    color: $white
+    border: none
+    outline: none
+    border-radius: 50px
+    &::selection
+      background: $blue
+    &::placeholder
+      color: $blue-darker

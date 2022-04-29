@@ -35,6 +35,12 @@ button:focus {
   outline: none;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
 body {
   font-family: "Montserrat", sans-serif;
   font-weight: 500;
@@ -90,6 +96,110 @@ body {
 }
 .header__link:hover {
   border: #ffffff 5px solid;
+}
+
+.game-session {
+  margin: 100px auto 0;
+}
+.game-session .section-wrapper {
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.game-session .block-wrapper {
+  width: 500px;
+  background-color: #ffffff;
+  border-radius: 30px;
+  padding: 10px 0;
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.game-session .block-wrapper > * {
+  margin: 10px 0;
+}
+.game-session__button {
+  width: 350px;
+  font-size: 30px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+  padding: 15px 0;
+  text-align: center;
+  background-color: #4c97fc;
+  color: #ffffff;
+  border-radius: 50px;
+  user-select: none;
+  cursor: pointer;
+  transition: 0.1s ease-in-out;
+  transition-property: background-color;
+}
+.game-session__button:hover {
+  background-color: #3e89ec;
+}
+.game-session__button_inactive {
+  width: 350px;
+  font-size: 30px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+  padding: 15px 0;
+  text-align: center;
+  background-color: #eeeeee;
+  color: #999999;
+  border-radius: 50px;
+  user-select: none;
+  cursor: pointer;
+  transition: 0.1s ease-in-out;
+  transition-property: background-color;
+}
+.game-session__robot-button {
+  margin: 20px 0;
+}
+.game-session__block-title {
+  font-size: 25px;
+  color: #999999;
+  user-select: none;
+}
+.game-session__user-key {
+  width: 350px;
+  font-size: 25px;
+  padding: 15px 0;
+  text-align: center;
+  background-color: #2172d9;
+  color: #ffffff;
+  border-radius: 50px;
+}
+.game-session__user-key::selection {
+  background: #4c97fc;
+}
+.game-session__opponent {
+  width: 350px;
+  font-size: 25px;
+  padding: 15px 0;
+  text-align: center;
+  background-color: #eeeeee;
+  color: #999999;
+  border-radius: 50px;
+  user-select: none;
+}
+.game-session__input {
+  width: 350px;
+  font-size: 25px;
+  padding: 15px 0;
+  text-align: center;
+  background-color: #2172d9;
+  color: #ffffff;
+  border: none;
+  outline: none;
+  border-radius: 50px;
+}
+.game-session__input::selection {
+  background: #4c97fc;
+}
+.game-session__input::placeholder {
+  color: #3e89ec;
 }
 
 .game-panel {

@@ -116,7 +116,7 @@ def fire_opponent_cell(cell_id, current_status, session_key):
     destroyed_ship = ''
     if is_ship_destroyed:
         destroyed_ship = current_game.player2.get_ship_name(cell)
-
+    
     return Response(is_changed=True, game_status=new_game_status,
                     icon=new_icon, is_ship_destroyed=is_ship_destroyed,
                     destroyed_ship=destroyed_ship).to_dict()
