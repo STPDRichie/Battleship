@@ -68,7 +68,10 @@ let hovered_cells = [];
 
 game_status.addEventListener('click', function () {
   const game_status_click_response = $.post('/status_button_clicked', {
-    current_status: game_status.innerHTML
+    current_status: game_status.innerHTML,
+    player1_name: 'nikol',
+    player2_name: null,
+    session_key: Date.now()
   });
 
   game_status_click_response.done(function (data) {
