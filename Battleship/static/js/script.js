@@ -12,6 +12,7 @@ const icon_destroyed = '<i class="fa-solid fa-circle-xmark"></i>'
 const icon_empty = '<i class="fa-solid"></i>'
 
 
+const game_session_section = document.getElementById('game-session');
 const play_with_robot_block = document.getElementById('play-with-robot-block');
 const game_select_block = document.getElementById('game-select-block');
 const host_block = document.getElementById('host-block');
@@ -26,12 +27,64 @@ const session_key = document.getElementById('user-session-key');
 const start_button = document.getElementById('start-button');
 const session_key_input = document.getElementById('session-key-input');
 const connect_button = document.getElementById('connect-button');
+const host_opponent = document.getElementById('host-opponent');
+const join_opponent = document.getElementById('join-opponent');
+
+username.value = 'Guest';
+session_key.innerHTML = Date.now().toString();
 
 play_with_robot_button.addEventListener('click', function () {
+  game_session_section.style.display = 'none';
+  game_panel_section.style.display = 'block';
+  game_section.style.display = 'flex';
+});
 
+host_button.addEventListener('click', function () {
+  if (username.value === '') {
+    return;
+  }
+
+  play_with_robot_block.style.display = 'none';
+  game_select_block.style.display = 'none';
+  host_block.style.display = 'flex';
+});
+
+join_button.addEventListener('click', function () {
+  if (username.value === '') {
+    return;
+  }
+
+  play_with_robot_block.style.display = 'none';
+  game_select_block.style.display = 'none';
+  join_block.style.display = 'flex';
+});
+
+connect_button.addEventListener('click', function () {
+  if (session_key_input.value === '') {
+    return;
+  }
+
+  // make request to find game
+  let is_game_found = true;
+
+  if (is_game_found) {
+    join_block.style.display = 'none';
+    lobby_block.style.display = 'flex';
+  }
+});
+
+start_button.addEventListener('click', function () {
+  if (host_opponent.innerHTML === '') {
+    return;
+  }
+
+  game_session_section.style.display = 'none';
+  game_panel_section.style.display = 'block';
+  game_section.style.display = 'flex';
 });
 
 
+const game_panel_section = document.getElementById('game-panel');
 const game_status = document.getElementById('game-status');
 const ship_placing_buttons = document.getElementById('ship-placing-buttons');
 const game_status_active_class = 'game-panel__status';
@@ -77,6 +130,8 @@ const remaining_ships = document.getElementsByClassName('remaining-ship__count')
 const remaining_ship_panel = document.getElementById('remaining-ships-panel');
 const remaining_ship_count_id_template = '-remaining-ship-count__';
 
+
+const game_section = document.getElementById('game');
 const person_board = document.getElementById('person-board');
 const person_cells = person_board.getElementsByClassName('game__cell');
 const opponent_board = document.getElementById('opponent-board');
@@ -89,9 +144,9 @@ let hovered_cells = [];
 game_status.addEventListener('click', function () {
   const game_status_click_response = $.post('/status_button_clicked', {
     current_status: game_status.innerHTML,
-    player1_name: 'nikol',
+    player1_name: username.value,
     player2_name: null,
-    session_key: Date.now()
+    session_key: session_key.innerHTML
   });
 
   game_status_click_response.done(function (data) {

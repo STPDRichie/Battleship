@@ -150,7 +150,6 @@ body {
   color: #999999;
   border-radius: 50px;
   user-select: none;
-  cursor: pointer;
   transition: 0.1s ease-in-out;
   transition-property: background-color;
 }
@@ -220,6 +219,8 @@ body {
   padding: 15px;
   color: #ffffff;
   background-color: #4c97fc;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
   border-radius: 35px;
   user-select: none;
   cursor: pointer;
