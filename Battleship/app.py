@@ -18,13 +18,10 @@ def index():
 
 @app.route('/host_lobby', methods=['POST'])
 def host_lobby():
-    player1_name = request.form['player1_name']
     session_key = request.form['session_key']
+    username = request.form['username']
 
-    lobby = Lobby(session_key, player1_name)
-    lobbies.append(lobby)
-
-    response = make_response()
+    response = make_response(gs.host_lobby(session_key, username))
     response.set_cookie(
         'session-key',
         value=session_key
@@ -32,16 +29,35 @@ def host_lobby():
     return response
 
 
+@app.route('/connect_to_lobby', methods=['POST'])
+def connect_to_lobby():
+    session_key = request.form['session_key']
+    username = request.form['username']
+
+    connection_response = gs.connect_to_lobby(session_key, username)
+    server_response = make_response(connection_response)
+    if connection_response['is_success']:
+        server_response.set_cookie(
+            'session-key',
+            value=session_key
+        )
+    return server_response
+
+
+@app.route('/leave_lobby', methods=['POST'])
+def leave_lobby():
+    username = request.form['username']
+    session_key = request.cookies.get('session-key')
+    return gs.leave_lobby(session_key, username)
+
+
 @app.route('/status_button_clicked', methods=['POST'])
 def response_to_status_button_click():
     current_status = request.form['current_status']
-    session_key = request.form['session_key']
-    player1_name = request.form['player1_name']
-    player2_name = request.form['player2_name']
-    game_response = gs.change_game_status(current_status, session_key,
-                                          player1_name, player2_name)
-    server_response = make_response(game_response)
-    if game_response['is_changed']:
+    session_key = request.cookies.get('session-key')
+    game_change_response = gs.change_game_status(current_status, session_key)
+    server_response = make_response(game_change_response)
+    if game_change_response['is_changed']:
         server_response.set_cookie(
             'session-key',
             value=session_key

@@ -7,7 +7,7 @@ class Game:
         self.lobby = lobby
 
         self.player1 = Player()
-        if not lobby.player2_name:
+        if not lobby.member_name:
             self.player2 = Robot()
             self.player2.init_board()
         else:

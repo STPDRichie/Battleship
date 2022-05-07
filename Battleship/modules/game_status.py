@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 
 import app
 from modules.game import Game
@@ -21,18 +21,44 @@ column_numbers_and_letters = {
 }
 
 
-def change_game_status(current_status, session_key,
-                       player1_name, player2_name):
+def host_lobby(session_key, host_name):
+    lobby = Lobby(session_key, host_name)
+    app.lobbies.append(lobby)
+    return asdict(Connection(is_success=True))
+
+
+def connect_to_lobby(session_key, member_name):
+    current_lobby = next((lobby for lobby in app.lobbies
+                          if lobby.session_key == session_key), None)
+    if current_lobby:
+        current_lobby.init_second_player(member_name)
+        return asdict(Connection(is_success=True,
+                                 opponent=current_lobby.host_name))
+    return asdict(Connection())
+
+
+def leave_lobby(session_key, username):
+    current_lobby = next((lobby for lobby in app.lobbies
+                          if lobby.session_key == session_key), None)
+    if current_lobby:
+        if username == current_lobby.host_name:
+            app.lobbies.remove(current_lobby)
+        if username == current_lobby.member_name:
+            current_lobby.uninit_second_player()
+
+    return asdict(Connection(is_success=True))
+
+
+def change_game_status(current_status, session_key):
     if current_status != GameStatus.START.value:
-        return Response().to_dict()
+        return asdict(GameChange())
 
     game_status = GameStatus.PLACE_SHIPS.value
     
-    current_lobby = Lobby(session_key, player1_name, player2_name)
-    app.lobbies.append(current_lobby)
+    current_lobby = next((lobby for lobby in app.lobbies
+                          if lobby.session_key == session_key), None)
     init_game(current_lobby)
-
-    return Response(is_changed=True, game_status=game_status).to_dict()
+    return asdict(GameChange(is_changed=True, game_status=game_status))
 
 
 def init_game(lobby):
@@ -43,7 +69,7 @@ def init_game(lobby):
     else:
         game = Game(lobby)
         app.games.append(game)
-    return Response(is_changed=True).to_dict()
+    return asdict(GameChange(is_changed=True))
 
 
 def reset_game(session_key):
@@ -52,31 +78,31 @@ def reset_game(session_key):
 
     if current_game:
         current_game.__init__(current_game.lobby)
-        return Response(is_changed=True).to_dict()
-    return Response().to_dict()
+        return asdict(GameChange(is_changed=True))
+    return asdict(GameChange())
 
 
 def get_person_outline_cells(ship, ship_direction,
                              cell_id, current_status):
     if current_status != GameStatus.PLACE_SHIPS.value:
-        return Response().to_dict()
+        return asdict(GameChange())
 
     cell = cell_id_to_computing_format(cell_id)
     cells = get_ship_cells(cell, ship, ship_direction)
 
     ship_length = abs(ships_ranges[ship][0]) + ships_ranges[ship][1] + 1
     if len(cells) != ship_length:
-        return Response().to_dict()
+        return asdict(GameChange())
 
     cells_ids = player_cells_to_id_format(cells, PlayerName.PERSON.value)
 
-    return Response(is_changed=True, cells=cells_ids).to_dict()
+    return asdict(GameChange(is_changed=True, cells=cells_ids))
 
 
 def change_person_cells(cell_icon, cell_id, ship,
                         ship_direction, current_status, session_key):
     if current_status != GameStatus.PLACE_SHIPS.value:
-        return Response().to_dict()
+        return asdict(GameChange())
 
     current_game = next((g for g in app.games
                          if g.lobby.session_key == session_key), None)
@@ -88,7 +114,7 @@ def change_person_cells(cell_icon, cell_id, ship,
         ship_cells = current_game.player1\
             .place_ship(cell, ship, ship_direction)
         if not ship_cells:
-            return Response().to_dict()
+            return asdict(GameChange())
         new_game_status = current_game.player1.check_game_status()
         cells_ids = player_cells_to_id_format(ship_cells,
                                               PlayerName.PERSON.value)
@@ -104,16 +130,17 @@ def change_person_cells(cell_icon, cell_id, ship,
             .get_remains_to_place_ship_count(returned_ship)
         new_icon = CellIcon.EMPTY.value
     else:
-        return Response().to_dict()
+        return asdict(GameChange())
 
-    return Response(is_changed=True, game_status=new_game_status,
-                    ship_count=ship_count, returned_ship=returned_ship,
-                    cells=cells_ids, icon=new_icon).to_dict()
+    return asdict(
+        GameChange(is_changed=True, game_status=new_game_status,
+                   ship_count=ship_count, returned_ship=returned_ship,
+                   cells=cells_ids, icon=new_icon))
 
 
 def fire_opponent_cell(cell_id, current_status, session_key):
     if current_status != GameStatus.BATTLE.value:
-        return Response().to_dict()
+        return asdict(GameChange())
 
     current_game = next((g for g in app.games
                          if g.lobby.session_key == session_key), None)
@@ -132,14 +159,15 @@ def fire_opponent_cell(cell_id, current_status, session_key):
     if is_ship_destroyed:
         destroyed_ship = current_game.player2.get_ship_name(cell)
     
-    return Response(is_changed=True, game_status=new_game_status,
-                    icon=new_icon, is_ship_destroyed=is_ship_destroyed,
-                    destroyed_ship=destroyed_ship).to_dict()
+    return asdict(
+        GameChange(is_changed=True, game_status=new_game_status,
+                   icon=new_icon, is_ship_destroyed=is_ship_destroyed,
+                   destroyed_ship=destroyed_ship))
 
 
 def fire_person_cell(current_status, session_key):
     if current_status != GameStatus.BATTLE.value:
-        return Response().to_dict()
+        return asdict(GameChange())
 
     current_game = next((g for g in app.games
                          if g.lobby.session_key == session_key), None)
@@ -159,10 +187,11 @@ def fire_person_cell(current_status, session_key):
     if is_ship_destroyed:
         destroyed_ship = current_game.player1.get_ship_name(fired_cell)
 
-    return Response(is_changed=True, game_status=new_game_status,
-                    cells=fired_cell_id, icon=new_icon,
-                    is_ship_destroyed=is_ship_destroyed,
-                    destroyed_ship=destroyed_ship).to_dict()
+    return asdict(
+        GameChange(is_changed=True, game_status=new_game_status,
+                   cells=fired_cell_id, icon=new_icon,
+                   is_ship_destroyed=is_ship_destroyed,
+                   destroyed_ship=destroyed_ship))
 
 
 def get_opponent_remaining_ship_cells(session_key):
@@ -172,7 +201,7 @@ def get_opponent_remaining_ship_cells(session_key):
     remaining_cells = current_game.player2.get_remaining_ship_cells()
     cells_ids = player_cells_to_id_format(remaining_cells,
                                           PlayerName.OPPONENT.value)
-    return Response(cells=cells_ids, icon=CellIcon.SHIP.value).to_dict()
+    return asdict(GameChange(cells=cells_ids, icon=CellIcon.SHIP.value))
 
 
 def cell_id_to_computing_format(cell_id):
@@ -193,7 +222,7 @@ def player_cells_to_id_format(cells, player):
 
 
 @dataclass(frozen=True)
-class Response:
+class GameChange:
     is_changed: bool = False
     game_status: str = GameStatus.START.value
     cells: list = field(default_factory=list)
@@ -203,14 +232,9 @@ class Response:
     ship_count: int = 0
     returned_ship: str = ''
 
-    def to_dict(self):
-        return {
-            'is_changed': self.is_changed,
-            'game_status': self.game_status,
-            'cells': self.cells,
-            'icon': self.icon,
-            'is_ship_destroyed': self.is_ship_destroyed,
-            'destroyed_ship': self.destroyed_ship,
-            'ship_count': self.ship_count,
-            'returned_ship': self.returned_ship
-        }
+
+@dataclass(frozen=True)
+class Connection:
+    is_success: bool = False
+    session_key: int = -1
+    opponent: str = None

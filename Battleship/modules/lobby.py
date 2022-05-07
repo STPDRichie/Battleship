@@ -1,8 +1,11 @@
 class Lobby:
-    def __init__(self, session_key, player1_name, player2_name=None):
+    def __init__(self, session_key, host_name, member_name=None):
         self.session_key = session_key
-        self.player1_name = player1_name
-        self.player2_name = player2_name
+        self.host_name = host_name
+        self.member_name = member_name
 
     def init_second_player(self, player2_name):
-        self.player2_name = player2_name
+        self.member_name = player2_name
+
+    def uninit_second_player(self):
+        self.member_name = None
