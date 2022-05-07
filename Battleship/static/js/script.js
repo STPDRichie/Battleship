@@ -44,6 +44,11 @@ host_button.addEventListener('click', function () {
     return;
   }
 
+  $.post('/host_lobby', {
+    player1_name: username.value,
+    session_key: session_key.innerHTML
+  });
+
   play_with_robot_block.style.display = 'none';
   game_select_block.style.display = 'none';
   host_block.style.display = 'flex';

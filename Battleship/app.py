@@ -1,5 +1,6 @@
 import modules.game_status as gs
 from modules.game import Game
+from modules.lobby import Lobby
 
 from flask import Flask, render_template, request, make_response
 
@@ -7,11 +8,28 @@ from flask import Flask, render_template, request, make_response
 app = Flask(__name__)
 
 games = []
+lobbies = []
 
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+@app.route('/host_lobby', methods=['POST'])
+def host_lobby():
+    player1_name = request.form['player1_name']
+    session_key = request.form['session_key']
+
+    lobby = Lobby(session_key, player1_name)
+    lobbies.append(lobby)
+
+    response = make_response()
+    response.set_cookie(
+        'session-key',
+        value=session_key
+    )
+    return response
 
 
 @app.route('/status_button_clicked', methods=['POST'])
@@ -78,8 +96,8 @@ def get_opponent_remaining_ship_cells():
 @app.route('/restart_button_clicked', methods=['GET'])
 def restart_game():
     session_key = request.cookies.get('session-key')
-    return gs.init_game(session_key)
+    return gs.reset_game(session_key)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(threaded=True, debug=True)

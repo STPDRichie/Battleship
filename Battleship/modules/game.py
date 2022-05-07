@@ -3,13 +3,11 @@ from modules.robot import Robot
 
 
 class Game:
-    def __init__(self, session_key, player1_name, player2_name=None):
-        self.key = session_key
-        self.player1_name = player1_name
-        self.player2_name = player2_name
+    def __init__(self, lobby):
+        self.lobby = lobby
 
         self.player1 = Player()
-        if not player2_name:
+        if not lobby.player2_name:
             self.player2 = Robot()
             self.player2.init_board()
         else:
