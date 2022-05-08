@@ -1,3 +1,4 @@
+import time
 from dataclasses import dataclass, field, asdict
 
 import app
@@ -24,7 +25,28 @@ column_numbers_and_letters = {
 def host_lobby(session_key, host_name):
     lobby = Lobby(session_key, host_name)
     app.lobbies.append(lobby)
-    return asdict(Connection(is_success=True))
+    return asdict(LobbyChange(is_changed=True))
+
+
+def wait_for_connection(session_key):
+    current_lobby = next((lobby for lobby in app.lobbies
+                          if lobby.session_key == session_key), None)
+    if not current_lobby:
+        return asdict(LobbyChange())
+
+    while True:
+        time.sleep(0.5)
+        if current_lobby.member_name:
+            return asdict(LobbyChange(is_changed=True,
+                                      opponent=current_lobby.member_name))
+
+
+# def is_players_in_lobby(session_key):
+#     current_lobby = next((lobby for lobby in app.lobbies
+#                           if lobby.session_key == session_key))
+#     if not current_lobby or not current_lobby.member_name:
+#         return asdict(LobbyChange(is_changed=True, opponent=''))
+#     return asdict(LobbyChange())
 
 
 def connect_to_lobby(session_key, member_name):
@@ -32,9 +54,18 @@ def connect_to_lobby(session_key, member_name):
                           if lobby.session_key == session_key), None)
     if current_lobby:
         current_lobby.init_second_player(member_name)
-        return asdict(Connection(is_success=True,
-                                 opponent=current_lobby.host_name))
-    return asdict(Connection())
+        return asdict(LobbyChange(is_changed=True,
+                                  opponent=current_lobby.host_name))
+    return asdict(LobbyChange())
+
+
+def check_for_start_game(session_key):
+    while True:
+        time.sleep(0.5)
+        current_game = next((g for g in app.games
+                             if g.lobby.session_key == session_key), None)
+        if current_game:
+            return asdict(LobbyChange(is_changed=True))
 
 
 def leave_lobby(session_key, username):
@@ -46,10 +77,10 @@ def leave_lobby(session_key, username):
         if username == current_lobby.member_name:
             current_lobby.uninit_second_player()
 
-    return asdict(Connection(is_success=True))
+    return asdict(LobbyChange(is_changed=True))
 
 
-def change_game_status(current_status, session_key):
+def start_game(current_status, session_key):
     if current_status != GameStatus.START.value:
         return asdict(GameChange())
 
@@ -72,7 +103,7 @@ def init_game(lobby):
     return asdict(GameChange(is_changed=True))
 
 
-def reset_game(session_key):
+def restart_game(session_key):
     current_game = next((g for g in app.games
                          if g.lobby.session_key == session_key), None)
 
@@ -234,7 +265,6 @@ class GameChange:
 
 
 @dataclass(frozen=True)
-class Connection:
-    is_success: bool = False
-    session_key: int = -1
+class LobbyChange:
+    is_changed: bool = False
     opponent: str = None

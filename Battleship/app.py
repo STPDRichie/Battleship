@@ -29,6 +29,18 @@ def host_lobby():
     return response
 
 
+@app.route('/wait_for_connection')
+def wait_for_connection():
+    session_key = request.cookies.get('session-key')
+    return gs.wait_for_connection(session_key)
+
+
+# @app.route('/check_for_opponent_connection')
+# def check_for_opponent_connection():
+#     session_key = request.cookies.get('session-key')
+#     return gs.is_players_in_lobby(session_key)
+
+
 @app.route('/connect_to_lobby', methods=['POST'])
 def connect_to_lobby():
     session_key = request.form['session_key']
@@ -36,12 +48,18 @@ def connect_to_lobby():
 
     connection_response = gs.connect_to_lobby(session_key, username)
     server_response = make_response(connection_response)
-    if connection_response['is_success']:
+    if connection_response['is_changed']:
         server_response.set_cookie(
             'session-key',
             value=session_key
         )
     return server_response
+
+
+@app.route('/check_for_start_game')
+def check_for_start_game():
+    session_key = request.cookies.get('session-key')
+    return gs.check_for_start_game(session_key)
 
 
 @app.route('/leave_lobby', methods=['POST'])
@@ -51,11 +69,11 @@ def leave_lobby():
     return gs.leave_lobby(session_key, username)
 
 
-@app.route('/status_button_clicked', methods=['POST'])
-def response_to_status_button_click():
+@app.route('/start_game', methods=['POST'])
+def start_game():
     current_status = request.form['current_status']
     session_key = request.cookies.get('session-key')
-    game_change_response = gs.change_game_status(current_status, session_key)
+    game_change_response = gs.start_game(current_status, session_key)
     server_response = make_response(game_change_response)
     if game_change_response['is_changed']:
         server_response.set_cookie(
@@ -109,10 +127,10 @@ def get_opponent_remaining_ship_cells():
     return gs.get_opponent_remaining_ship_cells(session_key)
 
 
-@app.route('/restart_button_clicked', methods=['GET'])
+@app.route('/restart_game', methods=['GET'])
 def restart_game():
     session_key = request.cookies.get('session-key')
-    return gs.reset_game(session_key)
+    return gs.restart_game(session_key)
 
 
 if __name__ == '__main__':

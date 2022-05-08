@@ -31,19 +31,20 @@ const host_opponent = document.getElementById('host-opponent');
 const join_opponent = document.getElementById('join-opponent');
 const session_key_cookie_name_eq = 'session-key=';
 const erase_session_key_cookie = session_key_cookie_name_eq + '; Max-Age=0';
+let is_game_started = false;
 
 username.value = 'Guest';
 session_key.innerHTML = Date.now().toString();
 
 
 window.onbeforeunload = function () {
-  document.cookie = erase_session_key_cookie;
-  
   // todo mind about same usernames
   $.post('/leave_lobby', {
     username: username.value
   });
-};
+  
+  document.cookie = erase_session_key_cookie;
+}
 
 
 play_with_robot_button.addEventListener('click', function () {
@@ -72,18 +73,91 @@ host_button.addEventListener('click', function () {
   game_select_block.style.display = 'none';
   host_block.style.display = 'flex';
   
-  // todo wait for connection
+  // todo check for opponent connection in loop with waiting
+  wait_for_connection();
+  // while (true) {
+  //   if (host_opponent.innerHTML === '') {
+  //     wait_for_connection();
+  //   } else {
+  //     // check_for_opponent_connect();
+  //   }
+  //
+  //   if (is_game_started) {
+  //     return;
+  //   }
+  // }
 });
+
+function wait_for_connection() {
+  $.ajax({
+    url: '/wait_for_connection',
+    data: {},
+    timeout: 30000,
+    success: function(data) {
+      if (data['is_changed']) {
+        host_opponent.innerHTML = data['opponent'];
+      } else {
+        wait_for_connection();
+      }
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      console.log('wait_for_connection: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
+      wait_for_connection();
+    }
+  });
+}
+
+// function check_for_opponent_connect() {
+//   // const check_opponent_response = $.get('/check_for_opponent_connection');
+//   //
+//   // check_opponent_response.done(function (data) {
+//   //   if (data['opponent'] === '') {
+//   //     host_opponent.innerHTML = '';
+//   //     if (join_opponent.innerHTML !== '') {
+//   //       join_opponent.innerHTML = '';
+//   //       disconnect();
+//   //     }
+//   //   }
+//   // });
+//   $.ajax({
+//     url: '/check_for_opponent_connection',
+//     data: {},
+//     timeout: 30000,
+//     success: function (data) {
+//       if (data['opponent'] === '') {
+//         host_opponent.innerHTML = '';
+//         if (join_opponent.innerHTML !== '') {
+//           join_opponent.innerHTML = '';
+//           disconnect();
+//         }
+//       } else {
+//         check_for_opponent_connect();
+//       }
+//     },
+//     error: function(jqXHR, textStatus, errorThrown) {
+//       console.log('check_for_opponent_connection: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
+//       check_for_opponent_connect();
+//     }
+//   });
+// }
 
 start_button.addEventListener('click', function () {
   if (host_opponent.innerHTML === '') {
     return;
   }
   
-  // todo start game
   game_session_section.style.display = 'none';
   game_panel_section.style.display = 'block';
   game_section.style.display = 'flex';
+  
+  const start_click_response = $.post('/start_game', {
+    current_status: game_status.innerHTML
+  });
+  
+  start_click_response.done(function (data) {
+    is_game_started = true;
+    show_game_ui(data);
+  });
 });
 
 
@@ -109,7 +183,7 @@ connect_button.addEventListener('click', function () {
   });
   
   connect_button_click_response.done(function (data) {
-    if (data['is_success']) {
+    if (data['is_changed']) {
       join_opponent.innerHTML = data['opponent'];
       
       join_block.style.display = 'none';
@@ -117,24 +191,47 @@ connect_button.addEventListener('click', function () {
     }
   });
   
-  // todo wait for start game
+  // todo check for opponent connection in loop with waiting
+  wait_for_start_game();
+  // while (true) {
+  //   if (join_opponent.innerHTML !== '') {
+  //     wait_for_start_game();
+  //   } else {
+  //     // check_for_opponent_connect();
+  //   }
+  //
+  //   if (is_game_started) {
+  //     return;
+  //   }
+  // }
 });
 
-
-// function get_session_key() {
-//   let cookies = document.cookie.split(';');
-//
-//   for (let i = 0; i < cookies.length; i++) {
-//     let cookie = cookies[i];
-//     while (cookie.charAt(0) === ' ') {
-//       cookie = cookie.substring(1, cookie.length);
-//     }
-//     if (cookie.indexOf(session_key_cookie_name_eq) === 0) {
-//       return cookie.substring(session_key_cookie_name_eq.length, cookie.length);
-//     }
-//   }
-//   return null;
-// }
+function wait_for_start_game() {
+  $.ajax({
+    url: '/check_for_start_game',
+    data: {},
+    timeout: 30000,
+    success: function (data) {
+      if (data['is_changed']) {
+        is_game_started = true;
+        
+        game_session_section.style.display = 'none';
+        game_panel_section.style.display = 'block';
+        game_section.style.display = 'flex';
+        show_game_ui({
+          'is_changed': true,
+          'game_status': game_status_placing_ships
+        });
+      } else {
+        wait_for_start_game();
+      }
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      console.log('wait_for_start_game: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
+      wait_for_start_game();
+    }
+  });
+}
 
 
 const game_panel_section = document.getElementById('game-panel');
@@ -195,25 +292,29 @@ let hovered_cells = [];
 
 
 game_status.addEventListener('click', function () {
-  const game_status_click_response = $.post('/status_button_clicked', {
+  const game_status_click_response = $.post('/start_game', {
     current_status: game_status.innerHTML
   });
   
   game_status_click_response.done(function (data) {
-    if (data['is_changed']) {
-      game_status.innerHTML = data['game_status'];
-      game_status.classList.remove(game_status_active_class);
-      game_status.classList.add(game_status_inactive_class);
-      
-      ship_placing_buttons.style.display = 'block';
-      restart_button.style.display = 'flex';
-    }
+    show_game_ui(data);
   });
 });
 
+function show_game_ui(data) {
+  if (data['is_changed']) {
+    game_status.innerHTML = data['game_status'].toString();
+    game_status.classList.remove(game_status_active_class);
+    game_status.classList.add(game_status_inactive_class);
+
+    ship_placing_buttons.style.display = 'block';
+    restart_button.style.display = 'flex';
+  }
+}
+
 
 restart_button.addEventListener('click', function () {
-  const restart_button_click_response = $.get('/restart_button_clicked');
+  const restart_button_click_response = $.get('/restart_game');
   
   restart_button_click_response.done(function (data) {
     if (data['is_changed']) {

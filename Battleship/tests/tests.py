@@ -17,18 +17,18 @@ def init_battle():
 
 class ChaGameStatusTest(TestCase):
     def test_correct_changing_status_start_to_place_ships(self):
-        response = gs.change_game_status(GameStatus.START.value)
+        response = gs.start_game(GameStatus.START.value)
 
         self.assertEqual(True, response['is_changed'])
         self.assertEqual(GameStatus.PLACE_SHIPS.value, response['game_status'])
 
     def test_dont_change_status_from_not_start(self):
-        battle_response = gs.change_game_status(GameStatus.BATTLE.value)
+        battle_response = gs.start_game(GameStatus.BATTLE.value)
         place_ships_response = gs\
-            .change_game_status(GameStatus.PLACE_SHIPS.value)
-        win_response = gs.change_game_status(GameStatus.WIN.value)
-        lose_response = gs.change_game_status(GameStatus.LOSE.value)
-        random_response = gs.change_game_status('blablabla')
+            .start_game(GameStatus.PLACE_SHIPS.value)
+        win_response = gs.start_game(GameStatus.WIN.value)
+        lose_response = gs.start_game(GameStatus.LOSE.value)
+        random_response = gs.start_game('blablabla')
 
         self.assertEqual(False, battle_response['is_changed'])
         self.assertEqual(False, place_ships_response['is_changed'])
