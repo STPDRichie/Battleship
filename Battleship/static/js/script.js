@@ -13,37 +13,39 @@ const icon_empty = '<i class="fa-solid"></i>'
 
 
 const game_session_section = document.getElementById('game-session');
-const play_with_robot_block = document.getElementById('play-with-robot-block');
 const game_select_block = document.getElementById('game-select-block');
-const host_block = document.getElementById('host-block');
-const join_block = document.getElementById('join-block');
-const lobby_block = document.getElementById('lobby-block');
+const host_lobby_block = document.getElementById('host-lobby-block');
+const member_lobby_block = document.getElementById('member-lobby-block');
 
 const play_with_robot_button = document.getElementById('play-with-robot-button');
 const username = document.getElementById('username');
 const host_button = document.getElementById('host-button');
-const join_button = document.getElementById('join-button');
 const session_key = document.getElementById('user-session-key');
 const start_button = document.getElementById('start-button');
 const session_key_input = document.getElementById('session-key-input');
 const connect_button = document.getElementById('connect-button');
-const host_opponent = document.getElementById('host-opponent');
-const join_opponent = document.getElementById('join-opponent');
+const hosts_opponent = document.getElementById('host-opponent');
+const members_opponent = document.getElementById('join-opponent');
 const session_key_cookie_name_eq = 'session-key=';
-const erase_session_key_cookie = session_key_cookie_name_eq + '; Max-Age=0';
+const session_key_cookie_erase_id = session_key_cookie_name_eq + '; Max-Age=0';
 let is_game_started = false;
 
 username.value = 'Guest';
 session_key.innerHTML = Date.now().toString();
 
 
-window.onbeforeunload = function () {
-  // todo mind about same usernames
-  $.post('/leave_lobby', {
+window.onbeforeunload = disconnect
+
+function disconnect() {
+  const disconnect_response = $.post('/leave_lobby', {
     username: username.value
   });
   
-  document.cookie = erase_session_key_cookie;
+  disconnect_response.done(function (data) {
+    if (data['is_changed']) {
+      document.cookie = session_key_cookie_erase_id;
+    }
+  });
 }
 
 
@@ -69,80 +71,63 @@ host_button.addEventListener('click', function () {
     username: username.value
   });
   
-  play_with_robot_block.style.display = 'none';
   game_select_block.style.display = 'none';
-  host_block.style.display = 'flex';
+  host_lobby_block.style.display = 'flex';
   
-  // todo check for opponent connection in loop with waiting
-  wait_for_connection();
-  // while (true) {
-  //   if (host_opponent.innerHTML === '') {
-  //     wait_for_connection();
-  //   } else {
-  //     // check_for_opponent_connect();
-  //   }
-  //
-  //   if (is_game_started) {
-  //     return;
-  //   }
-  // }
+  waitForConnection();
 });
 
-function wait_for_connection() {
+function waitForConnection() {
+  if (is_game_started) {
+    return;
+  }
+  
   $.ajax({
     url: '/wait_for_connection',
     data: {},
     timeout: 30000,
     success: function(data) {
       if (data['is_changed']) {
-        host_opponent.innerHTML = data['opponent'];
+        hosts_opponent.innerHTML = data['opponent'];
+        checkForMemberConnection();
       } else {
-        wait_for_connection();
+        waitForConnection();
       }
     },
     error: function(jqXHR, textStatus, errorThrown) {
       console.log('wait_for_connection: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
-      wait_for_connection();
+      waitForConnection();
     }
   });
 }
 
-// function check_for_opponent_connect() {
-//   // const check_opponent_response = $.get('/check_for_opponent_connection');
-//   //
-//   // check_opponent_response.done(function (data) {
-//   //   if (data['opponent'] === '') {
-//   //     host_opponent.innerHTML = '';
-//   //     if (join_opponent.innerHTML !== '') {
-//   //       join_opponent.innerHTML = '';
-//   //       disconnect();
-//   //     }
-//   //   }
-//   // });
-//   $.ajax({
-//     url: '/check_for_opponent_connection',
-//     data: {},
-//     timeout: 30000,
-//     success: function (data) {
-//       if (data['opponent'] === '') {
-//         host_opponent.innerHTML = '';
-//         if (join_opponent.innerHTML !== '') {
-//           join_opponent.innerHTML = '';
-//           disconnect();
-//         }
-//       } else {
-//         check_for_opponent_connect();
-//       }
-//     },
-//     error: function(jqXHR, textStatus, errorThrown) {
-//       console.log('check_for_opponent_connection: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
-//       check_for_opponent_connect();
-//     }
-//   });
-// }
+function checkForMemberConnection() {
+  if (is_game_started) {
+    return;
+  }
+  
+  $.ajax({
+    url: '/check_for_member_connection',
+    data: {},
+    timeout: 30000,
+    success: function (data) {
+      if (data['opponent'] === '') {
+        hosts_opponent.innerHTML = '';
+        waitForConnection();
+      } else {
+        checkForMemberConnection();
+      }
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      console.log('check_for_opponent_connection: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
+      checkForMemberConnection();
+    }
+  });
+}
+
 
 start_button.addEventListener('click', function () {
-  if (host_opponent.innerHTML === '') {
+  if (hosts_opponent.innerHTML === '') {
     return;
   }
   
@@ -155,28 +140,19 @@ start_button.addEventListener('click', function () {
   });
   
   start_click_response.done(function (data) {
-    is_game_started = true;
-    show_game_ui(data);
+    if (data['is_changed']) {
+      is_game_started = true;
+      showGameUI(data['game_status'].toString());
+    }
   });
 });
 
 
-join_button.addEventListener('click', function () {
-  if (username.value === '') {
-    return;
-  }
-  
-  play_with_robot_block.style.display = 'none';
-  game_select_block.style.display = 'none';
-  join_block.style.display = 'flex';
-});
-
 connect_button.addEventListener('click', function () {
-  if (session_key_input.value === '') {
+  if (username.value === '' || session_key_input.value === '') {
     return;
   }
   
-  // todo mind about same usernames
   const connect_button_click_response = $.post('/connect_to_lobby', {
     session_key: session_key_input.value,
     username: username.value
@@ -184,51 +160,40 @@ connect_button.addEventListener('click', function () {
   
   connect_button_click_response.done(function (data) {
     if (data['is_changed']) {
-      join_opponent.innerHTML = data['opponent'];
+      members_opponent.innerHTML = data['opponent'];
       
-      join_block.style.display = 'none';
-      lobby_block.style.display = 'flex';
+      game_select_block.style.display = 'none';
+      member_lobby_block.style.display = 'flex';
+  
+      waitForStartGame();
     }
   });
-  
-  // todo check for opponent connection in loop with waiting
-  wait_for_start_game();
-  // while (true) {
-  //   if (join_opponent.innerHTML !== '') {
-  //     wait_for_start_game();
-  //   } else {
-  //     // check_for_opponent_connect();
-  //   }
-  //
-  //   if (is_game_started) {
-  //     return;
-  //   }
-  // }
 });
 
-function wait_for_start_game() {
+function waitForStartGame() {
   $.ajax({
     url: '/check_for_start_game',
     data: {},
     timeout: 30000,
     success: function (data) {
       if (data['is_changed']) {
-        is_game_started = true;
-        
-        game_session_section.style.display = 'none';
-        game_panel_section.style.display = 'block';
-        game_section.style.display = 'flex';
-        show_game_ui({
-          'is_changed': true,
-          'game_status': game_status_placing_ships
-        });
+        if (data['opponent'] === '') {
+          members_opponent.innerHTML = '';
+          disconnect();
+        } else {
+          is_game_started = true;
+          game_session_section.style.display = 'none';
+          game_panel_section.style.display = 'block';
+          game_section.style.display = 'flex';
+          showGameUI(game_status_placing_ships);
+        }
       } else {
-        wait_for_start_game();
+        waitForStartGame();
       }
     },
     error: function(jqXHR, textStatus, errorThrown) {
-      console.log('wait_for_start_game: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
-      wait_for_start_game();
+      console.log('waitForStartGame: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
+      waitForStartGame();
     }
   });
 }
@@ -297,19 +262,17 @@ game_status.addEventListener('click', function () {
   });
   
   game_status_click_response.done(function (data) {
-    show_game_ui(data);
+    showGameUI(data['game_status'].toString());
   });
 });
 
-function show_game_ui(data) {
-  if (data['is_changed']) {
-    game_status.innerHTML = data['game_status'].toString();
-    game_status.classList.remove(game_status_active_class);
-    game_status.classList.add(game_status_inactive_class);
+function showGameUI(new_game_status) {
+  game_status.innerHTML = new_game_status;
+  game_status.classList.remove(game_status_active_class);
+  game_status.classList.add(game_status_inactive_class);
 
-    ship_placing_buttons.style.display = 'block';
-    restart_button.style.display = 'flex';
-  }
+  ship_placing_buttons.style.display = 'block';
+  restart_button.style.display = 'flex';
 }
 
 

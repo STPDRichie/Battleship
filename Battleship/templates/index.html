@@ -34,30 +34,33 @@
 
     <section id="game-session" class="game-session">
         <div class="section-wrapper">
-            <div id="play-with-robot-block" class="block-wrapper">
-                <div id="play-with-robot-button" class="game-session__robot-button game-session__button">Play with robot</div>
+            <div id="game-select-block">
+                <div id="play-with-robot-block" class="block-wrapper">
+                    <div id="play-with-robot-button" class="game-session__robot-button game-session__button">Play with robot</div>
+                </div>
+                <div id="username-block" class="block-wrapper">
+                    <div class="game-session__block-title">Input username</div>
+                    <label for="username">
+                        <input id="username" type="text" class="game-session__input">
+                    </label>
+                </div>
+                <div id="host-block" class="block-wrapper">
+                    <div id="host-button" class="game-session__button">Host game</div>
+                </div>
+                <div id="join-block" class="block-wrapper">
+                    <label for="session-key-input">
+                        <input id="session-key-input" type="number" class="game-session__input" placeholder="Input session key">
+                    </label>
+                    <div id="connect-button" class="game-session__connect-button game-session__button">Join the game</div>
+                </div>
             </div>
-            <div id="game-select-block" class="block-wrapper">
-                <div class="game-session__block-title">Input username</div>
-                <label for="username">
-                    <input id="username" type="text" class="game-session__input">
-                </label>
-                <div id="host-button" class="game-session__button">Host game</div>
-                <div id="join-button" class="game-session__button">Join the game</div>
-            </div>
-            <div id="host-block" style="display: none;" class="block-wrapper">
+            <div id="host-lobby-block" style="display: none;" class="block-wrapper">
                 <div class="game-session__block-title">Your session</div>
                 <div id="user-session-key" class="game-session__user-key"></div>
                 <div id="host-opponent" class="game-session__opponent"></div>
                 <div id="start-button" class="game-session__start-button game-session__button">Start</div>
             </div>
-            <div id="join-block" style="display: none;" class="block-wrapper">
-                <label for="session-key-input">
-                    <input id="session-key-input" type="number" class="game-session__input" placeholder="Input session key">
-                </label>
-                <div id="connect-button" class="game-session__connect-button game-session__button">Connect</div>
-            </div>
-            <div id="lobby-block" style="display: none;" class="block-wrapper">
+            <div id="member-lobby-block" style="display: none;" class="block-wrapper">
                 <div class="game-session__block-title">Session</div>
                 <div id="join-opponent" class="game-session__opponent"></div>
                 <div class="game-session__button_inactive">Waiting for host</div>

@@ -35,10 +35,10 @@ def wait_for_connection():
     return gs.wait_for_connection(session_key)
 
 
-# @app.route('/check_for_opponent_connection')
-# def check_for_opponent_connection():
-#     session_key = request.cookies.get('session-key')
-#     return gs.is_players_in_lobby(session_key)
+@app.route('/check_for_member_connection')
+def check_for_member_connection():
+    session_key = request.cookies.get('session-key')
+    return gs.check_for_member_connection(session_key)
 
 
 @app.route('/connect_to_lobby', methods=['POST'])
