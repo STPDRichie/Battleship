@@ -14,8 +14,12 @@ const icon_empty = '<i class="fa-solid"></i>'
 
 const game_session_section = document.getElementById('game-session');
 const game_select_block = document.getElementById('game-select-block');
-const host_lobby_block = document.getElementById('host-lobby-block');
-const member_lobby_block = document.getElementById('member-lobby-block');
+const lobby_block = document.getElementById('lobby-block');
+const host_block = document.getElementById('host-lobby-block');
+const member_block = document.getElementById('member-lobby-block');
+const member_lobby_status = document.getElementById('member-lobby-status');
+const member_lobby_status_text_waiting = 'Waiting for host';
+const member_lobby_status_text_left = 'Host left';
 
 const play_with_robot_button = document.getElementById('play-with-robot-button');
 const username = document.getElementById('username');
@@ -24,8 +28,12 @@ const session_key = document.getElementById('user-session-key');
 const start_button = document.getElementById('start-button');
 const session_key_input = document.getElementById('session-key-input');
 const connect_button = document.getElementById('connect-button');
+const leave_button = document.getElementById('leave-button');
 const hosts_opponent = document.getElementById('host-opponent');
 const members_opponent = document.getElementById('join-opponent');
+
+const game_session_button_class_default = 'game-session__button';
+const game_session_button_class_inactive = 'game-session__button_inactive';
 const session_key_cookie_name_eq = 'session-key=';
 const session_key_cookie_erase_id = session_key_cookie_name_eq + '; Max-Age=0';
 let is_game_started = false;
@@ -47,6 +55,17 @@ function disconnect() {
     }
   });
 }
+
+
+leave_button.addEventListener('click', function () {
+  disconnect();
+  
+  host_block.style.display = 'none';
+  member_block.style.display = 'none';
+  lobby_block.style.display = 'none';
+  
+  game_select_block.style.display = 'block';
+});
 
 
 play_with_robot_button.addEventListener('click', function () {
@@ -72,7 +91,8 @@ host_button.addEventListener('click', function () {
   });
   
   game_select_block.style.display = 'none';
-  host_lobby_block.style.display = 'flex';
+  lobby_block.style.display = 'block';
+  host_block.style.display = 'flex';
   
   waitForConnection();
 });
@@ -84,11 +104,12 @@ function waitForConnection() {
   
   $.ajax({
     url: '/wait_for_connection',
-    data: {},
     timeout: 30000,
     success: function(data) {
       if (data['is_changed']) {
         hosts_opponent.innerHTML = data['opponent'];
+        start_button.classList.add(game_session_button_class_default);
+        start_button.classList.remove(game_session_button_class_inactive);
         checkForMemberConnection();
       } else {
         waitForConnection();
@@ -108,11 +129,12 @@ function checkForMemberConnection() {
   
   $.ajax({
     url: '/check_for_member_connection',
-    data: {},
     timeout: 30000,
     success: function (data) {
       if (data['opponent'] === '') {
         hosts_opponent.innerHTML = '';
+        start_button.classList.add(game_session_button_class_inactive);
+        start_button.classList.remove(game_session_button_class_default);
         waitForConnection();
       } else {
         checkForMemberConnection();
@@ -163,7 +185,9 @@ connect_button.addEventListener('click', function () {
       members_opponent.innerHTML = data['opponent'];
       
       game_select_block.style.display = 'none';
-      member_lobby_block.style.display = 'flex';
+      lobby_block.style.display = 'block';
+      member_block.style.display = 'flex';
+      member_lobby_status.innerHTML = member_lobby_status_text_waiting;
   
       waitForStartGame();
     }
@@ -173,12 +197,12 @@ connect_button.addEventListener('click', function () {
 function waitForStartGame() {
   $.ajax({
     url: '/check_for_start_game',
-    data: {},
     timeout: 30000,
     success: function (data) {
       if (data['is_changed']) {
         if (data['opponent'] === '') {
           members_opponent.innerHTML = '';
+          member_lobby_status.innerHTML = member_lobby_status_text_left;
           disconnect();
         } else {
           is_game_started = true;

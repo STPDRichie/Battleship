@@ -54,16 +54,21 @@
                     <div id="connect-button" class="game-session__connect-button game-session__button">Join the game</div>
                 </div>
             </div>
-            <div id="host-lobby-block" style="display: none;" class="block-wrapper">
-                <div class="game-session__block-title">Your session</div>
-                <div id="user-session-key" class="game-session__user-key"></div>
-                <div id="host-opponent" class="game-session__opponent"></div>
-                <div id="start-button" class="game-session__start-button game-session__button">Start</div>
-            </div>
-            <div id="member-lobby-block" style="display: none;" class="block-wrapper">
-                <div class="game-session__block-title">Session</div>
-                <div id="join-opponent" class="game-session__opponent"></div>
-                <div class="game-session__button_inactive">Waiting for host</div>
+            <div id="lobby-block" style="display: none;">
+                <div id="host-lobby-block" style="display: none;" class="block-wrapper">
+                    <div class="game-session__block-title">Your session</div>
+                    <div id="user-session-key" class="game-session__user-key"></div>
+                    <div id="host-opponent" class="game-session__opponent"></div>
+                    <div id="start-button" class="game-session__start-button game-session__button_inactive">Start</div>
+                </div>
+                <div id="member-lobby-block" style="display: none;" class="block-wrapper">
+                    <div class="game-session__block-title">Session</div>
+                    <div id="join-opponent" class="game-session__opponent"></div>
+                    <div id="member-lobby-status" class="game-session__button_inactive">Waiting for host</div>
+                </div>
+                <div id="leave-block" class="block-wrapper">
+                    <div id="leave-button" class="game-session__start-button game-session__button">Leave</div>
+                </div>
             </div>
         </div>
     </section>
