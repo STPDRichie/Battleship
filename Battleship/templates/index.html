@@ -94,15 +94,15 @@
         </div>
     </section>
 
-    <section id="game-state-panel" class="game-state-panel">
+    <section id="game-state-panel" style="display: none;" class="game-state-panel">
         <div class="section-wrapper">
-            <div class="game-state-panel__ready-statuses">
-                <div class="game-state-panel__ready-status game-state-panel__ready-status-inactive">Not ready</div>
-                <div class="game-state-panel__ready-status game-state-panel__ready-status-inactive">Ready</div>
+            <div id="ready-states-block" class="game-state-panel__ready-states">
+                <div id="person-ready-state" class="game-state-panel__ready-state game-state-panel__ready-state_inactive">Not ready</div>
+                <div id="opponent-ready-state" class="game-state-panel__ready-state game-state-panel__ready-state_active">Ready</div>
             </div>
-            <div class="game-state-panel__turn">
-                <div class="game-state-panel__player-name">Turn: </div>
-                <div class="game-state-panel__timer">00:00</div>
+            <div id="turn-block" style="display: none;" class="game-state-panel__turn">
+                <div id="turn-player-name" class="game-state-panel__player-name">Turn: Some_Name</div>
+                <div id="turn-timer" class="game-state-panel__timer">00:00</div>
             </div>
         </div>
     </section>

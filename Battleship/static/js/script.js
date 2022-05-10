@@ -3,7 +3,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const color_white = '#ffffff';
 const color_lightgray = '#999999';
 const color_darkgray = '#333333';
-const color_green = '#95e1d3';
+const color_cyan = '#95e1d3';
 const color_red = '#f38181';
 const color_cell_hovered_gray = '#d8d8d8';
 const color_section_gray = '#eeeeee';
@@ -281,6 +281,16 @@ const ship_select_button_default = 'Battleship'
 let selected_ship = 'Battleship'
 
 
+const game_state_panel_section = document.getElementById('game-state-panel');
+const ready_states_block = document.getElementById('ready-states-block');
+const turn_block = document.getElementById('turn-block');
+
+const person_ready_state = document.getElementById('person-ready-state');
+const opponent_ready_state = document.getElementById('opponent-ready-state');
+const turn_player_name = document.getElementById('turn-player-name');
+const turn_timer =document.getElementById('turn-timer');
+
+
 const remaining_ships = document.getElementsByClassName('remaining-ship__count');
 const remaining_ship_panel = document.getElementById('remaining-ships-panel');
 const remaining_ship_count_id_template = '-remaining-ship-count__';
@@ -313,6 +323,7 @@ function showGameUI(new_game_status) {
 
   ship_placing_buttons.style.display = 'block';
   restart_button.style.display = 'flex';
+  game_state_panel_section.style.display = 'flex';
 }
 
 
@@ -332,6 +343,10 @@ function resetGame() {
   game_status.style.backgroundColor = color_section_gray;
   ship_placing_buttons.style.display = 'block';
   remaining_ship_panel.style.display = 'none';
+
+  game_state_panel_section.style.display = 'flex';
+  ready_states_block.style.display = 'flex';
+  turn_block.style.display = 'none';
   
   changeShipDirection(ship_direction_default_button);
   battleship_select_button.innerHTML = battleship_select_button_default_inner;
@@ -493,8 +508,7 @@ function handlePersonBoardClick(cell) {
       }
       
       if (game_status.innerHTML === game_status_battle) {
-        ship_placing_buttons.style.display = 'none';
-        remaining_ship_panel.style.display = 'block';
+        showBattleUI();
       }
     }
   });
@@ -541,7 +555,7 @@ Array.prototype.forEach.call(opponent_cells, function (element) {
           }
     
           opponent_board.classList.add(board_class_inactive);
-          // if (game_status.innerHTML !== game_status_win && game_status.innerHTML !== game_status_lose) {
+
           if (game_status.innerHTML === game_status_battle) {
             await sleep(800);
             getOpponentTurn();
@@ -595,7 +609,7 @@ function handleOpponentBoardClick(cell) {
       game_status.innerHTML = data['game_status'];
       
       if (data['is_ship_destroyed'] && cell.innerHTML !== icon_destroyed) {
-        changeRemainingShipCount('opponent', data['destroyed_ship'].toLowerCase(), color_green).then(r => r);
+        changeRemainingShipCount('opponent', data['destroyed_ship'].toLowerCase(), color_cyan).then(r => r);
       }
       
       cell.innerHTML = data['icon'];
@@ -672,11 +686,20 @@ function showOpponentRemainingShipCells() {
 }
 
 
+function showBattleUI() {
+  ship_placing_buttons.style.display = 'none';
+  game_state_panel_section.style.display = 'flex';
+  ready_states_block.style.display = 'flex';
+  turn_block.style.display = 'none';
+  remaining_ship_panel.style.display = 'block';
+}
+
+
 function showWinUI() {
   opponent_board.classList.add(board_class_inactive);
   person_board.classList.add(board_class_inactive);
   game_status.style.color = color_white;
-  game_status.style.backgroundColor = color_green;
+  game_status.style.backgroundColor = color_cyan;
 }
 
 function showLoseUI() {

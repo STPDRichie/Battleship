@@ -236,7 +236,7 @@ def get_robot_fire(session_key, current_status):
     
     return asdict(
         GameChange(is_changed=True, game_status=new_game_status,
-                   cells=fired_cell_id, icon=new_icon,
+                   cells=[fired_cell_id], icon=new_icon,
                    is_ship_destroyed=is_ship_destroyed,
                    destroyed_ship=destroyed_ship))
 
