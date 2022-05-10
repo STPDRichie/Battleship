@@ -418,7 +418,7 @@ class GameStatusFireTest(TestCase):
                          destroy_response['destroyed_ship'])
 
     def test_dont_fire_person_cell_when_status_not_battle(self):
-        dont_fire_response = gs.fire_person_cell(GameStatus.WIN.value)
+        dont_fire_response = gs.get_robot_fire(GameStatus.WIN.value)
 
         self.assertEqual(False, dont_fire_response['is_changed'])
 
@@ -429,7 +429,7 @@ class GameStatusFireTest(TestCase):
                               ShipName.SUBMARINE.value,
                               ShipDirection.VERTICAL.value)
 
-        fire_response = gs.fire_person_cell(GameStatus.BATTLE.value)
+        fire_response = gs.get_robot_fire(GameStatus.BATTLE.value)
         fired_cell = gs.cell_id_to_computing_format(fire_response['cells'])
 
         self.assertEqual(False, fire_response['is_ship_destroyed'])

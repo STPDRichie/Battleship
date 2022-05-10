@@ -448,6 +448,8 @@ function handlePersonBoardClick(cell) {
     cell_id: cell.id
   });
   
+  // todo if ships_remains_to_place == 0 Ready & waitForOpponentShipsPlacing
+  
   person_board_click_response.done(function (data) {
     if (data['is_changed']) {
       game_status.innerHTML = data['game_status'];
@@ -564,7 +566,6 @@ Array.prototype.forEach.call(opponent_cells, function (element) {
           }
           
           opponent_board.classList.add(board_class_inactive);
-          // todo waitForOpponentFire function
           waitForOpponentFire();
           await sleep(100);
           
@@ -584,6 +585,7 @@ Array.prototype.forEach.call(opponent_cells, function (element) {
 
 function handleOpponentBoardClick(cell) {
   const opponent_board_click_response = $.post('/opponent_cell_clicked', {
+    username: username.value,
     game_status: game_status.innerHTML,
     cell_id: cell.id
   });
@@ -602,11 +604,11 @@ function handleOpponentBoardClick(cell) {
 }
 
 function waitForOpponentFire() {
-  // todo toggleOpponentTurnTimer function
+  // todo toggleTurnTimer function
   
   getOpponentTurn();
   
-  // todo toggleOpponentTurnTimer frunction
+  // todo toggleTurnTimer frunction
 }
 
 function getOpponentTurn() {
@@ -628,6 +630,8 @@ function getOpponentTurn() {
         }
     
         fired_cell.innerHTML = data['icon']
+        
+        // todo wait for person turn for 15s
       }
     },
     error: function (jqXHR, textStatus, errorThrown) {
