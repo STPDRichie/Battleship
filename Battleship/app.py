@@ -29,10 +29,10 @@ def host_lobby():
     return response
 
 
-@app.route('/wait_for_connection')
-def wait_for_connection():
+@app.route('/wait_for_member_connect')
+def wait_for_member_connect():
     session_key = request.cookies.get('session-key')
-    return gs.wait_for_connection(session_key)
+    return gs.wait_for_member_connect(session_key)
 
 
 @app.route('/check_for_member_connection')
@@ -62,11 +62,11 @@ def check_for_start_game():
     return gs.check_for_start_game(session_key)
 
 
-@app.route('/leave_lobby', methods=['POST'])
-def leave_lobby():
+@app.route('/leave', methods=['POST'])
+def leave():
     username = request.form['username']
     session_key = request.cookies.get('session-key')
-    return gs.leave_lobby(session_key, username)
+    return gs.leave(session_key, username)
 
 
 @app.route('/start_game', methods=['POST'])

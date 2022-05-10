@@ -36,16 +36,17 @@ const game_session_button_class_default = 'game-session__button';
 const game_session_button_class_inactive = 'game-session__button_inactive';
 const session_key_cookie_name_eq = 'session-key=';
 const session_key_cookie_erase_id = session_key_cookie_name_eq + '; Max-Age=0';
+let is_opponent_ai = false;
 let is_game_started = false;
 
 username.value = 'Guest';
 session_key.innerHTML = Date.now().toString();
 
 
-window.onbeforeunload = disconnect
+window.onbeforeunload = leave
 
-function disconnect() {
-  const disconnect_response = $.post('/leave_lobby', {
+function leave() {
+  const disconnect_response = $.post('/leave', {
     username: username.value
   });
   
@@ -58,7 +59,7 @@ function disconnect() {
 
 
 leave_button.addEventListener('click', function () {
-  disconnect();
+  leave();
   
   host_block.style.display = 'none';
   member_block.style.display = 'none';
@@ -74,6 +75,7 @@ play_with_robot_button.addEventListener('click', function () {
     username: username.value
   });
   
+  is_opponent_ai = true;
   game_session_section.style.display = 'none';
   game_panel_section.style.display = 'block';
   game_section.style.display = 'flex';
@@ -85,39 +87,47 @@ host_button.addEventListener('click', function () {
     return;
   }
   
-  $.post('/host_lobby', {
+  const host_response = $.post('/host_lobby', {
     session_key: session_key.innerHTML,
     username: username.value
   });
   
-  game_select_block.style.display = 'none';
-  lobby_block.style.display = 'block';
-  host_block.style.display = 'flex';
+  host_response.done(function (data) {
+    if (data['is_lobby_exist']) {
+      game_select_block.style.display = 'none';
+      lobby_block.style.display = 'block';
+      host_block.style.display = 'flex';
   
-  waitForConnection();
+      waitForMemberConnect();
+    }
+  });
 });
 
-function waitForConnection() {
+function waitForMemberConnect() {
   if (is_game_started) {
     return;
   }
   
   $.ajax({
-    url: '/wait_for_connection',
+    url: '/wait_for_member_connect',
     timeout: 30000,
     success: function(data) {
+      if (!data['is_lobby_exist']) {
+        return;
+      }
+      
       if (data['is_changed']) {
         hosts_opponent.innerHTML = data['opponent'];
         start_button.classList.add(game_session_button_class_default);
         start_button.classList.remove(game_session_button_class_inactive);
         checkForMemberConnection();
       } else {
-        waitForConnection();
+        waitForMemberConnect();
       }
     },
     error: function(jqXHR, textStatus, errorThrown) {
-      console.log('wait_for_connection: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
-      waitForConnection();
+      console.log('wait_for_member_connect: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
+      waitForMemberConnect();
     }
   });
 }
@@ -135,13 +145,13 @@ function checkForMemberConnection() {
         hosts_opponent.innerHTML = '';
         start_button.classList.add(game_session_button_class_inactive);
         start_button.classList.remove(game_session_button_class_default);
-        waitForConnection();
+        waitForMemberConnect();
       } else {
         checkForMemberConnection();
       }
     },
     error: function(jqXHR, textStatus, errorThrown) {
-      console.log('check_for_opponent_connection: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
+      console.log('check_for_member_connection: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
       checkForMemberConnection();
     }
   });
@@ -181,6 +191,10 @@ connect_button.addEventListener('click', function () {
   });
   
   connect_button_click_response.done(function (data) {
+    if (!data['is_lobby_exist']) {
+      // todo alert lobby is not exist
+    }
+    
     if (data['is_changed']) {
       members_opponent.innerHTML = data['opponent'];
       
@@ -190,6 +204,8 @@ connect_button.addEventListener('click', function () {
       member_lobby_status.innerHTML = member_lobby_status_text_waiting;
   
       waitForStartGame();
+    } else {
+      // todo alert same name
     }
   });
 });
@@ -200,10 +216,10 @@ function waitForStartGame() {
     timeout: 30000,
     success: function (data) {
       if (data['is_changed']) {
-        if (data['opponent'] === '') {
+        if (!data['is_lobby_exist']) {
           members_opponent.innerHTML = '';
           member_lobby_status.innerHTML = member_lobby_status_text_left;
-          disconnect();
+          leave();
         } else {
           is_game_started = true;
           game_session_section.style.display = 'none';
@@ -216,7 +232,7 @@ function waitForStartGame() {
       }
     },
     error: function(jqXHR, textStatus, errorThrown) {
-      console.log('waitForStartGame: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
+      console.log('check_for_start_game: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
       waitForStartGame();
     }
   });
@@ -424,8 +440,9 @@ Array.prototype.forEach.call(person_cells, function (element) {
 
 function handlePersonBoardClick(cell) {
   const person_board_click_response = $.post('/person_cell_clicked', {
-    direction: selected_ship_direction,
+    username: username.value,
     game_status: game_status.innerHTML,
+    direction: selected_ship_direction,
     current_ship: selected_ship,
     cell_icon: cell.innerHTML,
     cell_id: cell.id
@@ -512,31 +529,53 @@ function handlePersonCellUnhover() {
 Array.prototype.forEach.call(opponent_cells, function (element) {
   if (!element.classList.contains(markup_cell_class)) {
     element.addEventListener('click', async function () {
-      if (game_status.innerHTML === game_status_battle) {
-        handleOpponentBoardClick(element);
-        await sleep(100);
-        if (game_status.innerHTML === game_status_win) {
-          opponent_board.classList.add(board_class_inactive);
-          person_board.classList.add(board_class_inactive);
-          game_status.style.color = color_white;
-          game_status.style.backgroundColor = color_green;
-        }
-        
-        opponent_board.classList.add(board_class_inactive);
-        await sleep(700);
-        if (game_status.innerHTML !== game_status_win && game_status.innerHTML !== game_status_lose) {
-          getOpponentTurn();
+      if (is_opponent_ai) {
+        if (game_status.innerHTML === game_status_battle) {
+          handleOpponentBoardClick(element);
           await sleep(100);
-          opponent_board.classList.remove(board_class_inactive);
-        }
-        
-        await sleep(100);
-        if (game_status.innerHTML === game_status_lose) {
+          
+          if (game_status.innerHTML === game_status_win) {
+            showWinUI();
+          }
+    
           opponent_board.classList.add(board_class_inactive);
-          person_board.classList.add(board_class_inactive);
-          game_status.style.color = color_white;
-          game_status.style.backgroundColor = color_red;
-          showOpponentRemainingShipCells();
+          // if (game_status.innerHTML !== game_status_win && game_status.innerHTML !== game_status_lose) {
+          if (game_status.innerHTML === game_status_battle) {
+            await sleep(800);
+            getOpponentTurn();
+            await sleep(100);
+            opponent_board.classList.remove(board_class_inactive);
+          }
+    
+          if (game_status.innerHTML === game_status_lose) {
+            showLoseUI();
+            showOpponentRemainingShipCells();
+          }
+        }
+      }
+      
+      if (!is_opponent_ai) {
+        if (game_status.innerHTML === game_status_battle) {
+          handleOpponentBoardClick(element);
+          await sleep(100);
+          
+          if (game_status.innerHTML === game_status_win) {
+            showWinUI();
+          }
+          
+          opponent_board.classList.add(board_class_inactive);
+          // todo waitForOpponentFire function
+          waitForOpponentFire();
+          await sleep(100);
+          
+          if (game_status.innerHTML === game_status_battle) {
+            opponent_board.classList.remove(board_class_inactive);
+          }
+          
+          if (game_status.innerHTML === game_status_lose) {
+            showLoseUI();
+            showOpponentRemainingShipCells();
+          }
         }
       }
     });
@@ -562,24 +601,45 @@ function handleOpponentBoardClick(cell) {
   });
 }
 
-function getOpponentTurn() {
-  const opponent_fire = $.post('/get_opponent_fire', {
-    game_status: game_status.innerHTML
-  });
+function waitForOpponentFire() {
+  // todo toggleOpponentTurnTimer function
   
-  opponent_fire.done(function (data) {
-    if (data['is_changed']) {
-      game_status.innerHTML = data['game_status'];
-      let fired_cell = Array.from(person_cells).find(cell => cell.id === data['cells']);
-      
-      if (data['is_ship_destroyed'] && fired_cell.innerHTML !== icon_destroyed) {
-        changeRemainingShipCount('person', data['destroyed_ship'].toLowerCase(), color_red).then(r => r);
+  getOpponentTurn();
+  
+  // todo toggleOpponentTurnTimer frunction
+}
+
+function getOpponentTurn() {
+  $.ajax({
+    method: 'POST',
+    url: '/get_opponent_fire',
+    data: {
+      username: username.value,
+      game_status: game_status.innerHTML
+    },
+    timeout: 15000,
+    success: function (data) {
+      if (data['is_changed']) {
+        game_status.innerHTML = data['game_status'];
+        let fired_cell = Array.from(person_cells).find(cell => cell.id === data['cells']);
+    
+        if (data['is_ship_destroyed'] && fired_cell.innerHTML !== icon_destroyed) {
+          changeRemainingShipCount('person', data['destroyed_ship'].toLowerCase(), color_red).then(r => r);
+        }
+    
+        fired_cell.innerHTML = data['icon']
       }
-      
-      fired_cell.innerHTML = data['icon']
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      console.log('get_opponent_fire: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
+      if (jqXHR.status !== 0) {
+        // todo alert connection problems
+        getOpponentTurn();
+      }
     }
   });
 }
+
 
 async function changeRemainingShipCount(player, ship_name, text_color) {
   let current_ship = Array
@@ -605,4 +665,19 @@ function showOpponentRemainingShipCells() {
       current_cell.innerHTML = data['icon'];
     }
   });
+}
+
+
+function showWinUI() {
+  opponent_board.classList.add(board_class_inactive);
+  person_board.classList.add(board_class_inactive);
+  game_status.style.color = color_white;
+  game_status.style.backgroundColor = color_green;
+}
+
+function showLoseUI() {
+  opponent_board.classList.add(board_class_inactive);
+  person_board.classList.add(board_class_inactive);
+  game_status.style.color = color_white;
+  game_status.style.backgroundColor = color_red;
 }

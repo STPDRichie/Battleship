@@ -25,10 +25,10 @@ column_numbers_and_letters = {
 def host_lobby(session_key, host_name):
     lobby = Lobby(session_key, host_name)
     app.lobbies.append(lobby)
-    return asdict(LobbyChange(is_changed=True))
+    return asdict(LobbyChange(is_lobby_exist=True, is_changed=True))
 
 
-def wait_for_connection(session_key):
+def wait_for_member_connect(session_key):
     current_lobby = next((lobby for lobby in app.lobbies
                           if lobby.session_key == session_key), None)
     if not current_lobby:
@@ -37,7 +37,7 @@ def wait_for_connection(session_key):
     while True:
         time.sleep(0.5)
         if current_lobby.member_name:
-            return asdict(LobbyChange(is_changed=True,
+            return asdict(LobbyChange(is_lobby_exist=True, is_changed=True,
                                       opponent=current_lobby.member_name))
 
 
@@ -46,8 +46,11 @@ def check_for_member_connection(session_key):
                           if lobby.session_key == session_key), None)
     while True:
         time.sleep(0.5)
-        if not current_lobby or not current_lobby.member_name:
-            return asdict(LobbyChange(is_changed=True, opponent=''))
+        if not current_lobby:
+            return asdict(LobbyChange())
+        if not current_lobby.member_name:
+            return asdict(LobbyChange(is_lobby_exist=True,
+                                      is_changed=True, opponent=''))
 
 
 def connect_to_lobby(session_key, member_name):
@@ -60,7 +63,7 @@ def connect_to_lobby(session_key, member_name):
     if not current_lobby.is_game_started and \
             current_lobby.host_name != member_name:
         current_lobby.init_second_player(member_name)
-        return asdict(LobbyChange(is_changed=True,
+        return asdict(LobbyChange(is_lobby_exist=True, is_changed=True,
                                   opponent=current_lobby.host_name))
     return asdict(LobbyChange())
 
@@ -74,18 +77,17 @@ def check_for_start_game(session_key):
         if not current_lobby:
             return asdict(LobbyChange(is_changed=True, opponent=''))
         if current_lobby.is_game_started:
-            return asdict(LobbyChange(is_changed=True,
+            return asdict(LobbyChange(is_lobby_exist=True, is_changed=True,
                                       opponent=current_lobby.host_name))
 
 
-def leave_lobby(session_key, username):
+def leave(session_key, username):
     current_lobby = next((lobby for lobby in app.lobbies
                           if lobby.session_key == session_key), None)
     if current_lobby:
+        current_lobby.uninit_second_player()
         if username == current_lobby.host_name:
             app.lobbies.remove(current_lobby)
-        if username == current_lobby.member_name:
-            current_lobby.uninit_second_player()
 
     return asdict(LobbyChange(is_changed=True))
 
@@ -280,5 +282,6 @@ class GameChange:
 
 @dataclass(frozen=True)
 class LobbyChange:
+    is_lobby_exist: bool = False
     is_changed: bool = False
     opponent: str = None
