@@ -84,7 +84,7 @@ body {
   padding: 5px;
   width: 60px;
   height: 60px;
-  font-size: 32px;
+  font-size: 200%;
   color: #4c97fc;
   background-color: #ffffff;
   border: #4c97fc 5px solid;
@@ -252,7 +252,7 @@ body {
   border-radius: 50%;
   background-color: #4c97fc;
   transition: 0.1s ease-in-out background-color;
-  font-size: 27px;
+  font-size: 200%;
   color: #ffffff;
 }
 .game-panel__restart-button i {

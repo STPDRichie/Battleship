@@ -11,6 +11,8 @@ const color_section_gray = '#eeeeee';
 const icon_destroyed = '<i class="fa-solid fa-circle-xmark"></i>'
 const icon_empty = '<i class="fa-solid"></i>'
 
+const robot_name = 'Robot';
+
 
 const game_session_section = document.getElementById('game-session');
 const game_select_block = document.getElementById('game-select-block');
@@ -70,7 +72,7 @@ leave_button.addEventListener('click', function () {
 
 
 play_with_robot_button.addEventListener('click', function () {
-  $.post('host_lobby', {
+  $.post('/host_lobby', {
     session_key: session_key.innerHTML,
     username: username.value
   });
@@ -97,7 +99,7 @@ host_button.addEventListener('click', function () {
       game_select_block.style.display = 'none';
       lobby_block.style.display = 'block';
       host_block.style.display = 'flex';
-  
+      
       waitForMemberConnect();
     }
   });
@@ -111,7 +113,7 @@ function waitForMemberConnect() {
   $.ajax({
     url: '/wait_for_member_connect',
     timeout: 30000,
-    success: function(data) {
+    success: function (data) {
       if (!data['is_lobby_exist']) {
         return;
       }
@@ -125,7 +127,7 @@ function waitForMemberConnect() {
         waitForMemberConnect();
       }
     },
-    error: function(jqXHR, textStatus, errorThrown) {
+    error: function (jqXHR, textStatus, errorThrown) {
       console.log('wait_for_member_connect: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
       waitForMemberConnect();
     }
@@ -150,7 +152,7 @@ function checkForMemberConnection() {
         checkForMemberConnection();
       }
     },
-    error: function(jqXHR, textStatus, errorThrown) {
+    error: function (jqXHR, textStatus, errorThrown) {
       console.log('check_for_member_connection: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
       checkForMemberConnection();
     }
@@ -174,7 +176,9 @@ start_button.addEventListener('click', function () {
   start_click_response.done(function (data) {
     if (data['is_changed']) {
       is_game_started = true;
-      showGameUI(data['game_status'].toString());
+      showShipsPlacingUI(data['game_status']);
+      changeNextTurnPlayerName(data['whose_next_turn']);
+      waitForOpponentReadyForBattle();
     }
   });
 });
@@ -202,7 +206,7 @@ connect_button.addEventListener('click', function () {
       lobby_block.style.display = 'block';
       member_block.style.display = 'flex';
       member_lobby_status.innerHTML = member_lobby_status_text_waiting;
-  
+      
       waitForStartGame();
     } else {
       // todo alert same name
@@ -212,7 +216,7 @@ connect_button.addEventListener('click', function () {
 
 function waitForStartGame() {
   $.ajax({
-    url: '/check_for_start_game',
+    url: '/wait_for_start_game',
     timeout: 30000,
     success: function (data) {
       if (data['is_changed']) {
@@ -220,19 +224,21 @@ function waitForStartGame() {
           members_opponent.innerHTML = '';
           member_lobby_status.innerHTML = member_lobby_status_text_left;
           leave();
-        } else {
-          is_game_started = true;
-          game_session_section.style.display = 'none';
-          game_panel_section.style.display = 'block';
-          game_section.style.display = 'flex';
-          showGameUI(game_status_placing_ships);
+          return;
         }
+        is_game_started = true;
+        game_session_section.style.display = 'none';
+        game_panel_section.style.display = 'block';
+        game_section.style.display = 'flex';
+        showShipsPlacingUI(game_status_placing_ships);
+        changeNextTurnPlayerName(data['whose_next_turn']);
+        waitForOpponentReadyForBattle();
       } else {
         waitForStartGame();
       }
     },
-    error: function(jqXHR, textStatus, errorThrown) {
-      console.log('check_for_start_game: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
+    error: function (jqXHR, textStatus, errorThrown) {
+      console.log('wait_for_start_game: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
       waitForStartGame();
     }
   });
@@ -287,8 +293,9 @@ const turn_block = document.getElementById('turn-block');
 
 const person_ready_state = document.getElementById('person-ready-state');
 const opponent_ready_state = document.getElementById('opponent-ready-state');
-const turn_player_name = document.getElementById('turn-player-name');
-const turn_timer =document.getElementById('turn-timer');
+const whose_next_turn = document.getElementById('whose-next-turn');
+const turn_timer = document.getElementById('turn-timer');
+const whose_next_turn_pattern = 'Turn: '
 
 const ready_state_class_active = 'game-state-panel__ready-state_active';
 const ready_state_class_inactive = 'game-state-panel__ready-state_inactive';
@@ -317,7 +324,11 @@ game_status.addEventListener('click', function () {
   });
   
   game_status_click_response.done(function (data) {
-    showGameUI(data['game_status'].toString());
+    if (data['is_changed']) {
+      showShipsPlacingUI(data['game_status']);
+      changeNextTurnPlayerName(data['whose_next_turn']);
+      waitForOpponentReadyForBattle();
+    }
   });
 });
 
@@ -327,21 +338,26 @@ restart_button.addEventListener('click', function () {
   
   restart_button_click_response.done(function (data) {
     if (data['is_changed']) {
-      resetGame();
+      resetGame(data['whose_next_turn']);
+      waitForOpponentReadyForBattle();
     }
   });
 });
 
-function resetGame() {
+function resetGame(whose_next_turn_name) {
   game_status.innerHTML = game_status_placing_ships;
   game_status.style.color = color_lightgray;
   game_status.style.backgroundColor = color_section_gray;
   ship_placing_buttons.style.display = 'block';
   remaining_ship_panel.style.display = 'none';
-
+  
   game_state_panel_section.style.display = 'flex';
   ready_states_block.style.display = 'flex';
   turn_block.style.display = 'none';
+  
+  changeReadyState(person_ready_state, false);
+  changeReadyState(opponent_ready_state, false);
+  changeNextTurnPlayerName(whose_next_turn_name);
   
   changeShipDirection(ship_direction_default_button);
   battleship_select_button.innerHTML = battleship_select_button_default_inner;
@@ -458,26 +474,19 @@ function handlePersonBoardClick(cell) {
     cell_id: cell.id
   });
   
-  // todo if non_placed_ships_count == 0 Ready & waitForOpponentShipsPlacing
-  
-  person_board_click_response.done(function (data) {
+  person_board_click_response.done(async function (data) {
     if (data['is_changed']) {
       game_status.innerHTML = data['game_status'];
-
+      
       if (data['is_person_ready_for_battle']) {
-        changeStateToReady(person_ready_state);
-
-        if (!data['is_opponent_ready_for_battle']) {
-          waitForOpponentShipsPlacing();
-        }
+        changeReadyState(person_ready_state, true);
       }
-
-      if (data['is_opponent_ready_for_battle']) {
-        changeStateToReady(opponent_ready_state);
-      }
-
+      
       if (game_status.innerHTML === game_status_battle) {
         showBattleUI();
+        if (username.value !== data['whose_next_turn']) {
+          await waitForOpponentFire();
+        }
       }
       
       for (let i = 0; i < data['cells'].length; i++) {
@@ -486,43 +495,52 @@ function handlePersonBoardClick(cell) {
       }
       
       if (data['returned_ship'] !== '') {
-        let returned_ship = Array
-          .from(ship_select_buttons)
-          .find(button => button.innerHTML.split(ship_count_sep)[0] === data['returned_ship']);
-        if (returned_ship.innerHTML.split(ship_count_sep)[1] === '0') {
-          returned_ship.classList.remove(ship_select_button_class_inactive);
-          returned_ship.classList.add(ship_select_button_class_default);
-        }
-        returned_ship.innerHTML = data['returned_ship'] + ship_count_sep + data['ship_count'];
+        returnShip(data['returned_ship'], data['ship_count']);
         return;
       }
       
-      let current_ship_select_button = Array
-        .from(ship_select_buttons)
-        .filter(button => button.innerHTML.split(ship_count_sep)[0] === selected_ship)[0];
-      current_ship_select_button.innerHTML = selected_ship + ship_count_sep + data['ship_count'];
-      if (data['ship_count'] === 0) {
-        current_ship_select_button.classList.remove(ship_select_button_class_active);
-        current_ship_select_button.classList.add(ship_select_button_class_inactive);
-        let next_ships = Array
-          .from(ship_select_buttons)
-          .filter(button => button.innerHTML.split(ship_count_sep)[0] !== selected_ship
-            && !button.classList.contains(ship_select_button_class_inactive));
-        if (next_ships.length !== 0) {
-          selected_ship = next_ships[0].innerHTML.split(ship_count_sep)[0];
-          let next_ship_select_button = Array
-            .from(ship_select_buttons)
-            .filter(button => button.innerHTML.split(ship_count_sep)[0] === selected_ship)[0];
-          next_ship_select_button.classList.remove(ship_select_button_class_default);
-          next_ship_select_button.classList.add(ship_select_button_class_active);
-        }
-      }
+      changeShipSelectButton(data['ship_count']);
     }
   });
 }
 
-function waitForOpponentShipsPlacing() {
+function returnShip(returned_ship_name, ship_count) {
+  let returned_ship = Array
+    .from(ship_select_buttons)
+    .find(button => button.innerHTML.split(ship_count_sep)[0] === returned_ship_name);
+  if (returned_ship.innerHTML.split(ship_count_sep)[1] === '0') {
+    returned_ship.classList.remove(ship_select_button_class_inactive);
+    returned_ship.classList.add(ship_select_button_class_default);
+  }
+  returned_ship.innerHTML = returned_ship_name + ship_count_sep + ship_count;
+}
+
+function changeShipSelectButton(ship_count) {
+  let current_ship_select_button = Array
+    .from(ship_select_buttons)
+    .filter(button => button.innerHTML.split(ship_count_sep)[0] === selected_ship)[0];
+  current_ship_select_button.innerHTML = selected_ship + ship_count_sep + ship_count;
+  if (ship_count === 0) {
+    current_ship_select_button.classList.remove(ship_select_button_class_active);
+    current_ship_select_button.classList.add(ship_select_button_class_inactive);
+    let next_ships = Array
+      .from(ship_select_buttons)
+      .filter(button => button.innerHTML.split(ship_count_sep)[0] !== selected_ship
+        && !button.classList.contains(ship_select_button_class_inactive));
+    if (next_ships.length !== 0) {
+      selected_ship = next_ships[0].innerHTML.split(ship_count_sep)[0];
+      let next_ship_select_button = Array
+        .from(ship_select_buttons)
+        .filter(button => button.innerHTML.split(ship_count_sep)[0] === selected_ship)[0];
+      next_ship_select_button.classList.remove(ship_select_button_class_default);
+      next_ship_select_button.classList.add(ship_select_button_class_active);
+    }
+  }
+}
+
+function waitForOpponentReadyForBattle() {
   $.ajax({
+    method: 'POST',
     url: '/wait_for_opponent_ready_for_battle',
     data: {
       username: username.value
@@ -535,17 +553,22 @@ function waitForOpponentShipsPlacing() {
           leave();
           return;
         }
-
+        
         if (data['is_opponent_ready_for_battle']) {
-          changeStateToReady(opponent_ready_state);
+          changeReadyState(opponent_ready_state, true);
+          
+          if (data['is_person_ready_for_battle']) {
+            changeReadyState(person_ready_state, true);
+            showBattleUI();
+          }
           return;
         }
       }
-      waitForOpponentShipsPlacing();
+      waitForOpponentReadyForBattle();
     },
     error: function (jqXHR, textStatus, errorThrown) {
       console.log('wait_for_opponent_ready_for_battle: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
-      waitForOpponentShipsPlacing();
+      waitForOpponentReadyForBattle();
     }
   })
 }
@@ -584,68 +607,41 @@ function handlePersonCellUnhover() {
 Array.prototype.forEach.call(opponent_cells, function (element) {
   if (!element.classList.contains(markup_cell_class)) {
     element.addEventListener('click', async function () {
-      if (is_opponent_ai) {
-        if (game_status.innerHTML === game_status_battle) {
-          handleOpponentBoardClick(element);
-          await sleep(100);
-          
-          if (game_status.innerHTML === game_status_win) {
-            showWinUI();
-          }
-    
-          opponent_board.classList.add(board_class_inactive);
-
-          if (game_status.innerHTML === game_status_battle) {
-            await sleep(800);
-            getOpponentTurn();
-            await sleep(100);
-            opponent_board.classList.remove(board_class_inactive);
-          }
-    
-          if (game_status.innerHTML === game_status_lose) {
-            showLoseUI();
-            showOpponentRemainingShipCells();
-          }
+      if (game_status.innerHTML === game_status_battle) {
+        fireOpponentCell(element);
+        await sleep(100);
+        
+        if (game_status.innerHTML === game_status_win) {
+          showWinUI();
         }
-      }
-      
-      if (!is_opponent_ai) {
+        
         if (game_status.innerHTML === game_status_battle) {
-          handleOpponentBoardClick(element);
-          await sleep(100);
-          
-          if (game_status.innerHTML === game_status_win) {
-            showWinUI();
+          if (is_opponent_ai) {
+            await sleep(800);
           }
-          
-          opponent_board.classList.add(board_class_inactive);
-          waitForOpponentFire();
-          await sleep(100);
-          
-          if (game_status.innerHTML === game_status_battle) {
-            opponent_board.classList.remove(board_class_inactive);
-          }
-          
-          if (game_status.innerHTML === game_status_lose) {
-            showLoseUI();
-            showOpponentRemainingShipCells();
-          }
+          await waitForOpponentFire();
+        }
+        
+        if (game_status.innerHTML === game_status_lose) {
+          showLoseUI();
+          showOpponentRemainingShipCells();
         }
       }
     });
   }
 });
 
-function handleOpponentBoardClick(cell) {
-  const opponent_board_click_response = $.post('/opponent_cell_clicked', {
+function fireOpponentCell(cell) {
+  const fire_opponent_cell_response = $.post('/fire_opponent_cell', {
     username: username.value,
     game_status: game_status.innerHTML,
     cell_id: cell.id
   });
   
-  opponent_board_click_response.done(function (data) {
+  fire_opponent_cell_response.done(function (data) {
     if (data['is_changed']) {
       game_status.innerHTML = data['game_status'];
+      changeNextTurnPlayerName(data['whose_next_turn']);
       
       if (data['is_ship_destroyed'] && cell.innerHTML !== icon_destroyed) {
         changeRemainingShipCount('opponent', data['destroyed_ship'].toLowerCase(), color_cyan).then(r => r);
@@ -656,10 +652,17 @@ function handleOpponentBoardClick(cell) {
   });
 }
 
-function waitForOpponentFire() {
+async function waitForOpponentFire() {
   // todo toggleTurnTimer function
   
+  opponent_board.classList.add(board_class_inactive);
+  
   getOpponentTurn();
+  await sleep(100);
+  
+  if (game_status.innerHTML === game_status_battle) {
+    opponent_board.classList.remove(board_class_inactive);
+  }
   
   // todo toggleTurnTimer frunction
 }
@@ -676,12 +679,14 @@ function getOpponentTurn() {
     success: function (data) {
       if (data['is_changed']) {
         game_status.innerHTML = data['game_status'];
-        let fired_cell = Array.from(person_cells).find(cell => cell.id === data['cells']);
-    
+        changeNextTurnPlayerName(data['whose_next_turn']);
+        
+        let fired_cell = Array.from(person_cells).find(cell => cell.id === data['cells'][0]);
+        
         if (data['is_ship_destroyed'] && fired_cell.innerHTML !== icon_destroyed) {
           changeRemainingShipCount('person', data['destroyed_ship'].toLowerCase(), color_red).then(r => r);
         }
-    
+        
         fired_cell.innerHTML = data['icon']
         
         // todo wait for person turn for 15s
@@ -725,14 +730,27 @@ function showOpponentRemainingShipCells() {
 }
 
 
-function changeStateToReady(player_ready_state) {
-  player_ready_state.classList.remove(ready_state_class_inactive);
-  player_ready_state.classList.add(ready_state_class_active);
-  player_ready_state.innerHTML = ready_state_text_ready;
+function changeReadyState(player_ready_state, is_ready) {
+  if (is_ready) {
+    player_ready_state.classList.remove(ready_state_class_inactive);
+    player_ready_state.classList.add(ready_state_class_active);
+    player_ready_state.innerHTML = ready_state_text_ready;
+  } else {
+    player_ready_state.classList.remove(ready_state_class_active);
+    player_ready_state.classList.add(ready_state_class_inactive);
+    player_ready_state.innerHTML = ready_state_text_not_ready;
+  }
+}
+
+function changeNextTurnPlayerName(whose_next_turn_name) {
+  if (whose_next_turn_name === null) {
+    whose_next_turn_name = robot_name;
+  }
+  whose_next_turn.innerHTML = whose_next_turn_pattern + whose_next_turn_name;
 }
 
 
-function showGameUI(new_game_status) {
+function showShipsPlacingUI(new_game_status) {
   game_status.innerHTML = new_game_status;
   game_status.classList.remove(game_status_active_class);
   game_status.classList.add(game_status_inactive_class);
@@ -751,17 +769,17 @@ function showBattleUI() {
 }
 
 function showWinUI() {
-  game_state_panel_section.style.display = 'none';
-  opponent_board.classList.add(board_class_inactive);
-  person_board.classList.add(board_class_inactive);
   game_status.style.color = color_white;
   game_status.style.backgroundColor = color_cyan;
+  opponent_board.classList.add(board_class_inactive);
+  person_board.classList.add(board_class_inactive);
+  game_state_panel_section.style.display = 'none';
 }
 
 function showLoseUI() {
-  game_state_panel_section.style.display = 'none';
-  opponent_board.classList.add(board_class_inactive);
-  person_board.classList.add(board_class_inactive);
   game_status.style.color = color_white;
   game_status.style.backgroundColor = color_red;
+  opponent_board.classList.add(board_class_inactive);
+  person_board.classList.add(board_class_inactive);
+  game_state_panel_section.style.display = 'none';
 }

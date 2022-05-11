@@ -55,16 +55,17 @@ def connect_to_lobby():
     return server_response
 
 
-@app.route('/check_for_start_game')
-def check_for_start_game():
+@app.route('/wait_for_start_game')
+def wait_for_start_game():
     session_key = request.cookies.get('session-key')
-    return gs.check_for_start_game(session_key)
+    return gs.wait_for_start_game(session_key)
 
 
-@app.route('/wait_for_opponent_ready_for_battle')
+@app.route('/wait_for_opponent_ready_for_battle', methods=['POST'])
 def wait_for_opponent_ready_for_battle():
     session_key = request.cookies.get('session-key')
-    return gs.wait_for_opponent_ready_for_battle(session_key)
+    username = request.form['username']
+    return gs.wait_for_opponent_ready_for_battle(session_key, username)
 
 
 @app.route('/leave', methods=['POST'])
@@ -78,14 +79,7 @@ def leave():
 def start_game():
     session_key = request.cookies.get('session-key')
     current_status = request.form['current_status']
-    game_change_response = gs.start_game(session_key, current_status)
-    server_response = make_response(game_change_response)
-    if game_change_response['is_changed']:
-        server_response.set_cookie(
-            'session-key',
-            value=session_key
-        )
-    return server_response
+    return gs.start_game(session_key, current_status)
 
 
 @app.route('/get_ship_outline_cells', methods=['POST'])
@@ -109,8 +103,8 @@ def response_to_person_cell_click():
                                   ship, ship_direction, current_status)
 
 
-@app.route('/opponent_cell_clicked', methods=['POST'])
-def response_to_opponent_cell_click():
+@app.route('/fire_opponent_cell', methods=['POST'])
+def fire_opponent_cell():
     session_key = request.cookies.get('session-key')
     username = request.form['username']
     current_status = request.form['game_status']
