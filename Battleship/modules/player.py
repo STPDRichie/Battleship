@@ -229,6 +229,11 @@ class Player:
             return GameStatus.LOSE.value
         
         return GameStatus.BATTLE.value
+
+    def is_ready_for_battle(self):
+        if self.non_placed_ships_count > 0:
+            return False
+        return True
     
     def get_remains_to_place_ship_count(self, ship_name):
         return self.ships_remains_to_place[ship_name]

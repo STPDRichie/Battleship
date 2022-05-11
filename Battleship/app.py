@@ -61,6 +61,12 @@ def check_for_start_game():
     return gs.check_for_start_game(session_key)
 
 
+@app.route('/wait_for_opponent_ready_for_battle')
+def wait_for_opponent_ready_for_battle():
+    session_key = request.cookies.get('session-key')
+    return gs.wait_for_opponent_ready_for_battle(session_key)
+
+
 @app.route('/leave', methods=['POST'])
 def leave():
     session_key = request.cookies.get('session-key')

@@ -80,6 +80,19 @@ def check_for_start_game(session_key):
                                       opponent=current_lobby.host_name))
 
 
+def wait_for_opponent_ready_for_battle(session_key):
+    while True:
+        time.sleep(0.5)
+        current_lobby = next((lobby for lobby in app.lobbies
+                              if lobby.session_key == session_key), None)
+
+        if not current_lobby or not current_lobby.member_name:
+            return asdict(GameChange(is_lobby_exist=False, is_changed=True))
+        if current_lobby.is_game_started:
+            return asdict(GameChange(is_lobby_exist=True, is_changed=True,
+                                     is_opponent_ready_for_battle=True))
+
+
 def leave(session_key, username):
     current_lobby = next((lobby for lobby in app.lobbies
                           if lobby.session_key == session_key), None)
@@ -166,6 +179,8 @@ def change_person_cells(session_key, username, cell_icon, cell_id, ship,
         if not ship_cells:
             return asdict(GameChange())
         new_game_status = current_player.check_game_status()
+        is_person_ready = current_player.is_ready_for_battle()
+        is_opponent_ready = current_player.opponent.is_ready_for_battle()
         cells_ids = player_cells_to_id_format(ship_cells,
                                               PlayerName.PERSON.value)
         ship_count = current_player.get_remains_to_place_ship_count(ship)
@@ -174,6 +189,8 @@ def change_person_cells(session_key, username, cell_icon, cell_id, ship,
         returned_ship = current_player.get_ship_name(cell)
         ship_cells = current_player.uninit_and_get_ship_cells(cell)
         new_game_status = current_player.check_game_status()
+        is_person_ready = current_player.is_ready_for_battle()
+        is_opponent_ready = current_player.opponent.is_ready_for_battle()
         cells_ids = player_cells_to_id_format(ship_cells,
                                               PlayerName.PERSON.value)
         ship_count = current_player \
@@ -188,7 +205,9 @@ def change_person_cells(session_key, username, cell_icon, cell_id, ship,
     return asdict(
         GameChange(is_changed=True, game_status=new_game_status,
                    ship_count=ship_count, returned_ship=returned_ship,
-                   cells=cells_ids, icon=new_icon))
+                   cells=cells_ids, icon=new_icon,
+                   is_person_ready_for_battle=is_person_ready,
+                   is_opponent_ready_for_battle=is_opponent_ready))
 
 
 def fire_opponent_cell(session_key, username, cell_id, current_status):
@@ -317,6 +336,7 @@ def cells_to_other_player_id_format(cells_ids):
 
 @dataclass(frozen=True)
 class GameChange:
+    is_lobby_exist: bool = False
     is_changed: bool = False
     next_turn_player_name: str = None
     game_status: str = GameStatus.START.value
@@ -326,6 +346,8 @@ class GameChange:
     destroyed_ship: str = ''
     ship_count: int = 0
     returned_ship: str = ''
+    is_person_ready_for_battle: bool = False
+    is_opponent_ready_for_battle: bool = False
 
 
 @dataclass(frozen=True)

@@ -290,6 +290,9 @@ const opponent_ready_state = document.getElementById('opponent-ready-state');
 const turn_player_name = document.getElementById('turn-player-name');
 const turn_timer =document.getElementById('turn-timer');
 
+const ready_state_class_active = 'game-state-panel__ready-state_active';
+const ready_state_class_inactive = 'game-state-panel__ready-state_inactive';
+
 
 const remaining_ships = document.getElementsByClassName('remaining-ship__count');
 const remaining_ship_panel = document.getElementById('remaining-ships-panel');
@@ -463,11 +466,27 @@ function handlePersonBoardClick(cell) {
     cell_id: cell.id
   });
   
-  // todo if ships_remains_to_place == 0 Ready & waitForOpponentShipsPlacing
+  // todo if non_placed_ships_count == 0 Ready & waitForOpponentShipsPlacing
   
   person_board_click_response.done(function (data) {
     if (data['is_changed']) {
       game_status.innerHTML = data['game_status'];
+
+      if (data['is_person_ready_for_battle']) {
+        changeStateToReady(person_ready_state);
+
+        if (!data['is_opponent_ready_for_battle']) {
+          waitForOpponentShipsPlacing();
+        }
+      }
+
+      if (data['is_opponent_ready_for_battle']) {
+        changeStateToReady(opponent_ready_state);
+      }
+
+      if (game_status.innerHTML === game_status_battle) {
+        showBattleUI();
+      }
       
       for (let i = 0; i < data['cells'].length; i++) {
         let current_cell = Array.from(person_cells).find(cell => cell.id === data['cells'][i]);
@@ -506,12 +525,37 @@ function handlePersonBoardClick(cell) {
           next_ship_select_button.classList.add(ship_select_button_class_active);
         }
       }
-      
-      if (game_status.innerHTML === game_status_battle) {
-        showBattleUI();
-      }
     }
   });
+}
+
+function waitForOpponentShipsPlacing() {
+  $.ajax({
+    url: '/wait_for_opponent_ready_for_battle',
+    data: {
+      username: username.value
+    },
+    timeout: 30000,
+    success: function (data) {
+      if (data['is_changed']) {
+        if (!data['is_lobby_exist']) {
+          // todo alert lobby closed
+          leave();
+          return;
+        }
+
+        if (data['is_opponent_ready_for_battle']) {
+          changeStateToReady(opponent_ready_state);
+          return;
+        }
+      }
+      waitForOpponentShipsPlacing();
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      console.log('wait_for_opponent_ready_for_battle: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
+      waitForOpponentShipsPlacing();
+    }
+  })
 }
 
 function handlePersonCellHover(cell) {
@@ -686,16 +730,22 @@ function showOpponentRemainingShipCells() {
 }
 
 
+function changeStateToReady(player_ready_state) {
+  player_ready_state.classList.remove(ready_state_class_inactive);
+  player_ready_state.classList.add(ready_state_class_active);
+}
+
 function showBattleUI() {
   ship_placing_buttons.style.display = 'none';
   game_state_panel_section.style.display = 'flex';
-  ready_states_block.style.display = 'flex';
-  turn_block.style.display = 'none';
+  ready_states_block.style.display = 'none';
+  turn_block.style.display = 'flex';
   remaining_ship_panel.style.display = 'block';
 }
 
 
 function showWinUI() {
+  game_state_panel_section.style.display = 'none';
   opponent_board.classList.add(board_class_inactive);
   person_board.classList.add(board_class_inactive);
   game_status.style.color = color_white;
@@ -703,6 +753,7 @@ function showWinUI() {
 }
 
 function showLoseUI() {
+  game_state_panel_section.style.display = 'none';
   opponent_board.classList.add(board_class_inactive);
   person_board.classList.add(board_class_inactive);
   game_status.style.color = color_white;
