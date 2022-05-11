@@ -143,11 +143,7 @@ def restart_game(session_key):
     return asdict(GameChange())
 
 
-def get_person_outline_cells(ship, ship_direction,
-                             cell_id, current_status):
-    if current_status != GameStatus.PLACE_SHIPS.value:
-        return asdict(GameChange())
-    
+def get_ship_outline_cells(ship, ship_direction, cell_id):
     cell = cell_id_to_computing_format(cell_id)
     cells = get_ship_cells(cell, ship, ship_direction)
     

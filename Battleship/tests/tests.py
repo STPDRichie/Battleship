@@ -266,9 +266,9 @@ class GameStatusTest(TestCase):
             .player_cells_to_id_format([cell], PlayerName.PERSON.value)[0]
 
         dont_outline_cells_response = gs\
-            .get_person_outline_cells(ShipName.SUBMARINE.value,
-                                      ShipDirection.VERTICAL.value,
-                                      cell_id, GameStatus.START.value)
+            .get_ship_outline_cells(ShipName.SUBMARINE.value,
+                                    ShipDirection.VERTICAL.value,
+                                    cell_id, GameStatus.START.value)
 
         self.assertEqual(False, dont_outline_cells_response['is_changed'])
 
@@ -278,9 +278,9 @@ class GameStatusTest(TestCase):
             .player_cells_to_id_format([cell], PlayerName.PERSON.value)[0]
 
         dont_outline_cells_response = gs\
-            .get_person_outline_cells(ShipName.BATTLESHIP.value,
-                                      ShipDirection.VERTICAL.value,
-                                      cell_id, GameStatus.PLACE_SHIPS.value)
+            .get_ship_outline_cells(ShipName.BATTLESHIP.value,
+                                    ShipDirection.VERTICAL.value,
+                                    cell_id, GameStatus.PLACE_SHIPS.value)
 
         self.assertEqual(False, dont_outline_cells_response['is_changed'])
 
@@ -294,9 +294,9 @@ class GameStatusTest(TestCase):
                                        PlayerName.PERSON.value)
 
         outline_cells_response = gs\
-            .get_person_outline_cells(ShipName.SUBMARINE.value,
-                                      ShipDirection.VERTICAL.value,
-                                      cell_id, GameStatus.PLACE_SHIPS.value)
+            .get_ship_outline_cells(ShipName.SUBMARINE.value,
+                                    ShipDirection.VERTICAL.value,
+                                    cell_id, GameStatus.PLACE_SHIPS.value)
 
         self.assertEqual(True, outline_cells_response['is_changed'])
         self.assertEqual(submarine_cells_ids, outline_cells_response['cells'])

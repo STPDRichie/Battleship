@@ -292,6 +292,8 @@ const turn_timer =document.getElementById('turn-timer');
 
 const ready_state_class_active = 'game-state-panel__ready-state_active';
 const ready_state_class_inactive = 'game-state-panel__ready-state_inactive';
+const ready_state_text_ready = 'Ready';
+const ready_state_text_not_ready = 'Not ready';
 
 
 const remaining_ships = document.getElementsByClassName('remaining-ship__count');
@@ -318,16 +320,6 @@ game_status.addEventListener('click', function () {
     showGameUI(data['game_status'].toString());
   });
 });
-
-function showGameUI(new_game_status) {
-  game_status.innerHTML = new_game_status;
-  game_status.classList.remove(game_status_active_class);
-  game_status.classList.add(game_status_inactive_class);
-
-  ship_placing_buttons.style.display = 'block';
-  restart_button.style.display = 'flex';
-  game_state_panel_section.style.display = 'flex';
-}
 
 
 restart_button.addEventListener('click', function () {
@@ -559,8 +551,11 @@ function waitForOpponentShipsPlacing() {
 }
 
 function handlePersonCellHover(cell) {
-  const person_cell_hover_response = $.post('/person_cell_hovered', {
-    game_status: game_status.innerHTML,
+  if (game_status.innerHTML !== game_status_placing_ships || person_ready_state.innerHTML === ready_state_text_ready) {
+    return;
+  }
+  
+  const person_cell_hover_response = $.post('/get_ship_outline_cells', {
     current_ship: selected_ship,
     direction: selected_ship_direction,
     cell_id: cell.id
@@ -733,6 +728,18 @@ function showOpponentRemainingShipCells() {
 function changeStateToReady(player_ready_state) {
   player_ready_state.classList.remove(ready_state_class_inactive);
   player_ready_state.classList.add(ready_state_class_active);
+  player_ready_state.innerHTML = ready_state_text_ready;
+}
+
+
+function showGameUI(new_game_status) {
+  game_status.innerHTML = new_game_status;
+  game_status.classList.remove(game_status_active_class);
+  game_status.classList.add(game_status_inactive_class);
+  
+  ship_placing_buttons.style.display = 'block';
+  restart_button.style.display = 'flex';
+  game_state_panel_section.style.display = 'flex';
 }
 
 function showBattleUI() {
@@ -742,7 +749,6 @@ function showBattleUI() {
   turn_block.style.display = 'flex';
   remaining_ship_panel.style.display = 'block';
 }
-
 
 function showWinUI() {
   game_state_panel_section.style.display = 'none';

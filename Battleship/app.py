@@ -88,14 +88,12 @@ def start_game():
     return server_response
 
 
-@app.route('/person_cell_hovered', methods=['POST'])
-def response_to_person_cell_hover():
-    current_status = request.form['game_status']
+@app.route('/get_ship_outline_cells', methods=['POST'])
+def get_ship_outline_cells():
     ship = request.form['current_ship']
     ship_direction = request.form['direction']
     cell_id = request.form['cell_id']
-    return gs.get_person_outline_cells(ship, ship_direction,
-                                       cell_id, current_status)
+    return gs.get_ship_outline_cells(ship, ship_direction, cell_id)
 
 
 @app.route('/person_cell_clicked', methods=['POST'])
