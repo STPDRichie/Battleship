@@ -616,9 +616,9 @@ Array.prototype.forEach.call(opponent_cells, function (element) {
         }
         
         if (game_status.innerHTML === game_status_battle) {
-          if (is_opponent_ai) {
-            await sleep(800);
-          }
+          // if (is_opponent_ai) {
+          //   await sleep(800);
+          // }
           await waitForOpponentFire();
         }
         
@@ -658,7 +658,7 @@ async function waitForOpponentFire() {
   opponent_board.classList.add(board_class_inactive);
   
   getOpponentTurn();
-  await sleep(100);
+  // await sleep(100);
   
   if (game_status.innerHTML === game_status_battle) {
     opponent_board.classList.remove(board_class_inactive);

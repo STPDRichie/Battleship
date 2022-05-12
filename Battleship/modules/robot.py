@@ -1,3 +1,4 @@
+import time
 from random import randint
 
 from modules.domain import CellStatus, ShipName, ShipDirection
@@ -33,6 +34,7 @@ class Robot(Player):
             self.place_ship((row, column), ship, ship_direction)
     
     def random_fire(self):
+        time.sleep(1)
         next_cells_length = len(self.next_cells_to_fire)
         if next_cells_length != 0:
             cell = self.next_cells_to_fire[randint(0, next_cells_length - 1)]
