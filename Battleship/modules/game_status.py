@@ -180,27 +180,14 @@ def change_person_cells(session_key, username, cell_icon, cell_id, ship,
     
     cell = cell_id_to_computing_format(cell_id)
     
-    returned_ship = ''
-    if cell_icon == CellIcon.EMPTY.value:
-        ship_cells = current_player.place_ship(cell, ship, ship_direction)
-        if not ship_cells:
-            return asdict(GameChange())
-        ship_count = current_player.get_remains_to_place_ship_count(ship)
-        new_icon = CellIcon.SHIP.value
-    elif cell_icon == CellIcon.SHIP.value:
-        returned_ship = current_player.get_ship_name(cell)
-        ship_cells = current_player.uninit_and_get_ship_cells(cell)
-        ship_count = current_player\
-            .get_remains_to_place_ship_count(returned_ship)
-        new_icon = CellIcon.EMPTY.value
-    else:
+    ship_count, returned_ship, cells_ids, new_icon = \
+        get_change_player_cell_info(current_player, cell, cell_icon,
+                                    ship, ship_direction)
+    if not ship_count:
         return asdict(GameChange())
     
-    new_game_status = current_player.check_game_status()
-    is_person_ready = current_player.is_ready_for_battle()
-    is_opponent_ready = current_player.opponent.is_ready_for_battle()
-    cells_ids = player_cells_to_id_format(ship_cells,
-                                          PlayerName.PERSON.value)
+    new_game_status, is_person_ready, is_opponent_ready = \
+        get_game_status_info(current_player)
     
     if new_game_status == GameStatus.BATTLE.value:
         current_game.is_battle_started = True
@@ -231,16 +218,9 @@ def fire_opponent_cell(session_key, username, cell_id, current_status):
     new_icon, is_ship_destroyed, destroyed_ship = \
         get_fire_info(cell, fired_cell_status, current_player.opponent)
 
-    current_game.change_turn_player()
-    turn = GameChange(is_changed=True,
-                      whose_turn=current_game.whose_turn,
-                      game_status=new_game_status,
-                      cells=[cell_id],
-                      icon=new_icon, is_ship_destroyed=is_ship_destroyed,
-                      destroyed_ship=destroyed_ship)
-    current_game.change_last_turn(turn)
-    
-    return asdict(turn)
+    return update_game_and_get_last_turn(current_game, new_game_status,
+                                         [cell_id], new_icon,
+                                         is_ship_destroyed, destroyed_ship)
 
 
 def get_opponent_fire(session_key, username, current_status):
@@ -254,12 +234,9 @@ def get_opponent_fire(session_key, username, current_status):
         time.sleep(0.5)
         last_turn = current_game.last_turn
         if last_turn and last_turn.whose_turn == username:
-            print(last_turn.cells[0])
-            print(cells_to_other_player_id_format([last_turn.cells[0]]))
             response_turn = replace(
                 last_turn,
                 cells=cells_to_other_player_id_format([last_turn.cells[0]]))
-            print(asdict(response_turn))
             return asdict(response_turn)
 
 
@@ -277,16 +254,9 @@ def get_robot_fire(session_key, current_status):
     new_icon, is_ship_destroyed, destroyed_ship = \
         get_fire_info(fired_cell, fired_cell_status, current_game.player1)
 
-    current_game.change_turn_player()
-    turn = GameChange(is_changed=True,
-                      whose_turn=current_game.whose_turn,
-                      game_status=new_game_status,
-                      cells=[fired_cell_id],
-                      icon=new_icon, is_ship_destroyed=is_ship_destroyed,
-                      destroyed_ship=destroyed_ship)
-    current_game.change_last_turn(turn)
-    
-    return asdict(turn)
+    return update_game_and_get_last_turn(current_game, new_game_status,
+                                         [fired_cell_id], new_icon,
+                                         is_ship_destroyed, destroyed_ship)
 
 
 def get_opponent_remaining_ship_cells(session_key, username):
@@ -300,6 +270,20 @@ def get_opponent_remaining_ship_cells(session_key, username):
     cells_ids = player_cells_to_id_format(remaining_cells,
                                           PlayerName.OPPONENT.value)
     return asdict(GameChange(cells=cells_ids, icon=CellIcon.SHIP.value))
+
+
+def update_game_and_get_last_turn(current_game, game_status,
+                                  cells, icon, is_ship_destroyed,
+                                  destroyed_ship):
+    current_game.change_turn_player()
+    turn = GameChange(is_changed=True,
+                      whose_turn=current_game.whose_turn,
+                      game_status=game_status,
+                      cells=cells,
+                      icon=icon, is_ship_destroyed=is_ship_destroyed,
+                      destroyed_ship=destroyed_ship)
+    current_game.change_last_turn(turn)
+    return asdict(turn)
 
 
 def get_game_if_correct(session_key, current_status, required_status):
@@ -323,6 +307,38 @@ def get_lobby_if_exist(session_key):
     current_lobby = next((lobby for lobby in app.lobbies
                           if lobby.session_key == session_key), None)
     return current_lobby
+
+
+def get_change_player_cell_info(current_player, cell, cell_icon,
+                                ship, ship_direction):
+    returned_ship = ''
+    if cell_icon == CellIcon.EMPTY.value:
+        ship_cells = current_player.place_ship(cell, ship, ship_direction)
+        if not ship_cells:
+            return None, None, None, None
+        ship_count = current_player.get_remains_to_place_ship_count(ship)
+        new_icon = CellIcon.SHIP.value
+    elif cell_icon == CellIcon.SHIP.value:
+        returned_ship = current_player.get_ship_name(cell)
+        ship_cells = current_player.uninit_and_get_ship_cells(cell)
+        ship_count = current_player\
+            .get_remains_to_place_ship_count(returned_ship)
+        new_icon = CellIcon.EMPTY.value
+    else:
+        return None, None, None, None
+    
+    cells_ids = player_cells_to_id_format(ship_cells,
+                                          PlayerName.PERSON.value)
+    
+    return ship_count, returned_ship, cells_ids, new_icon
+
+
+def get_game_status_info(current_player):
+    new_game_status = current_player.check_game_status()
+    is_person_ready = current_player.is_ready_for_battle()
+    is_opponent_ready = current_player.opponent.is_ready_for_battle()
+    
+    return new_game_status, is_person_ready, is_opponent_ready
 
 
 def get_fire_info(fired_cell, fired_cell_status, opponent):
@@ -365,7 +381,6 @@ def cells_to_other_player_id_format(cells_ids):
     cells = []
     for cell_id in cells_ids:
         cells.append(cell_id_to_computing_format(cell_id))
-    print(cells)
     
     if cells_ids[0].split('-')[0] == PlayerName.PERSON.value:
         return player_cells_to_id_format(cells, PlayerName.OPPONENT.value)
