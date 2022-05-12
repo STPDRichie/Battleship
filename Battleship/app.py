@@ -116,14 +116,16 @@ def fire_opponent_cell():
 @app.route('/get_opponent_fire', methods=['POST'])
 def get_opponent_fire():
     session_key = request.cookies.get('session-key')
+    username = request.form['username']
     current_status = request.form['game_status']
-    return gs.get_robot_fire(session_key, current_status)
+    return gs.get_opponent_fire(session_key, username, current_status)
 
 
-@app.route('/get_opponent_remaining_ships', methods=['GET'])
+@app.route('/get_opponent_remaining_ships', methods=['POST'])
 def get_opponent_remaining_ship_cells():
     session_key = request.cookies.get('session-key')
-    return gs.get_opponent_remaining_ship_cells(session_key)
+    username = request.form['username']
+    return gs.get_opponent_remaining_ship_cells(session_key, username)
 
 
 @app.route('/restart_game', methods=['GET'])

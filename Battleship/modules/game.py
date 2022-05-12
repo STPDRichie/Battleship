@@ -18,15 +18,14 @@ class Game:
         self.player2.init_opponent(self.player1)
         
         self.is_battle_started = False
-        self.whose_next_turn = \
-            choice([lobby.host_name, lobby.member_name])
+        self.whose_turn = choice([lobby.host_name, lobby.member_name])
         self.last_turn = None
 
-    def change_next_turn_player(self):
-        if self.whose_next_turn == self.lobby.host_name:
-            self.whose_next_turn = self.lobby.member_name
+    def change_turn_player(self):
+        if self.whose_turn == self.lobby.host_name:
+            self.whose_turn = self.lobby.member_name
         else:
-            self.whose_next_turn = self.lobby.host_name
+            self.whose_turn = self.lobby.host_name
 
     def change_last_turn(self, turn):
         self.last_turn = turn

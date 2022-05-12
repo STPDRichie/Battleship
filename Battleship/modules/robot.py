@@ -1,5 +1,5 @@
 import time
-from random import randint
+from random import randint, uniform
 
 from modules.domain import CellStatus, ShipName, ShipDirection
 from modules.player import Player
@@ -34,7 +34,6 @@ class Robot(Player):
             self.place_ship((row, column), ship, ship_direction)
     
     def random_fire(self):
-        time.sleep(1)
         next_cells_length = len(self.next_cells_to_fire)
         if next_cells_length != 0:
             cell = self.next_cells_to_fire[randint(0, next_cells_length - 1)]
@@ -44,6 +43,8 @@ class Robot(Player):
             while cell in self.opponent_not_empty_cells:
                 cell = (randint(0, 9), randint(0, 9))
         
+        time.sleep(0.5)
+        # time.sleep(round(uniform(0.5, 1.5), 1))
         fired_cell_status, is_one_more = self.opponent.get_fired(cell)
         self.opponent_not_empty_cells.add(cell)
         
