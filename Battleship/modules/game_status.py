@@ -40,16 +40,12 @@ def wait_for_member_connect(session_key):
                                       opponent=current_lobby.member_name))
 
 
-def check_for_opponent_connection(session_key):
+def check_is_member_in_lobby(session_key):
     while True:
         time.sleep(0.5)
         current_lobby = get_lobby_if_exist(session_key)
         if not current_lobby:
             return asdict(LobbyChange(is_lobby_exist=False, is_changed=True))
-        
-        # current_game = get_game_if_exist(session_key)
-        # if current_lobby.is_game_started and current_game:
-        #     return asdict(LobbyChange(is_lobby_exist=False, is_changed=True))
         
         if not current_lobby.member_name:
             return asdict(LobbyChange(is_lobby_exist=True,
@@ -90,10 +86,14 @@ def leave(session_key, username):
         current_lobby.uninit_second_player()
         if username == current_lobby.host_name:
             app.lobbies.remove(current_lobby)
-
+        
         if current_lobby.is_game_started:
             current_game = get_game_if_exist(session_key)
-            app.games.remove(current_game)
+            if current_game:
+                current_game.change_turn_player()
+                turn = GameChange(is_changed=True)
+                current_game.change_last_turn(turn)
+                app.games.remove(current_game)
     
     return asdict(LobbyChange(is_changed=True))
 
@@ -103,13 +103,15 @@ def wait_for_opponent_ready_for_battle(session_key, username):
         time.sleep(0.5)
         current_lobby = get_lobby_if_exist(session_key)
         if not current_lobby:
-            return asdict(GameChange(is_lobby_exist=False, is_changed=True))
+            return asdict(GameChange(is_changed=True))
 
         current_game = get_game_if_exist(session_key)
+        if not current_game:
+            return asdict(GameChange(is_changed=True))
 
         if not current_lobby.member_name and \
                 not isinstance(current_game.player2, Robot):
-            return asdict(GameChange(is_lobby_exist=False, is_changed=True))
+            return asdict(GameChange(is_changed=True))
 
         current_player = get_current_player(current_game, username)
         is_person_ready = current_player.is_ready_for_battle()
@@ -151,6 +153,7 @@ def restart_game(session_key):
     current_game = get_game_if_exist(session_key)
     
     if current_game:
+        # todo change last turn
         current_game.__init__(current_game.lobby)
         return asdict(
             GameChange(is_changed=True,
@@ -230,6 +233,9 @@ def fire_opponent_cell(session_key, username, cell_id, current_status):
 def get_opponent_fire(session_key, username, current_status):
     current_game = get_game_if_correct(session_key, current_status,
                                        GameStatus.BATTLE.value)
+    if not current_game:
+        return asdict(GameChange(is_changed=True))
+    
     current_player = get_current_player(current_game, username)
     if isinstance(current_player.opponent, Robot):
         return get_robot_fire(session_key, current_status)
@@ -238,9 +244,12 @@ def get_opponent_fire(session_key, username, current_status):
         time.sleep(0.5)
         last_turn = current_game.last_turn
         if last_turn and last_turn.whose_turn == username:
+            fired_cell = None
+            if last_turn.cells:
+                fired_cell = last_turn.cells[0]
             response_turn = replace(
                 last_turn,
-                cells=cells_to_other_player_id_format([last_turn.cells[0]]))
+                cells=cells_to_other_player_id_format([fired_cell]))
             return asdict(response_turn)
 
 
@@ -280,7 +289,7 @@ def update_game_and_get_last_turn(current_game, game_status,
                                   cells, icon, is_ship_destroyed,
                                   destroyed_ship):
     current_game.change_turn_player()
-    turn = GameChange(is_changed=True,
+    turn = GameChange(is_lobby_exist=True, is_changed=True,
                       whose_turn=current_game.whose_turn,
                       game_status=game_status,
                       cells=cells,
@@ -382,6 +391,9 @@ def player_cells_to_id_format(cells, player):
 
 
 def cells_to_other_player_id_format(cells_ids):
+    if not cells_ids or not cells_ids[0]:
+        return None
+    
     cells = []
     for cell_id in cells_ids:
         cells.append(cell_id_to_computing_format(cell_id))
