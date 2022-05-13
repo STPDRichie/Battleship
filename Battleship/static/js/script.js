@@ -249,8 +249,8 @@ function waitForStartGame() {
 const game_panel_section = document.getElementById('game-panel');
 const game_status = document.getElementById('game-status');
 const ship_placing_buttons = document.getElementById('ship-placing-buttons');
-const game_status_active_class = 'game-panel__status';
-const game_status_inactive_class = 'game-panel__status_inactive'
+const game_status_class_active = 'game-panel__status';
+const game_status_class_inactive = 'game-panel__status_inactive';
 const game_status_placing_ships = 'Ships placing';
 const game_status_battle = 'Battle';
 const game_status_win = 'Win';
@@ -342,13 +342,13 @@ restart_button.addEventListener('click', function () {
   
   restart_button_click_response.done(function (data) {
     if (data['is_changed']) {
-      resetGame(data['whose_turn']);
+      resetShipsPlacing(data['whose_turn']);
       waitForOpponentReadyForBattle();
     }
   });
 });
 
-function resetGame(whose_turn_name) {
+function resetShipsPlacing(whose_turn_name) {
   changeGameStatus(game_status_placing_ships, true);
   ship_placing_buttons.style.display = 'block';
   remaining_ship_panel.style.display = 'none';
@@ -477,7 +477,7 @@ function handlePersonBoardClick(cell) {
   person_board_click_response.done(async function (data) {
     if (data['is_changed']) {
       if (data['is_game_restarted']) {
-        resetGame(data['whose_turn']);
+        resetShipsPlacing(data['whose_turn']);
         waitForOpponentReadyForBattle();
         return;
       }
@@ -553,7 +553,7 @@ function waitForOpponentReadyForBattle() {
     success: function (data) {
       if (data['is_changed']) {
         if (data['is_game_restarted']) {
-          resetGame(data['whose_turn']);
+          resetShipsPlacing(data['whose_turn']);
           waitForOpponentReadyForBattle();
           return;
         }
@@ -661,7 +661,7 @@ async function fireOpponentCell(cell) {
     success: function (data) {
       if (data['is_changed']) {
         if (data['is_game_restarted']) {
-          resetGame(data['whose_turn']);
+          resetShipsPlacing(data['whose_turn']);
           waitForOpponentReadyForBattle();
           return;
         }
@@ -699,7 +699,7 @@ function getOpponentTurn() {
     success: function (data) {
       if (data['is_changed']) {
         if (data['is_game_restarted']) {
-          resetGame(data['whose_turn']);
+          resetShipsPlacing(data['whose_turn']);
           waitForOpponentReadyForBattle();
           return;
         }
@@ -805,9 +805,9 @@ function changeBoardActivity(board, should_lock) {
 
 function changeGameStatusActivity(should_be_inactive) {
   if (should_be_inactive) {
-    replaceClasses(game_status, game_status_active_class, game_status_inactive_class);
+    replaceClasses(game_status, game_status_class_active, game_status_class_inactive);
   } else {
-    replaceClasses(game_status, game_status_inactive_class, game_status_active_class);
+    replaceClasses(game_status, game_status_class_inactive, game_status_class_active);
   }
 }
 
