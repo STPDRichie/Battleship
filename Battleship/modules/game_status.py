@@ -183,7 +183,7 @@ def change_person_cells(session_key, username, cell_icon, cell_id, ship,
     ship_count, returned_ship, cells_ids, new_icon = \
         get_change_player_cell_info(current_player, cell, cell_icon,
                                     ship, ship_direction)
-    if not ship_count:
+    if not cells_ids:
         return asdict(GameChange())
     
     new_game_status, is_person_ready, is_opponent_ready = \

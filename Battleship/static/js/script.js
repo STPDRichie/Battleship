@@ -1,4 +1,5 @@
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+let current_pollings = []
 
 const color_white = '#ffffff';
 const color_lightgray = '#999999';
@@ -38,8 +39,8 @@ const game_session_button_class_default = 'game-session__button';
 const game_session_button_class_inactive = 'game-session__button_inactive';
 const session_key_cookie_name_eq = 'session-key=';
 const session_key_cookie_erase_id = session_key_cookie_name_eq + '; Max-Age=0';
-let is_opponent_ai = false;
 let is_game_started = false;
+let am_i_host = false;
 
 username.value = 'Guest';
 session_key.innerHTML = Date.now().toString();
@@ -48,6 +49,7 @@ session_key.innerHTML = Date.now().toString();
 window.onbeforeunload = leave
 
 function leave() {
+  stopAllAsyncPollings();
   const disconnect_response = $.post('/leave', {
     username: username.value
   });
@@ -59,6 +61,15 @@ function leave() {
   });
 }
 
+function stopAllAsyncPollings() {
+  if (window.fire_opponent_cell) {
+    window.fire_opponent_cell.abort();
+  }
+  if (window.get_opponent_fire) {
+    window.get_opponent_fire.abort();
+  }
+}
+
 
 leave_button.addEventListener('click', function () {
   leave();
@@ -66,6 +77,7 @@ leave_button.addEventListener('click', function () {
   host_block.style.display = 'none';
   member_block.style.display = 'none';
   lobby_block.style.display = 'none';
+  am_i_host = false;
   
   game_select_block.style.display = 'block';
 });
@@ -77,10 +89,10 @@ play_with_robot_button.addEventListener('click', function () {
     username: username.value
   });
   
-  is_opponent_ai = true;
   game_session_section.style.display = 'none';
   game_panel_section.style.display = 'block';
   game_section.style.display = 'flex';
+  am_i_host = true;
 });
 
 
@@ -99,6 +111,7 @@ host_button.addEventListener('click', function () {
       game_select_block.style.display = 'none';
       lobby_block.style.display = 'block';
       host_block.style.display = 'flex';
+      am_i_host = true;
       
       waitForMemberConnect();
     }
@@ -317,6 +330,8 @@ const board_class_inactive = 'game__board_inactive';
 const markup_cell_class = 'game__markup-cell';
 let hovered_cells = [];
 
+changeBoardActivity(opponent_board, true).then();
+
 
 game_status.addEventListener('click', function () {
   const game_status_click_response = $.post('/start_game', {
@@ -385,7 +400,7 @@ function resetGame(whose_turn_name) {
   selected_ship = ship_select_button_default;
   
   changeBoardActivity(person_board, false).then();
-  changeBoardActivity(opponent_board, false).then();
+  changeBoardActivity(opponent_board, true).then();
   Array.prototype.forEach.call(person_cells, function (cell) {
     if (!cell.classList.contains(markup_cell_class)) {
       cell.innerHTML = icon_empty;
@@ -465,6 +480,10 @@ Array.prototype.forEach.call(person_cells, function (element) {
 });
 
 function handlePersonBoardClick(cell) {
+  if (person_ready_state.innerHTML === ready_state_text_ready) {
+    return;
+  }
+  
   const person_board_click_response = $.post('/person_cell_clicked', {
     username: username.value,
     game_status: game_status.innerHTML,
@@ -497,6 +516,8 @@ function handlePersonBoardClick(cell) {
         showBattleUI();
         if (username.value !== data['whose_turn']) {
           waitForOpponentFire().then();
+        } else {
+          changeBoardActivity(opponent_board, false).then();
         }
       }
     }
@@ -561,8 +582,10 @@ function waitForOpponentReadyForBattle() {
             game_status.innerHTML = game_status_battle;
             showBattleUI();
             if (username.value !== data['whose_turn']) {
-              changeBoardActivity(opponent_board, true).then();
               waitForOpponentFire().then();
+            } else {
+              console.log('bb');
+              changeBoardActivity(opponent_board, false).then();
             }
           }
           return;
@@ -632,7 +655,7 @@ Array.prototype.forEach.call(opponent_cells, function (element) {
 });
 
 async function fireOpponentCell(cell) {
-  $.ajax({
+  window.fire_opponent_cell = $.ajax({
     method: 'POST',
     url: '/fire_opponent_cell',
     async: false,
@@ -672,7 +695,7 @@ async function waitForOpponentFire() {
 }
 
 function getOpponentTurn() {
-  $.ajax({
+  window.get_opponent_fire = $.ajax({
     method: 'POST',
     url: '/get_opponent_fire',
     data: {
@@ -783,8 +806,10 @@ function showShipsPlacingUI(new_game_status) {
   game_status.classList.remove(game_status_active_class);
   game_status.classList.add(game_status_inactive_class);
   
+  if (am_i_host) {
+    restart_button.style.display = 'flex';
+  }
   ship_placing_buttons.style.display = 'block';
-  restart_button.style.display = 'flex';
   game_state_panel_section.style.display = 'flex';
 }
 
