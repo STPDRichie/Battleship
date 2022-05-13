@@ -40,12 +40,17 @@ def wait_for_member_connect(session_key):
                                       opponent=current_lobby.member_name))
 
 
-def check_for_member_connection(session_key):
-    current_lobby = get_lobby_if_exist(session_key)
+def check_for_opponent_connection(session_key):
     while True:
         time.sleep(0.5)
+        current_lobby = get_lobby_if_exist(session_key)
         if not current_lobby:
-            return asdict(LobbyChange())
+            return asdict(LobbyChange(is_lobby_exist=False, is_changed=True))
+        
+        # current_game = get_game_if_exist(session_key)
+        # if current_lobby.is_game_started and current_game:
+        #     return asdict(LobbyChange(is_lobby_exist=False, is_changed=True))
+        
         if not current_lobby.member_name:
             return asdict(LobbyChange(is_lobby_exist=True,
                                       is_changed=True, opponent=''))
@@ -87,8 +92,7 @@ def leave(session_key, username):
             app.lobbies.remove(current_lobby)
 
         if current_lobby.is_game_started:
-            current_game = next((g for g in app.games
-                                 if g.lobby == current_lobby), None)
+            current_game = get_game_if_exist(session_key)
             app.games.remove(current_game)
     
     return asdict(LobbyChange(is_changed=True))

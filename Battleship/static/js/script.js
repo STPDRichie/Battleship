@@ -1,5 +1,4 @@
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-let current_pollings = []
 
 const color_white = '#ffffff';
 const color_lightgray = '#999999';
@@ -49,7 +48,6 @@ session_key.innerHTML = Date.now().toString();
 window.onbeforeunload = leave
 
 function leave() {
-  stopAllAsyncPollings();
   const disconnect_response = $.post('/leave', {
     username: username.value
   });
@@ -59,15 +57,6 @@ function leave() {
       document.cookie = session_key_cookie_erase_id;
     }
   });
-}
-
-function stopAllAsyncPollings() {
-  if (window.fire_opponent_cell) {
-    window.fire_opponent_cell.abort();
-  }
-  if (window.get_opponent_fire) {
-    window.get_opponent_fire.abort();
-  }
 }
 
 
@@ -135,7 +124,7 @@ function waitForMemberConnect() {
         hosts_opponent.innerHTML = data['opponent'];
         start_button.classList.add(game_session_button_class_default);
         start_button.classList.remove(game_session_button_class_inactive);
-        checkForMemberConnection();
+        checkForOpponentConnection();
       } else {
         waitForMemberConnect();
       }
@@ -147,27 +136,30 @@ function waitForMemberConnect() {
   });
 }
 
-function checkForMemberConnection() {
-  if (is_game_started) {
-    return;
-  }
-  
+function checkForOpponentConnection() {
   $.ajax({
-    url: '/check_for_member_connection',
+    url: '/check_for_opponent_connection',
     timeout: 30000,
     success: function (data) {
+      if (!data['is_lobby_exist']) {
+        console.log('lobby closed');
+        leave();
+        return;
+      }
+      
       if (data['opponent'] === '') {
+        
         hosts_opponent.innerHTML = '';
         start_button.classList.add(game_session_button_class_inactive);
         start_button.classList.remove(game_session_button_class_default);
         waitForMemberConnect();
       } else {
-        checkForMemberConnection();
+        checkForOpponentConnection();
       }
     },
     error: function (jqXHR, textStatus, errorThrown) {
       console.log('check_for_member_connection: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
-      checkForMemberConnection();
+      checkForOpponentConnection();
     }
   });
 }
@@ -191,6 +183,7 @@ start_button.addEventListener('click', function () {
       is_game_started = true;
       showShipsPlacingUI(data['game_status']);
       changeTurnPlayerName(data['whose_turn']);
+      checkForOpponentConnection();
       waitForOpponentReadyForBattle();
     }
   });
@@ -245,6 +238,7 @@ function waitForStartGame() {
         game_section.style.display = 'flex';
         showShipsPlacingUI(game_status_placing_ships);
         changeTurnPlayerName(data['whose_turn']);
+        checkForOpponentConnection();
         waitForOpponentReadyForBattle();
       } else {
         waitForStartGame();
@@ -584,7 +578,6 @@ function waitForOpponentReadyForBattle() {
             if (username.value !== data['whose_turn']) {
               waitForOpponentFire().then();
             } else {
-              console.log('bb');
               changeBoardActivity(opponent_board, false).then();
             }
           }
@@ -655,7 +648,7 @@ Array.prototype.forEach.call(opponent_cells, function (element) {
 });
 
 async function fireOpponentCell(cell) {
-  window.fire_opponent_cell = $.ajax({
+  $.ajax({
     method: 'POST',
     url: '/fire_opponent_cell',
     data: {
@@ -695,7 +688,7 @@ async function waitForOpponentFire() {
 }
 
 function getOpponentTurn() {
-  window.get_opponent_fire = $.ajax({
+  $.ajax({
     method: 'POST',
     url: '/get_opponent_fire',
     data: {
