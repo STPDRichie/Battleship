@@ -113,12 +113,12 @@ def fire_opponent_cell():
                                  cell_id, current_status)
 
 
-@app.route('/get_opponent_fire', methods=['POST'])
-def get_opponent_fire():
+@app.route('/get_opponent_turn', methods=['POST'])
+def get_opponent_turn():
     session_key = request.cookies.get('session-key')
     username = request.form['username']
     current_status = request.form['game_status']
-    return gs.get_opponent_fire(session_key, username, current_status)
+    return gs.get_opponent_turn(session_key, username, current_status)
 
 
 @app.route('/get_opponent_remaining_ships', methods=['POST'])

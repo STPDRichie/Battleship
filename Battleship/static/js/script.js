@@ -145,7 +145,7 @@ function checkIsMemberInLobby() {
         return;
       }
       
-      if (data['opponent'] === '') {
+      if (data['opponent'] === null) {
         hosts_opponent.innerHTML = '';
         replaceClasses(start_button, game_session_button_class_default, game_session_button_class_inactive);
         waitForMemberConnect();
@@ -563,11 +563,7 @@ function waitForOpponentReadyForBattle() {
           leave();
           return;
         }
-        
-        if (data['is_opponent_ready_for_battle']) {
-          changeReadyState(opponent_ready_state, true);
-        }
-        
+  
         if (data['is_person_ready_for_battle']) {
           changeReadyState(person_ready_state, true);
         }
@@ -580,6 +576,10 @@ function waitForOpponentReadyForBattle() {
           } else {
             changeBoardActivity(opponent_board, false);
           }
+        }
+  
+        if (data['is_opponent_ready_for_battle']) {
+          changeReadyState(opponent_ready_state, true);
           return;
         }
       }
@@ -636,6 +636,7 @@ Array.prototype.forEach.call(opponent_cells, function (element) {
   
         if (game_status.innerHTML === game_status_win) {
           showWinUI();
+          getOpponentTurn();
         }
         
         if (game_status.innerHTML === game_status_lose) {
@@ -689,7 +690,7 @@ function waitForOpponentFire() {
 function getOpponentTurn() {
   $.ajax({
     method: 'POST',
-    url: '/get_opponent_fire',
+    url: '/get_opponent_turn',
     data: {
       username: username.value,
       game_status: game_status.innerHTML
@@ -721,6 +722,7 @@ function getOpponentTurn() {
         if (data['game_status'] === game_status_win) {
           showLoseUI();
           showOpponentRemainingShipCells();
+          getOpponentTurn();
         } else {
           changeGameStatus(data['game_status']);
           changeBoardActivity(opponent_board, false);
@@ -730,7 +732,7 @@ function getOpponentTurn() {
       }
     },
     error: function (jqXHR, textStatus, errorThrown) {
-      console.log('get_opponent_fire: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
+      console.log('get_opponent_turn: ' + jqXHR.status + ", " + textStatus + ", " + errorThrown);
       if (jqXHR.status !== 0) {
         // todo alert connection problems
         getOpponentTurn();
@@ -850,6 +852,7 @@ function showWinUI(new_game_status = game_status_win) {
   changeGameStatus(new_game_status, true, color_white, color_cyan);
   changeBoardActivity(opponent_board, true);
   changeBoardActivity(person_board, true);
+  ship_placing_buttons.style.display = 'none';
   game_state_panel_section.style.display = 'none';
 }
 
@@ -857,5 +860,6 @@ function showLoseUI(new_game_status = game_status_lose) {
   changeGameStatus(new_game_status, true, color_white, color_red);
   changeBoardActivity(opponent_board, true);
   changeBoardActivity(person_board, true);
+  ship_placing_buttons.style.display = 'none';
   game_state_panel_section.style.display = 'none';
 }

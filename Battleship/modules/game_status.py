@@ -48,8 +48,7 @@ def check_is_member_in_lobby(session_key):
             return asdict(LobbyChange(is_lobby_exist=False, is_changed=True))
         
         if not current_lobby.member_name:
-            return asdict(LobbyChange(is_lobby_exist=True,
-                                      is_changed=True, opponent=''))
+            return asdict(LobbyChange(is_lobby_exist=True, is_changed=True))
 
 
 def connect_to_lobby(session_key, member_name):
@@ -71,13 +70,26 @@ def wait_for_start_game(session_key):
         time.sleep(0.5)
         current_lobby = get_lobby_if_exist(session_key)
         if not current_lobby:
-            return asdict(LobbyChange(is_changed=True, opponent=''))
+            return asdict(LobbyChange(is_changed=True))
         if current_lobby.is_game_started:
             current_game = get_game_if_exist(session_key)
             return asdict(
                 LobbyChange(is_lobby_exist=True, is_changed=True,
                             whose_turn=current_game.whose_turn,
                             opponent=current_lobby.host_name))
+
+
+def wait_for_restart_game(session_key):
+    while True:
+        time.sleep(0.5)
+        current_game = get_game_if_exist(session_key)
+        if not current_game:
+            return asdict(GameChange(is_changed=True))
+        if current_game.last_turn and \
+                current_game.last_turn.is_game_restarted:
+            return asdict(GameChange(is_lobby_exist=True, is_changed=True,
+                                     is_game_restarted=True,
+                                     whose_turn=current_game.whose_turn))
 
 
 def leave(session_key, username):
@@ -101,10 +113,6 @@ def leave(session_key, username):
 def wait_for_opponent_ready_for_battle(session_key, username):
     while True:
         time.sleep(0.5)
-        # current_lobby = get_lobby_if_exist(session_key)
-        # if not current_lobby:
-        #     return asdict(GameChange(is_changed=True))
-
         current_game = get_game_if_exist(session_key)
         if not current_game:
             return asdict(GameChange(is_changed=True))
@@ -227,17 +235,13 @@ def fire_opponent_cell(session_key, username, cell_id, current_status):
     current_game = get_game_if_correct(session_key, current_status,
                                        GameStatus.BATTLE.value)
     if not current_game:
-        print('pizdec no game')
         return asdict(GameChange())
     
-    print('last_turn', current_game.last_turn)
     if current_game.last_turn and \
             current_game.last_turn.is_game_restarted and \
             current_game.lobby.host_name != username:
         turn = current_game.last_turn
-        print('turn', turn)
         current_game.change_last_turn(None)
-        print('new_turn', current_game.last_turn)
         return asdict(turn)
     
     current_player = get_current_player(current_game, username)
@@ -251,12 +255,17 @@ def fire_opponent_cell(session_key, username, cell_id, current_status):
     new_icon, is_ship_destroyed, destroyed_ship = \
         get_fire_info(cell, fired_cell_status, current_player.opponent)
 
-    return update_game_and_get_last_turn(current_game, new_game_status,
-                                         [cell_id], new_icon,
-                                         is_ship_destroyed, destroyed_ship)
+    return asdict(
+        update_game_and_get_last_turn(current_game, new_game_status,
+                                      [cell_id], new_icon,
+                                      is_ship_destroyed, destroyed_ship))
 
 
-def get_opponent_fire(session_key, username, current_status):
+def get_opponent_turn(session_key, username, current_status):
+    if (current_status == GameStatus.WIN.value or
+            current_status == GameStatus.LOSE.value):
+        return wait_for_restart_game(session_key)
+    
     current_game = get_game_if_correct(session_key, current_status,
                                        GameStatus.BATTLE.value)
     if not current_game:
@@ -298,9 +307,10 @@ def get_robot_fire(session_key, current_status):
     new_icon, is_ship_destroyed, destroyed_ship = \
         get_fire_info(fired_cell, fired_cell_status, current_game.player1)
 
-    return update_game_and_get_last_turn(current_game, new_game_status,
-                                         [fired_cell_id], new_icon,
-                                         is_ship_destroyed, destroyed_ship)
+    return asdict(
+        update_game_and_get_last_turn(current_game, new_game_status,
+                                      [fired_cell_id], new_icon,
+                                      is_ship_destroyed, destroyed_ship))
 
 
 def get_opponent_remaining_ship_cells(session_key, username):
@@ -327,7 +337,7 @@ def update_game_and_get_last_turn(current_game, game_status,
                       icon=icon, is_ship_destroyed=is_ship_destroyed,
                       destroyed_ship=destroyed_ship)
     current_game.change_last_turn(turn)
-    return asdict(turn)
+    return turn
 
 
 def get_game_if_correct(session_key, current_status, required_status):
