@@ -658,12 +658,12 @@ async function fireOpponentCell(cell) {
   window.fire_opponent_cell = $.ajax({
     method: 'POST',
     url: '/fire_opponent_cell',
-    async: false,
     data: {
       username: username.value,
       game_status: game_status.innerHTML,
       cell_id: cell.id
     },
+    async: false,
     success: function (data) {
       if (data['is_changed']) {
         game_status.innerHTML = data['game_status'];
@@ -687,9 +687,9 @@ async function waitForOpponentFire() {
   
   getOpponentTurn();
   
-  if (game_status.innerHTML === game_status_battle) {
-    await changeBoardActivity(opponent_board, false);
-  }
+  // if (game_status.innerHTML === game_status_battle) {
+  //   await changeBoardActivity(opponent_board, false);
+  // }
   
   // todo toggleTurnTimer frunction
 }
@@ -702,7 +702,6 @@ function getOpponentTurn() {
       username: username.value,
       game_status: game_status.innerHTML
     },
-    async: false,
     timeout: 15000,
     success: function (data) {
       if (data['is_changed']) {
@@ -732,7 +731,7 @@ function getOpponentTurn() {
         // todo alert connection problems
         getOpponentTurn();
       } else {
-        // todo pass
+        // todo opponent skiped turn
       }
     }
   });
