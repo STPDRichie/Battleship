@@ -629,6 +629,7 @@ Array.prototype.forEach.call(opponent_cells, function (element) {
     element.addEventListener('click', async function () {
       if (game_status.innerHTML === game_status_battle) {
         await fireOpponentCell(element);
+        await changeBoardActivity(opponent_board, true);
         
         if (game_status.innerHTML === game_status_battle) {
           waitForOpponentFire().then();
@@ -675,14 +676,7 @@ async function fireOpponentCell(cell) {
 async function waitForOpponentFire() {
   // todo toggleTurnTimer function
   
-  await changeBoardActivity(opponent_board, true);
-  await sleep(1000);
-  
   getOpponentTurn();
-  
-  // if (game_status.innerHTML === game_status_battle) {
-  //   await changeBoardActivity(opponent_board, false);
-  // }
   
   // todo toggleTurnTimer frunction
 }

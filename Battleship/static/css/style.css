@@ -399,6 +399,10 @@ body {
   user-select: none;
   background-color: #eeeeee;
   color: #999999;
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .game-state-panel__timer {
   width: 200px;
