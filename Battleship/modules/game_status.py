@@ -96,7 +96,7 @@ def leave(session_key, username):
     current_lobby = get_lobby_if_exist(session_key)
     if current_lobby:
         current_lobby.uninit_second_player()
-        if username == current_lobby.host_name:
+        if current_lobby.host_name == username:
             app.lobbies.remove(current_lobby)
         
         if current_lobby.is_game_started:
@@ -192,21 +192,12 @@ def get_ship_outline_cells(ship, ship_direction, cell_id):
 
 def change_person_cells(session_key, username, cell_icon, cell_id, ship,
                         ship_direction, current_status):
-    current_game = get_game_if_correct(session_key, current_status,
+    current_game, current_player, response_if_incorrect = \
+        get_game_and_player_if_correct(session_key, username,
+                                       current_status,
                                        GameStatus.PLACE_SHIPS.value)
-    if not current_game:
-        return asdict(GameChange())
-    
-    if current_game.last_turn and \
-            current_game.last_turn.is_game_restarted and \
-            current_game.lobby.host_name != username:
-        turn = current_game.last_turn
-        current_game.change_last_turn(None)
-        return asdict(turn)
-    
-    current_player = get_current_player(current_game, username)
-    if not current_player:
-        return asdict(GameChange())
+    if response_if_incorrect:
+        return asdict(response_if_incorrect)
     
     cell = cell_id_to_computing_format(cell_id)
     
@@ -232,21 +223,12 @@ def change_person_cells(session_key, username, cell_icon, cell_id, ship,
 
 
 def fire_opponent_cell(session_key, username, cell_id, current_status):
-    current_game = get_game_if_correct(session_key, current_status,
+    current_game, current_player, response_if_incorrect = \
+        get_game_and_player_if_correct(session_key, username,
+                                       current_status,
                                        GameStatus.BATTLE.value)
-    if not current_game:
-        return asdict(GameChange())
-    
-    if current_game.last_turn and \
-            current_game.last_turn.is_game_restarted and \
-            current_game.lobby.host_name != username:
-        turn = current_game.last_turn
-        current_game.change_last_turn(None)
-        return asdict(turn)
-    
-    current_player = get_current_player(current_game, username)
-    if not current_player:
-        return asdict(GameChange())
+    if response_if_incorrect:
+        return asdict(response_if_incorrect)
     
     cell = cell_id_to_computing_format(cell_id)
     fired_cell_status = current_player.fire(cell)
@@ -363,6 +345,33 @@ def get_lobby_if_exist(session_key):
     return current_lobby
 
 
+def get_current_player(current_game, username):
+    if current_game.lobby.host_name == username:
+        return current_game.player1
+    return current_game.player2
+
+
+def get_game_and_player_if_correct(session_key, username,
+                                   current_status, required_status):
+    current_game = get_game_if_correct(session_key, current_status,
+                                       required_status)
+    if not current_game:
+        return None, None, GameChange()
+    
+    if current_game.last_turn and \
+            current_game.last_turn.is_game_restarted and \
+            current_game.lobby.host_name != username:
+        turn = current_game.last_turn
+        current_game.change_last_turn(None)
+        return current_game, None, turn
+    
+    current_player = get_current_player(current_game, username)
+    if not current_player:
+        return current_game, None, GameChange()
+    
+    return current_game, current_player, None
+
+
 def get_change_player_cell_info(current_player, cell, cell_icon,
                                 ship, ship_direction):
     returned_ship = ''
@@ -406,12 +415,6 @@ def get_fire_info(fired_cell, fired_cell_status, opponent):
         destroyed_ship = opponent.get_ship_name(fired_cell)
     
     return new_icon, is_ship_destroyed, destroyed_ship
-
-
-def get_current_player(current_game, username):
-    if username == current_game.lobby.host_name:
-        return current_game.player1
-    return current_game.player2
 
 
 def cell_id_to_computing_format(cell_id):
