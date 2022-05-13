@@ -476,6 +476,12 @@ function handlePersonBoardClick(cell) {
   
   person_board_click_response.done(async function (data) {
     if (data['is_changed']) {
+      if (data['is_game_restarted']) {
+        resetGame(data['whose_turn']);
+        waitForOpponentReadyForBattle();
+        return;
+      }
+      
       changeGameStatus(data['game_status']);
       
       if (data['is_person_ready_for_battle']) {
@@ -546,6 +552,12 @@ function waitForOpponentReadyForBattle() {
     timeout: 30000,
     success: function (data) {
       if (data['is_changed']) {
+        if (data['is_game_restarted']) {
+          resetGame(data['whose_turn']);
+          waitForOpponentReadyForBattle();
+          return;
+        }
+        
         if (!data['is_lobby_exist']) {
           showWinUI(game_status_opponent_left);
           leave();
@@ -647,6 +659,12 @@ async function fireOpponentCell(cell) {
     async: false,
     success: function (data) {
       if (data['is_changed']) {
+        if (data['is_game_restarted']) {
+          resetGame(data['whose_turn']);
+          waitForOpponentReadyForBattle();
+          return;
+        }
+        
         changeGameStatus(data['game_status']);
         changeTurnPlayerName(data['whose_turn']);
         
@@ -679,6 +697,12 @@ function getOpponentTurn() {
     timeout: 15000,
     success: function (data) {
       if (data['is_changed']) {
+        if (data['is_game_restarted']) {
+          resetGame(data['whose_turn']);
+          waitForOpponentReadyForBattle();
+          return;
+        }
+        
         changeTurnPlayerName(username.value);
         
         if (!data['is_lobby_exist']) {

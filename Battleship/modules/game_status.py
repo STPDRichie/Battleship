@@ -101,15 +101,22 @@ def leave(session_key, username):
 def wait_for_opponent_ready_for_battle(session_key, username):
     while True:
         time.sleep(0.5)
-        current_lobby = get_lobby_if_exist(session_key)
-        if not current_lobby:
-            return asdict(GameChange(is_changed=True))
+        # current_lobby = get_lobby_if_exist(session_key)
+        # if not current_lobby:
+        #     return asdict(GameChange(is_changed=True))
 
         current_game = get_game_if_exist(session_key)
         if not current_game:
             return asdict(GameChange(is_changed=True))
 
-        if not current_lobby.member_name and \
+        if current_game.last_turn and \
+                current_game.last_turn.is_game_restarted and \
+                current_game.lobby.host_name != username:
+            turn = current_game.last_turn
+            current_game.change_last_turn(None)
+            return asdict(turn)
+
+        if not current_game.lobby.member_name and \
                 not isinstance(current_game.player2, Robot):
             return asdict(GameChange(is_changed=True))
 
@@ -152,12 +159,13 @@ def init_game(lobby):
 def restart_game(session_key):
     current_game = get_game_if_exist(session_key)
     
-    if current_game:
-        # todo change last turn
+    if current_game and current_game.lobby:
         current_game.__init__(current_game.lobby)
-        return asdict(
-            GameChange(is_changed=True,
-                       whose_turn=current_game.whose_turn))
+        turn = GameChange(is_lobby_exist=True, is_changed=True,
+                          is_game_restarted=True,
+                          whose_turn=current_game.whose_turn)
+        current_game.change_last_turn(turn)
+        return asdict(turn)
     return asdict(GameChange())
 
 
@@ -180,6 +188,13 @@ def change_person_cells(session_key, username, cell_icon, cell_id, ship,
                                        GameStatus.PLACE_SHIPS.value)
     if not current_game:
         return asdict(GameChange())
+    
+    if current_game.last_turn and \
+            current_game.last_turn.is_game_restarted and \
+            current_game.lobby.host_name != username:
+        turn = current_game.last_turn
+        current_game.change_last_turn(None)
+        return asdict(turn)
     
     current_player = get_current_player(current_game, username)
     if not current_player:
@@ -212,7 +227,18 @@ def fire_opponent_cell(session_key, username, cell_id, current_status):
     current_game = get_game_if_correct(session_key, current_status,
                                        GameStatus.BATTLE.value)
     if not current_game:
+        print('pizdec no game')
         return asdict(GameChange())
+    
+    print('last_turn', current_game.last_turn)
+    if current_game.last_turn and \
+            current_game.last_turn.is_game_restarted and \
+            current_game.lobby.host_name != username:
+        turn = current_game.last_turn
+        print('turn', turn)
+        current_game.change_last_turn(None)
+        print('new_turn', current_game.last_turn)
+        return asdict(turn)
     
     current_player = get_current_player(current_game, username)
     if not current_player:
@@ -243,6 +269,11 @@ def get_opponent_fire(session_key, username, current_status):
     while True:
         time.sleep(0.5)
         last_turn = current_game.last_turn
+        if last_turn and last_turn.is_game_restarted and \
+                current_game.lobby.host_name != username:
+            turn = last_turn
+            current_game.change_last_turn(None)
+            return asdict(turn)
         if last_turn and last_turn.whose_turn == username:
             fired_cell = None
             if last_turn.cells:
@@ -407,6 +438,7 @@ def cells_to_other_player_id_format(cells_ids):
 class GameChange:
     is_lobby_exist: bool = False
     is_changed: bool = False
+    is_game_restarted: bool = False
     whose_turn: str = None
     game_status: str = GameStatus.START.value
     cells: list = field(default_factory=list)
