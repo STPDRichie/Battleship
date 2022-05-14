@@ -11,8 +11,10 @@ directions = [ShipDirection.VERTICAL.value, ShipDirection.HORIZONTAL.value]
 
 
 class Robot(Player):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, board_data):
+        super().__init__(board_data)
+        self.diff_ships_count = board_data.get_different_ships_count()
+        
         self.opponent_not_empty_cells = set()
         
         self.next_cells_to_fire = []
@@ -20,15 +22,17 @@ class Robot(Player):
     
     def init_board(self):
         while self.non_placed_ships_count > 0:
-            ship = ship_list[randint(0, 3)]
+            ship = ship_list[randint(0, self.diff_ships_count - 1)]
             while self.ships_remains_to_place[ship] == 0:
-                ship = ship_list[randint(0, 3)]
+                ship = ship_list[randint(0, self.diff_ships_count - 1)]
             
-            row, column = randint(0, 9), randint(0, 9)
+            row = randint(0, self.board_size - 1)
+            column = randint(0, self.board_size - 1)
             ship_direction = directions[randint(0, 1)]
             while not self.is_placement_correct((row, column),
                                                 ship, ship_direction):
-                row, column = randint(0, 9), randint(0, 9)
+                row = randint(0, self.board_size - 1)
+                column = randint(0, self.board_size - 1)
                 ship_direction = directions[randint(0, 1)]
             
             self.place_ship((row, column), ship, ship_direction)
@@ -39,20 +43,19 @@ class Robot(Player):
             cell = self.next_cells_to_fire[randint(0, next_cells_length - 1)]
             self.next_cells_to_fire.remove(cell)
         else:
-            cell = (randint(0, 9), randint(0, 9))
+            cell = (randint(0, self.board_size - 1),
+                    randint(0, self.board_size - 1))
             while cell in self.opponent_not_empty_cells:
-                cell = (randint(0, 9), randint(0, 9))
+                cell = (randint(0, self.board_size - 1),
+                        randint(0, self.board_size - 1))
         
-        time.sleep(0.5)
-        # time.sleep(round(uniform(0.5, 1.5), 1))
-        fired_cell_status, is_one_more = self.opponent.get_fired(cell)
+        time.sleep(round(uniform(0.5, 1.5), 1))
+        fired_cell_status = self.opponent.get_fired(cell)
         self.opponent_not_empty_cells.add(cell)
         
         if fired_cell_status == CellStatus.DESTROYED.value:
             self.update_cells_to_fire_by_destroyed(cell)
             self.last_destroyed_cell = cell
-            if is_one_more:
-                self.opponent_remaining_ship_cells_count -= 1
         
         if self.opponent.is_ship_destroyed(cell):
             for next_cell in self.next_cells_to_fire:
@@ -66,7 +69,8 @@ class Robot(Player):
         cell_neighbors = []
         for row in range(-1, 2):
             for column in range(-1, 2):
-                if 0 <= row + cell[0] <= 9 and 0 <= column + cell[1] <= 9:
+                if self.min_cell <= row + cell[0] <= self.max_cell and \
+                        self.min_cell <= column + cell[1] <= self.max_cell:
                     if (row + column) % 2 != 0:
                         cell_neighbors.append(
                             (row + cell[0], column + cell[1]))

@@ -10,7 +10,3 @@ class Lobby:
     
     def uninit_second_player(self):
         self.member_name = None
-    
-    def __str__(self):
-        return f'{self.session_key}: ' \
-               f'HOST IS {self.host_name}, MEMBER IS {self.member_name}'

@@ -64,45 +64,38 @@ def get_ship_cells(cell, ship_name, ship_direction):
 
 
 class Player:
-    def __init__(self):
-        self.board = \
-            [[CellStatus.EMPTY.value for _ in range(10)] for _ in range(10)]
-        self.neighbors_board = \
-            [[0 for _ in range(10)] for _ in range(10)]
+    def __init__(self, board_data):
+        self.board_size = board_data.get_board_size()
+        self.min_cell = board_data.get_min_cell_index()
+        self.max_cell = board_data.get_max_cell_index()
         
-        self.non_placed_ships_count = 10
-        self.ships_remains_to_place = {
-            'Battleship': 1,
-            'Cruiser': 2,
-            'Submarine': 3,
-            'Destroyer': 4
-        }
+        self.board = \
+            [[CellStatus.EMPTY.value for _ in range(self.board_size)]
+             for _ in range(self.board_size)]
+        self.neighbors_board = [[0 for _ in range(self.board_size)]
+                                for _ in range(self.board_size)]
+        
+        self.non_placed_ships_count = board_data.get_non_placed_ships_count()
+        self.ships_remains_to_place = board_data.get_ships_remains_to_place()
         
         self.ships = []
         
         self.opponent = None
         
-        self.remaining_ship_cells_count = 20
-        self.opponent_remaining_ship_cells_count = 20
+        self.remaining_ship_cells_count = board_data.get_ship_cells_count()
         self.destroyed_ship_cells = []
     
     def init_opponent(self, opponent):
         self.opponent = opponent
     
     def fire(self, cell):
-        fired_cell_status, is_one_more = self.opponent.get_fired(cell)
-        
-        if is_one_more:
-            self.opponent_remaining_ship_cells_count -= 1
-        
+        fired_cell_status = self.opponent.get_fired(cell)
         return fired_cell_status
     
     def get_fired(self, cell):
         row, column = cell[0], cell[1]
         current_cell = self.board[row][column]
-        
         fired_cell_status = CellStatus.MISFIRE.value
-        is_one_more = False
         
         if current_cell == CellStatus.DESTROYED.value:
             fired_cell_status = CellStatus.DESTROYED.value
@@ -116,9 +109,8 @@ class Player:
             fired_cell_status = CellStatus.DESTROYED.value
             self.board[row][column] = CellStatus.DESTROYED.value
             self.remaining_ship_cells_count -= 1
-            is_one_more = True
         
-        return fired_cell_status, is_one_more
+        return fired_cell_status
     
     def place_ship(self, cell, ship_name, ship_direction):
         if not self.is_placement_correct(cell, ship_name, ship_direction):
@@ -151,7 +143,8 @@ class Player:
         ship_range = ships_ranges[ship_name]
         
         if ship_direction == ShipDirection.VERTICAL.value:
-            if row + ship_range[0] < 0 or row + ship_range[1] > 9:
+            if row + ship_range[0] < self.min_cell or \
+                    row + ship_range[1] > self.max_cell:
                 return False
             for r in range(ship_range[0], ship_range[1] + 1):
                 if self.board[row + r][column] in \
@@ -160,7 +153,8 @@ class Player:
                     return False
         
         if ship_direction == ShipDirection.HORIZONTAL.value:
-            if column + ship_range[0] < 0 or column + ship_range[1] > 9:
+            if column + ship_range[0] < self.min_cell or \
+                    column + ship_range[1] > self.max_cell:
                 return False
             for c in range(ship_range[0], ship_range[1] + 1):
                 if self.board[row][column + c] in \
@@ -191,24 +185,24 @@ class Player:
             start_r = ship.cells[0][0] - 1
             center_c = ship.cells[0][1]
             for r in range(start_r, start_r + reset_length):
-                if 0 <= r <= 9:
+                if self.min_cell <= r <= self.max_cell:
                     self.neighbors_board[r][center_c] -= 1
                     self.board[r][center_c] = CellStatus.EMPTY.value
-                    if center_c - 1 >= 0:
+                    if center_c - 1 >= self.min_cell:
                         self._uninit_cell(r, center_c - 1)
-                    if center_c + 1 <= 9:
+                    if center_c + 1 <= self.max_cell:
                         self._uninit_cell(r, center_c + 1)
         
         if ship.direction == ShipDirection.HORIZONTAL.value:
             start_c = ship.cells[0][1] - 1
             center_r = ship.cells[0][0]
             for c in range(start_c, start_c + reset_length):
-                if 0 <= c <= 9:
+                if self.min_cell <= c <= self.max_cell:
                     self.neighbors_board[center_r][c] -= 1
                     self.board[center_r][c] = CellStatus.EMPTY.value
-                    if center_r - 1 >= 0:
+                    if center_r - 1 >= self.min_cell:
                         self._uninit_cell(center_r - 1, c)
-                    if center_r + 1 <= 9:
+                    if center_r + 1 <= self.max_cell:
                         self._uninit_cell(center_r + 1, c)
     
     def _uninit_cell(self, row, column):
@@ -222,7 +216,7 @@ class Player:
                 self.opponent.non_placed_ships_count > 0:
             return GameStatus.PLACE_SHIPS.value
         
-        if self.opponent_remaining_ship_cells_count == 0:
+        if self.opponent.remaining_ship_cells_count == 0:
             return GameStatus.WIN.value
         
         if self.remaining_ship_cells_count == 0:

@@ -9,7 +9,7 @@ from modules.domain import GameStatus, PlayerName, CellStatus, CellIcon, \
     LobbyChange, GameChange, Board10
 from modules.player import get_ship_cells, ships_ranges
 
-board = Board10()
+board_data = Board10()
 
 
 def host_lobby(session_key, host_name):
@@ -136,18 +136,18 @@ def start_game(session_key, current_status):
     if not current_lobby:
         return asdict(GameChange())
     
-    init_response = init_game(current_lobby)
+    init_response = init_game(current_lobby, board_data)
     return asdict(init_response)
 
 
-def init_game(lobby):
+def init_game(lobby, board):
     lobby.is_game_started = True
     current_game = get_game_if_exist(lobby.session_key)
     
     if current_game:
-        current_game.__init__(lobby)
+        current_game.__init__(lobby, board)
     else:
-        current_game = Game(lobby)
+        current_game = Game(lobby, board)
         app.games.append(current_game)
     return GameChange(is_changed=True,
                       whose_turn=current_game.whose_turn,
@@ -158,7 +158,7 @@ def restart_game(session_key):
     current_game = get_game_if_exist(session_key)
     
     if current_game and current_game.lobby:
-        current_game.__init__(current_game.lobby)
+        current_game.__init__(current_game.lobby, current_game.board_data)
         turn = GameChange(is_lobby_exist=True, is_changed=True,
                           is_game_restarted=True,
                           whose_turn=current_game.whose_turn)
@@ -409,7 +409,7 @@ def get_fire_info(fired_cell, fired_cell_status, opponent):
 
 def cell_id_to_computing_format(cell_id):
     column, row = cell_id.split('_')[-1].split('-')
-    column = int(board.convert_column(column)) - 1
+    column = int(board_data.convert_column(column)) - 1
     row = int(row) - 1
     return row, column
 
@@ -419,7 +419,7 @@ def player_cells_to_id_format(cells, player):
     for cell in cells:
         cells_ids.append(
             f'{player}-board__cell_'
-            f'{board.convert_column(cell[1] + 1)}-'
+            f'{board_data.convert_column(cell[1] + 1)}-'
             f'{cell[0] + 1}'
         )
     

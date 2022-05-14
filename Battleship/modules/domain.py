@@ -44,8 +44,9 @@ class PlayerName(Enum):
 
 @dataclass(frozen=True)
 class Board10:
-    _min_cell_index: int = 0,
-    _max_cell_index: int = 9,
+    _board_size: int = 10
+    _min_cell_index: int = 0
+    _max_cell_index: int = 9
     _column_numbers_and_letters: dict = \
         field(default_factory=lambda: ({
             'a': 1, 1: 'a',
@@ -59,15 +60,40 @@ class Board10:
             'i': 9, 9: 'i',
             'j': 10, 10: 'j'
         }))
+    _different_ships_count: int = 4
+    _ship_cells_count: int = 20
+    _non_placed_ships_count: int = 10
+    _ships_remains_to_place: dict = \
+        field(default_factory=lambda: ({
+            'Battleship': 1,
+            'Cruiser': 2,
+            'Submarine': 3,
+            'Destroyer': 4
+        }))
+    
+    def get_board_size(self):
+        return int(self._board_size)
     
     def get_min_cell_index(self):
-        return self._min_cell_index
+        return int(self._min_cell_index)
     
     def get_max_cell_index(self):
-        return self._max_cell_index
+        return int(self._max_cell_index)
     
     def convert_column(self, column):
         return self._column_numbers_and_letters[column]
+    
+    def get_different_ships_count(self):
+        return int(self._different_ships_count)
+    
+    def get_ship_cells_count(self):
+        return int(self._ship_cells_count)
+    
+    def get_non_placed_ships_count(self):
+        return int(self._non_placed_ships_count)
+    
+    def get_ships_remains_to_place(self):
+        return dict(self._ships_remains_to_place)
 
 
 @dataclass(frozen=True)

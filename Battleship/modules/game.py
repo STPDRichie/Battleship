@@ -5,15 +5,16 @@ from modules.robot import Robot
 
 
 class Game:
-    def __init__(self, lobby):
+    def __init__(self, lobby, board_data):
         self.lobby = lobby
+        self.board_data = board_data
         
-        self.player1 = Player()
+        self.player1 = Player(board_data)
         if not lobby.member_name:
-            self.player2 = Robot()
+            self.player2 = Robot(board_data)
             self.player2.init_board()
         else:
-            self.player2 = Player()
+            self.player2 = Player(board_data)
         self.player1.init_opponent(self.player2)
         self.player2.init_opponent(self.player1)
         
