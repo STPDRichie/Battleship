@@ -21,12 +21,12 @@ class Game:
         self.is_battle_started = False
         self.whose_turn = choice([lobby.host_name, lobby.member_name])
         self.last_turn = None
-
+    
     def change_turn_player(self):
         if self.whose_turn == self.lobby.host_name:
             self.whose_turn = self.lobby.member_name
         else:
             self.whose_turn = self.lobby.host_name
-
+    
     def change_last_turn(self, turn):
         self.last_turn = turn

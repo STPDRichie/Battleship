@@ -1,66 +1,11 @@
 from modules.domain import GameStatus, CellStatus, ShipDirection
 from modules.ship import Ship
 
-ships_ranges = {
-    'Battleship': [-1, 2],
-    'Cruiser': [-1, 1],
-    'Submarine': [0, 1],
-    'Destroyer': [0, 0]
-}
-
 
 def get_ship_direction(ship_cells):
     if len(ship_cells) == 1 or ship_cells[0][0] == ship_cells[1][0]:
         return ShipDirection.HORIZONTAL.value
     return ShipDirection.VERTICAL.value
-
-
-def get_ship_neighbor_cells(ship_cells):
-    ship_direction = get_ship_direction(ship_cells)
-    neighbors = []
-    
-    if ship_direction == ShipDirection.VERTICAL.value:
-        start_row = ship_cells[0][0] - 1
-        center_column = ship_cells[0][1]
-        neighbors_length = ship_cells[-1][0] - start_row + 2
-        for r in range(start_row, start_row + neighbors_length):
-            if 0 <= r <= 9:
-                neighbors.append((r, center_column))
-                if center_column - 1 >= 0:
-                    neighbors.append((r, center_column - 1))
-                if center_column + 1 <= 9:
-                    neighbors.append((r, center_column + 1))
-    
-    if ship_direction == ShipDirection.HORIZONTAL.value:
-        start_column = ship_cells[0][1] - 1
-        center_row = ship_cells[0][0]
-        neighbors_length = ship_cells[-1][1] - start_column + 2
-        for c in range(start_column, start_column + neighbors_length):
-            if 0 <= c <= 9:
-                neighbors.append((center_row, c))
-                if center_row - 1 >= 0:
-                    neighbors.append((center_row - 1, c))
-                if center_row + 1 <= 9:
-                    neighbors.append((center_row + 1, c))
-    
-    return neighbors
-
-
-def get_ship_cells(cell, ship_name, ship_direction):
-    cells = []
-    ship_range = ships_ranges[ship_name]
-    
-    if ship_direction == ShipDirection.VERTICAL.value:
-        for r in range(ship_range[0], ship_range[1] + 1):
-            if 0 <= cell[0] + r <= 9:
-                cells.append((cell[0] + r, cell[1]))
-    
-    if ship_direction == ShipDirection.HORIZONTAL.value:
-        for c in range(ship_range[0], ship_range[1] + 1):
-            if 0 <= cell[1] + c <= 9:
-                cells.append((cell[0], cell[1] + c))
-    
-    return cells
 
 
 class Player:
@@ -77,6 +22,7 @@ class Player:
         
         self.non_placed_ships_count = board_data.get_non_placed_ships_count()
         self.ships_remains_to_place = board_data.get_ships_remains_to_place()
+        self.ships_ranges = board_data.get_ships_ranges()
         
         self.ships = []
         
@@ -116,8 +62,8 @@ class Player:
         if not self.is_placement_correct(cell, ship_name, ship_direction):
             return []
         
-        ship_cells = get_ship_cells(cell, ship_name, ship_direction)
-        neighbor_cells = get_ship_neighbor_cells(ship_cells)
+        ship_cells = self.get_ship_cells(cell, ship_name, ship_direction)
+        neighbor_cells = self.get_ship_neighbor_cells(ship_cells)
         
         for nbr_cell in neighbor_cells:
             self.board[nbr_cell[0]][nbr_cell[1]] = CellStatus.NEIGHBOR.value
@@ -140,7 +86,7 @@ class Player:
         
         row = cell[0]
         column = cell[1]
-        ship_range = ships_ranges[ship_name]
+        ship_range = self.ships_ranges[ship_name]
         
         if ship_direction == ShipDirection.VERTICAL.value:
             if row + ship_range[0] < self.min_cell or \
@@ -164,6 +110,52 @@ class Player:
         
         return True
     
+    def get_ship_cells(self, cell, ship_name, ship_direction):
+        cells = []
+        ship_range = self.ships_ranges[ship_name]
+        
+        if ship_direction == ShipDirection.VERTICAL.value:
+            for r in range(ship_range[0], ship_range[1] + 1):
+                if self.min_cell <= cell[0] + r <= self.max_cell:
+                    cells.append((cell[0] + r, cell[1]))
+        
+        if ship_direction == ShipDirection.HORIZONTAL.value:
+            for c in range(ship_range[0], ship_range[1] + 1):
+                if self.min_cell <= cell[1] + c <= self.max_cell:
+                    cells.append((cell[0], cell[1] + c))
+        
+        return cells
+    
+    def get_ship_neighbor_cells(self, ship_cells):
+        ship_direction = get_ship_direction(ship_cells)
+        neighbors = []
+        
+        if ship_direction == ShipDirection.VERTICAL.value:
+            start_row = ship_cells[0][0] - 1
+            center_column = ship_cells[0][1]
+            neighbors_length = ship_cells[-1][0] - start_row + 2
+            for r in range(start_row, start_row + neighbors_length):
+                if self.min_cell <= r <= self.max_cell:
+                    neighbors.append((r, center_column))
+                    if center_column - 1 >= self.min_cell:
+                        neighbors.append((r, center_column - 1))
+                    if center_column + 1 <= self.max_cell:
+                        neighbors.append((r, center_column + 1))
+        
+        if ship_direction == ShipDirection.HORIZONTAL.value:
+            start_column = ship_cells[0][1] - 1
+            center_row = ship_cells[0][0]
+            neighbors_length = ship_cells[-1][1] - start_column + 2
+            for c in range(start_column, start_column + neighbors_length):
+                if self.min_cell <= c <= self.max_cell:
+                    neighbors.append((center_row, c))
+                    if center_row - 1 >= self.min_cell:
+                        neighbors.append((center_row - 1, c))
+                    if center_row + 1 <= self.max_cell:
+                        neighbors.append((center_row + 1, c))
+        
+        return neighbors
+    
     def uninit_and_get_ship_cells(self, cell):
         self.non_placed_ships_count += 1
         
@@ -178,7 +170,7 @@ class Player:
         return None
     
     def _uninit_ship(self, ship):
-        ship_range = ships_ranges[ship.name]
+        ship_range = self.ships_ranges[ship.name]
         reset_length = abs(ship_range[0]) + ship_range[1] + 3
         
         if ship.direction == ShipDirection.VERTICAL.value:
@@ -223,7 +215,7 @@ class Player:
             return GameStatus.LOSE.value
         
         return GameStatus.BATTLE.value
-
+    
     def is_ready_for_battle(self):
         if self.non_placed_ships_count > 0:
             return False

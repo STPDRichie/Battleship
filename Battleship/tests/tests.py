@@ -220,7 +220,7 @@ class RobotTest(TestCase):
         app.robot.last_destroyed_cell = cell
         app.robot.next_cells_to_fire = [(4, 5), (5, 4), (5, 6), (6, 5)]
 
-        app.robot.update_cells_to_fire_by_destroyed(next_cell)
+        app.robot._update_cells_to_fire_by_destroyed(next_cell)
 
         self.assertEqual([(4, 5), (6, 5), (7, 5)],
                          app.robot.next_cells_to_fire)

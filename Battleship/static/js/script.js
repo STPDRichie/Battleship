@@ -487,12 +487,12 @@ function handlePersonBoardClick(cell) {
       if (data['is_person_ready_for_battle']) {
         changeReadyState(person_ready_state, true);
       }
-  
+      
       for (let i = 0; i < data['cells'].length; i++) {
         let current_cell = Array.from(person_cells).find(cell => cell.id === data['cells'][i]);
         current_cell.innerHTML = data['icon'];
       }
-  
+      
       if (data['returned_ship'] !== '') {
         returnShip(data['returned_ship'], data['ship_count']);
         return;
@@ -563,7 +563,7 @@ function waitForOpponentReadyForBattle() {
           leave();
           return;
         }
-  
+        
         if (data['is_person_ready_for_battle']) {
           changeReadyState(person_ready_state, true);
         }
@@ -577,7 +577,7 @@ function waitForOpponentReadyForBattle() {
             changeBoardActivity(opponent_board, false);
           }
         }
-  
+        
         if (data['is_opponent_ready_for_battle']) {
           changeReadyState(opponent_ready_state, true);
           return;
@@ -598,6 +598,7 @@ function handlePersonCellHover(cell) {
   }
   
   const person_cell_hover_response = $.post('/get_ship_outline_cells', {
+    username: username.value,
     current_ship: selected_ship,
     direction: selected_ship_direction,
     cell_id: cell.id
@@ -633,7 +634,7 @@ Array.prototype.forEach.call(opponent_cells, function (element) {
         if (game_status.innerHTML === game_status_battle) {
           waitForOpponentFire();
         }
-  
+        
         if (game_status.innerHTML === game_status_win) {
           showWinUI();
           getOpponentTurn();
@@ -718,7 +719,7 @@ function getOpponentTurn() {
         if (data['is_ship_destroyed'] && last_fired_cell_status !== icon_destroyed) {
           changeRemainingShipCount('person', data['destroyed_ship'].toLowerCase(), color_red);
         }
-  
+        
         if (data['game_status'] === game_status_win) {
           showLoseUI();
           showOpponentRemainingShipCells();

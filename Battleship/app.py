@@ -1,4 +1,5 @@
 import modules.game_status as gs
+import modules.lobby_status as ls
 from modules.game import Game
 from modules.lobby import Lobby
 
@@ -20,7 +21,7 @@ def host_lobby():
     session_key = request.form['session_key']
     username = request.form['username']
     
-    response = make_response(gs.host_lobby(session_key, username))
+    response = make_response(ls.host_lobby(session_key, username))
     response.set_cookie(
         'session-key',
         value=session_key
@@ -31,13 +32,13 @@ def host_lobby():
 @app.route('/wait_for_member_connect')
 def wait_for_member_connect():
     session_key = request.cookies.get('session-key')
-    return gs.wait_for_member_connect(session_key)
+    return ls.wait_for_member_connect(session_key)
 
 
 @app.route('/check_is_member_in_lobby')
 def check_is_member_in_lobby():
     session_key = request.cookies.get('session-key')
-    return gs.check_is_member_in_lobby(session_key)
+    return ls.check_is_member_in_lobby(session_key)
 
 
 @app.route('/connect_to_lobby', methods=['POST'])
@@ -45,7 +46,7 @@ def connect_to_lobby():
     session_key = request.form['session_key']
     username = request.form['username']
     
-    connection_response = gs.connect_to_lobby(session_key, username)
+    connection_response = ls.connect_to_lobby(session_key, username)
     server_response = make_response(connection_response)
     if connection_response['is_changed']:
         server_response.set_cookie(
@@ -58,7 +59,14 @@ def connect_to_lobby():
 @app.route('/wait_for_start_game')
 def wait_for_start_game():
     session_key = request.cookies.get('session-key')
-    return gs.wait_for_start_game(session_key)
+    return ls.wait_for_start_game(session_key)
+
+
+@app.route('/leave', methods=['POST'])
+def leave():
+    session_key = request.cookies.get('session-key')
+    username = request.form['username']
+    return ls.leave(session_key, username)
 
 
 @app.route('/wait_for_opponent_ready_for_battle', methods=['POST'])
@@ -68,13 +76,6 @@ def wait_for_opponent_ready_for_battle():
     return gs.wait_for_opponent_ready_for_battle(session_key, username)
 
 
-@app.route('/leave', methods=['POST'])
-def leave():
-    session_key = request.cookies.get('session-key')
-    username = request.form['username']
-    return gs.leave(session_key, username)
-
-
 @app.route('/start_game', methods=['POST'])
 def start_game():
     session_key = request.cookies.get('session-key')
@@ -82,12 +83,21 @@ def start_game():
     return gs.start_game(session_key, current_status)
 
 
+@app.route('/restart_game', methods=['GET'])
+def restart_game():
+    session_key = request.cookies.get('session-key')
+    return gs.restart_game(session_key)
+
+
 @app.route('/get_ship_outline_cells', methods=['POST'])
 def get_ship_outline_cells():
+    session_key = request.cookies.get('session-key')
+    username = request.form['username']
     ship = request.form['current_ship']
     ship_direction = request.form['direction']
     cell_id = request.form['cell_id']
-    return gs.get_ship_outline_cells(ship, ship_direction, cell_id)
+    return gs.get_ship_outline_cells(session_key, username, ship,
+                                     ship_direction, cell_id)
 
 
 @app.route('/person_cell_clicked', methods=['POST'])
@@ -126,12 +136,6 @@ def get_opponent_remaining_ship_cells():
     session_key = request.cookies.get('session-key')
     username = request.form['username']
     return gs.get_opponent_remaining_ship_cells(session_key, username)
-
-
-@app.route('/restart_game', methods=['GET'])
-def restart_game():
-    session_key = request.cookies.get('session-key')
-    return gs.restart_game(session_key)
 
 
 if __name__ == '__main__':

@@ -1,11 +1,8 @@
 import time
 from random import randint, uniform
 
-from modules.domain import CellStatus, ShipName, ShipDirection
+from modules.domain import CellStatus, ShipDirection
 from modules.player import Player
-
-ship_list = [ShipName.BATTLESHIP.value, ShipName.CRUISER.value,
-             ShipName.SUBMARINE.value, ShipName.DESTROYER.value]
 
 directions = [ShipDirection.VERTICAL.value, ShipDirection.HORIZONTAL.value]
 
@@ -14,6 +11,7 @@ class Robot(Player):
     def __init__(self, board_data):
         super().__init__(board_data)
         self.diff_ships_count = board_data.get_different_ships_count()
+        self.ship_list = board_data.get_ship_list()
         
         self.opponent_not_empty_cells = set()
         
@@ -22,9 +20,9 @@ class Robot(Player):
     
     def init_board(self):
         while self.non_placed_ships_count > 0:
-            ship = ship_list[randint(0, self.diff_ships_count - 1)]
+            ship = self.ship_list[randint(0, self.diff_ships_count - 1)]
             while self.ships_remains_to_place[ship] == 0:
-                ship = ship_list[randint(0, self.diff_ships_count - 1)]
+                ship = self.ship_list[randint(0, self.diff_ships_count - 1)]
             
             row = randint(0, self.board_size - 1)
             column = randint(0, self.board_size - 1)
@@ -54,7 +52,7 @@ class Robot(Player):
         self.opponent_not_empty_cells.add(cell)
         
         if fired_cell_status == CellStatus.DESTROYED.value:
-            self.update_cells_to_fire_by_destroyed(cell)
+            self._update_cells_to_fire_by_destroyed(cell)
             self.last_destroyed_cell = cell
         
         if self.opponent.is_ship_destroyed(cell):
@@ -65,7 +63,7 @@ class Robot(Player):
         
         return cell, fired_cell_status
     
-    def update_cells_to_fire_by_destroyed(self, cell):
+    def _update_cells_to_fire_by_destroyed(self, cell):
         cell_neighbors = []
         for row in range(-1, 2):
             for column in range(-1, 2):
@@ -80,7 +78,7 @@ class Robot(Player):
         
         next_cells = self.get_empty_cells_from_neighbors(cell_neighbors)
         self.next_cells_to_fire.extend(next_cells)
-        self.refine_next_cells_to_fire(cell)
+        self._refine_next_cells_to_fire(cell)
     
     def get_empty_cells_from_neighbors(self, neighbors):
         cells = []
@@ -90,7 +88,7 @@ class Robot(Player):
         
         return cells
     
-    def refine_next_cells_to_fire(self, cell):
+    def _refine_next_cells_to_fire(self, cell):
         if not self.last_destroyed_cell:
             return
         
