@@ -5,21 +5,11 @@ import app
 from modules.game import Game
 from modules.lobby import Lobby
 from modules.robot import Robot
-from modules.domain import GameStatus, PlayerName, CellStatus, CellIcon
+from modules.domain import GameStatus, PlayerName, CellStatus, CellIcon, \
+    LobbyChange, GameChange, Board10
 from modules.player import get_ship_cells, ships_ranges
 
-column_numbers_and_letters = {
-    'a': 1, 1: 'a',
-    'b': 2, 2: 'b',
-    'c': 3, 3: 'c',
-    'd': 4, 4: 'd',
-    'e': 5, 5: 'e',
-    'f': 6, 6: 'f',
-    'g': 7, 7: 'g',
-    'h': 8, 8: 'h',
-    'i': 9, 9: 'i',
-    'j': 10, 10: 'j'
-}
+board = Board10()
 
 
 def host_lobby(session_key, host_name):
@@ -282,7 +272,7 @@ def get_robot_fire(session_key, current_status):
         return asdict(GameChange())
     
     fired_cell, fired_cell_status = current_game.player2.random_fire()
-    new_game_status = current_game.player1.check_game_status()
+    new_game_status = current_game.player2.check_game_status()
     fired_cell_id = \
         player_cells_to_id_format([fired_cell], PlayerName.PERSON.value)[0]
 
@@ -419,7 +409,7 @@ def get_fire_info(fired_cell, fired_cell_status, opponent):
 
 def cell_id_to_computing_format(cell_id):
     column, row = cell_id.split('_')[-1].split('-')
-    column = int(column_numbers_and_letters[column]) - 1
+    column = int(board.convert_column(column)) - 1
     row = int(row) - 1
     return row, column
 
@@ -428,8 +418,10 @@ def player_cells_to_id_format(cells, player):
     cells_ids = []
     for cell in cells:
         cells_ids.append(
-            f'{player}-board__cell_' +
-            f'{column_numbers_and_letters[cell[1] + 1]}-{cell[0] + 1}')
+            f'{player}-board__cell_'
+            f'{board.convert_column(cell[1] + 1)}-'
+            f'{cell[0] + 1}'
+        )
     
     return cells_ids
 
@@ -445,28 +437,3 @@ def cells_to_other_player_id_format(cells_ids):
     if cells_ids[0].split('-')[0] == PlayerName.PERSON.value:
         return player_cells_to_id_format(cells, PlayerName.OPPONENT.value)
     return player_cells_to_id_format(cells, PlayerName.PERSON.value)
-
-
-@dataclass(frozen=True)
-class GameChange:
-    is_lobby_exist: bool = False
-    is_changed: bool = False
-    is_game_restarted: bool = False
-    whose_turn: str = None
-    game_status: str = GameStatus.START.value
-    cells: list = field(default_factory=list)
-    icon: str = CellIcon.EMPTY.value
-    is_ship_destroyed: bool = False
-    destroyed_ship: str = ''
-    ship_count: int = 0
-    returned_ship: str = ''
-    is_person_ready_for_battle: bool = False
-    is_opponent_ready_for_battle: bool = False
-
-
-@dataclass(frozen=True)
-class LobbyChange:
-    is_lobby_exist: bool = False
-    is_changed: bool = False
-    whose_turn: str = None
-    opponent: str = None
