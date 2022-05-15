@@ -3,21 +3,21 @@
   display: flex
   justify-content: center
   align-items: center
-
+  
   .section-wrapper
     background-color: $white
     height: 700px
     display: flex
     justify-content: space-around
     align-items: center
-
+  
   &__board
     width: 600px
     height: 600px
     display: flex
     flex-wrap: wrap
     text-align: center
-
+    
     &_inactive::after
       position: absolute
       content: ''
@@ -25,10 +25,10 @@
       height: 600px
       background-color: $white
       opacity: 0.5
-
+  
   &__row
     display: flex
-
+  
   &__cell
     width: calc(600px / 11)
     height: calc(600px / 11)
@@ -39,14 +39,15 @@
     border: $lightgray 2px solid
     cursor: pointer
     transition: 0.1s linear
-
+  
   #opponent-board &__cell:not(&__markup-cell)
     &:hover
       border-color: $blue
-
+  
   &__markup-cell
     border-color: $white
     cursor: default
     user-select: none
+    
     &:hover
       border-color: $white

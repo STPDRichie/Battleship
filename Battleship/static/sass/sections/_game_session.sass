@@ -1,12 +1,12 @@
 .game-session
   margin: 100px auto 0
-
+  
   .section-wrapper
     width: 400px
     display: flex
     flex-direction: column
     align-items: center
-
+  
   .block-wrapper
     width: 500px
     background-color: $white
@@ -17,9 +17,10 @@
     flex-direction: column
     align-items: center
     text-align: center
+    
     & > *
       margin: 10px 0
-
+  
   &__button
     width: 350px
     font-size: 30px
@@ -33,9 +34,10 @@
     cursor: pointer
     transition: 0.1s ease-in-out
     transition-property: background-color
+    
     &:hover
       background-color: $blue_darker
-
+  
   &__button_inactive
     width: 350px
     font-size: 30px
@@ -48,15 +50,15 @@
     user-select: none
     transition: 0.1s ease-in-out
     transition-property: background-color
-
+  
   &__robot-button
     margin: 20px 0
-
+  
   &__block-title
     font-size: 25px
     color: $lightgray
     user-select: none
-
+  
   &__user-key
     width: 350px
     font-size: 25px
@@ -65,9 +67,10 @@
     background-color: $blue-active
     color: $white
     border-radius: 50px
+    
     &::selection
       background: $blue
-
+  
   &__opponent
     width: 350px
     font-size: 25px
@@ -77,7 +80,7 @@
     color: $lightgray
     border-radius: 50px
     user-select: none
-
+  
   &__input
     width: 350px
     font-size: 25px
@@ -88,7 +91,9 @@
     border: none
     outline: none
     border-radius: 50px
+    
     &::selection
       background: $blue
+    
     &::placeholder
       color: $blue-darker

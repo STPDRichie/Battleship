@@ -1,15 +1,15 @@
 .game-panel
   margin: 100px auto 0
-
+  
   .section-wrapper
     background-color: $white
     text-align: center
     display: flex
     flex-direction: column
-
+  
   &__main-buttons
     position: relative
-
+  
   &__status
     width: 400px
     margin: 20px auto
@@ -22,9 +22,10 @@
     cursor: pointer
     transition: 0.1s ease-in-out
     transition-property: background-color
+    
     &:hover
       background-color: $blue_darker
-    
+  
   &__status_inactive
     width: 400px
     margin: 20px auto
@@ -33,7 +34,7 @@
     background-color: $section-gray
     border-radius: 35px
     user-select: none
-
+  
   &__restart-button
     width: 50px
     height: 50px
@@ -49,15 +50,18 @@
     transition: 0.1s ease-in-out background-color
     font-size: 200%
     color: $white
+    
     i
       transition: 0.5s ease-in-out all
+    
     &:hover
       background-color: $blue_darker
+    
     &:active
       i
         transition: 10ms ease-in-out all
         transform: rotateZ(720deg)
-
+  
   &__ship-select-buttons
     width: 900px
     margin: 0 auto 20px
@@ -76,9 +80,10 @@
     cursor: pointer
     transition: 0.1s ease-in-out
     transition-property: background-color
+    
     &:hover
       background-color: $blue_darker
-
+  
   &__ship-select-button_active
     width: 200px
     padding: 5px
@@ -89,7 +94,7 @@
     user-select: none
     transition: 0.1s ease-in-out
     transition-property: background-color
-
+  
   &__ship-select-button_inactive
     width: 200px
     padding: 5px
@@ -100,14 +105,14 @@
     user-select: none
     transition: 0.1s ease-in-out
     transition-property: background-color
-
+  
   &__ship-direction-select-buttons
     width: 600px
     margin: 0 auto 20px
     display: flex
     justify-content: space-between
     align-items: center
-
+  
   &__ship-direction
     width: 250px
     padding: 10px
@@ -119,9 +124,10 @@
     cursor: pointer
     transition: 0.1s ease-in-out
     transition-property: background-color
+    
     &:hover
       background-color: $blue_darker
-
+  
   &__ship-direction_active
     width: 250px
     padding: 10px
