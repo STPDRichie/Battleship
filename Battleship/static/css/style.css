@@ -45,7 +45,7 @@ body {
   font-family: "Montserrat", sans-serif;
   font-weight: 500;
   font-size: 15px;
-  background: url(../img/body-background.jpg) 0 -10px;
+  background: url(../img/body-background.png);
   background-size: 300px;
 }
 
@@ -58,6 +58,7 @@ body {
 .header {
   background: #4c97fc;
   color: #ffffff;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
 }
 .header .section-wrapper {
   padding: 15px 0;
