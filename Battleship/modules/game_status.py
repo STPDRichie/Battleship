@@ -4,13 +4,13 @@ from dataclasses import replace
 import app
 from modules.app_status import *
 from modules.domain import GameStatus, PlayerName, CellStatus, CellIcon, \
-    GameChange
+    GameChange, BoardData
 
 from modules.game import Game
 from modules.robot import Robot
 
 
-def wait_for_restart_game(session_key):
+def wait_for_restart_game(session_key) -> GameChange:
     while True:
         time.sleep(0.5)
         current_game = get_game_if_exist(session_key)
@@ -23,7 +23,7 @@ def wait_for_restart_game(session_key):
                               whose_turn=current_game.whose_turn)
 
 
-def start_game(session_key, current_status):
+def start_game(session_key, current_status) -> GameChange:
     if current_status != GameStatus.START.value:
         return GameChange()
     
@@ -35,7 +35,7 @@ def start_game(session_key, current_status):
     return init_response
 
 
-def init_game(lobby, board):
+def init_game(lobby: Lobby, board: BoardData) -> GameChange:
     lobby.is_game_started = True
     current_game = get_game_if_exist(lobby.session_key)
     
@@ -49,7 +49,7 @@ def init_game(lobby, board):
                       game_status=GameStatus.PLACE_SHIPS.value)
 
 
-def restart_game(session_key):
+def restart_game(session_key) -> GameChange:
     current_game = get_game_if_exist(session_key)
     
     if current_game and current_game.lobby:
@@ -62,7 +62,7 @@ def restart_game(session_key):
     return GameChange()
 
 
-def wait_for_opponent_ready_for_battle(session_key, username):
+def wait_for_opponent_ready(session_key, username) -> GameChange:
     while True:
         time.sleep(0.5)
         current_game = get_game_if_exist(session_key)
@@ -76,9 +76,9 @@ def wait_for_opponent_ready_for_battle(session_key, username):
             current_game.change_last_turn(None)
             return turn
         
-        if not current_game.lobby.member_name and \
-                not isinstance(current_game.player2, Robot):
-            return GameChange(is_changed=True)
+        # if not current_game.lobby.member_name and \
+        #         not isinstance(current_game.player2, Robot):
+        #     return GameChange(is_changed=True)
         
         current_player = get_current_player(current_game, username)
         is_person_ready = current_player.is_ready_for_battle()
@@ -90,14 +90,14 @@ def wait_for_opponent_ready_for_battle(session_key, username):
 
 
 def get_ship_outline_cells(session_key, username,
-                           ship, ship_direction, cell_id):
+                           ship, ship_direction, cell_id) -> GameChange:
     current_game = get_game_if_exist(session_key)
     if not current_game:
         return GameChange()
     
     current_player = get_current_player(current_game, username)
     
-    cell = cell_id_to_computing_format(cell_id)
+    cell = convert_cell_id_to_computing_format(cell_id)
     cells = current_player.get_ship_cells(cell, ship, ship_direction)
     
     current_ship_range = current_game.board_data.get_ships_ranges()[ship]
@@ -105,13 +105,13 @@ def get_ship_outline_cells(session_key, username,
     if len(cells) != ship_length:
         return GameChange()
     
-    cells_ids = player_cells_to_id_format(cells, PlayerName.PERSON.value)
+    cells_ids = convert_player_cells_to_id(cells, PlayerName.PERSON.value)
     
     return GameChange(is_changed=True, cells=cells_ids)
 
 
 def change_person_cells(session_key, username, cell_icon, cell_id, ship,
-                        ship_direction, current_status):
+                        ship_direction, current_status) -> GameChange:
     current_game, current_player, response_if_incorrect = \
         get_game_and_player_if_correct(session_key, username,
                                        current_status,
@@ -119,7 +119,7 @@ def change_person_cells(session_key, username, cell_icon, cell_id, ship,
     if response_if_incorrect:
         return response_if_incorrect
     
-    cell = cell_id_to_computing_format(cell_id)
+    cell = convert_cell_id_to_computing_format(cell_id)
     
     ship_count, returned_ship, cells_ids, new_icon = \
         get_change_player_cell_info(current_player, cell, cell_icon,
@@ -141,7 +141,8 @@ def change_person_cells(session_key, username, cell_icon, cell_id, ship,
                       is_opponent_ready_for_battle=is_opponent_ready)
 
 
-def fire_opponent_cell(session_key, username, cell_id, current_status):
+def fire_opponent_cell(session_key, username,
+                       cell_id, current_status) -> GameChange:
     current_game, current_player, response_if_incorrect = \
         get_game_and_player_if_correct(session_key, username,
                                        current_status,
@@ -149,7 +150,7 @@ def fire_opponent_cell(session_key, username, cell_id, current_status):
     if response_if_incorrect:
         return response_if_incorrect
     
-    cell = cell_id_to_computing_format(cell_id)
+    cell = convert_cell_id_to_computing_format(cell_id)
     fired_cell_status = current_player.fire(cell)
     new_game_status = current_player.check_game_status()
     
@@ -161,7 +162,7 @@ def fire_opponent_cell(session_key, username, cell_id, current_status):
                                          is_ship_destroyed, destroyed_ship)
 
 
-def get_opponent_turn(session_key, username, current_status):
+def get_opponent_turn(session_key, username, current_status) -> GameChange:
     if (current_status == GameStatus.WIN.value or
             current_status == GameStatus.LOSE.value):
         return wait_for_restart_game(session_key)
@@ -193,7 +194,7 @@ def get_opponent_turn(session_key, username, current_status):
             return response_turn
 
 
-def get_robot_fire(session_key, current_status):
+def get_robot_fire(session_key, current_status) -> GameChange:
     current_game = get_game_if_correct(session_key, current_status,
                                        GameStatus.BATTLE.value)
     if not current_game:
@@ -202,7 +203,7 @@ def get_robot_fire(session_key, current_status):
     fired_cell, fired_cell_status = current_game.player2.random_fire()
     new_game_status = current_game.player2.check_game_status()
     fired_cell_id = \
-        player_cells_to_id_format([fired_cell], PlayerName.PERSON.value)[0]
+        convert_player_cells_to_id([fired_cell], PlayerName.PERSON.value)[0]
     
     new_icon, is_ship_destroyed, destroyed_ship = \
         get_fire_info(fired_cell, fired_cell_status, current_game.player1)
@@ -212,7 +213,7 @@ def get_robot_fire(session_key, current_status):
                                          is_ship_destroyed, destroyed_ship)
 
 
-def get_opponent_remaining_ship_cells(session_key, username):
+def get_opponent_remaining_ship_cells(session_key, username) -> GameChange:
     current_game = get_game_if_exist(session_key)
     if not current_game:
         return GameChange()
@@ -220,14 +221,14 @@ def get_opponent_remaining_ship_cells(session_key, username):
     current_player = get_current_player(current_game, username)
     
     remaining_cells = current_player.opponent.get_remaining_ship_cells()
-    cells_ids = player_cells_to_id_format(remaining_cells,
-                                          PlayerName.OPPONENT.value)
+    cells_ids = convert_player_cells_to_id(remaining_cells,
+                                           PlayerName.OPPONENT.value)
     return GameChange(cells=cells_ids, icon=CellIcon.SHIP.value)
 
 
 def update_game_and_get_last_turn(current_game, game_status,
                                   cells, icon, is_ship_destroyed,
-                                  destroyed_ship):
+                                  destroyed_ship) -> GameChange:
     current_game.change_turn_player()
     turn = GameChange(is_lobby_exist=True, is_changed=True,
                       whose_turn=current_game.whose_turn,
@@ -295,8 +296,8 @@ def get_change_player_cell_info(current_player, cell, cell_icon,
     else:
         return None, None, None, None
     
-    cells_ids = player_cells_to_id_format(ship_cells,
-                                          PlayerName.PERSON.value)
+    cells_ids = convert_player_cells_to_id(ship_cells,
+                                           PlayerName.PERSON.value)
     
     return ship_count, returned_ship, cells_ids, new_icon
 

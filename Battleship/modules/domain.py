@@ -68,7 +68,51 @@ class LobbyChange:
 
 
 @dataclass(frozen=True)
-class Board10:
+class BoardData:
+    _board_size: int
+    _min_cell_index: int
+    _max_cell_index: int
+    _column_numbers_and_letters: dict
+    _different_ships_count: int
+    _ship_cells_count: int
+    _non_placed_ships_count: int
+    _ships_remains_to_place: dict
+    _ships_ranges: dict
+    _ship_list: list
+    
+    def get_board_size(self) -> int:
+        return int(self._board_size)
+    
+    def get_min_cell_index(self) -> int:
+        return int(self._min_cell_index)
+    
+    def get_max_cell_index(self) -> int:
+        return int(self._max_cell_index)
+    
+    def convert_column(self, column):
+        return self._column_numbers_and_letters[column]
+    
+    def get_different_ships_count(self) -> int:
+        return int(self._different_ships_count)
+    
+    def get_ship_cells_count(self) -> int:
+        return int(self._ship_cells_count)
+    
+    def get_non_placed_ships_count(self) -> int:
+        return int(self._non_placed_ships_count)
+    
+    def get_ships_remains_to_place(self) -> dict:
+        return dict(self._ships_remains_to_place)
+    
+    def get_ships_ranges(self) -> dict:
+        return dict(self._ships_ranges)
+    
+    def get_ship_list(self) -> list:
+        return list(self._ship_list)
+
+
+@dataclass(frozen=True)
+class Board10(BoardData):
     _board_size: int = 10
     _min_cell_index: int = 0
     _max_cell_index: int = 9
@@ -88,16 +132,16 @@ class Board10:
     _ship_cells_count: int = 20
     _non_placed_ships_count: int = 10
     _ships_remains_to_place: dict = field(default_factory=lambda: ({
-        'Battleship': 1,
-        'Cruiser': 2,
-        'Submarine': 3,
-        'Destroyer': 4
+        ShipName.BATTLESHIP.value: 1,
+        ShipName.CRUISER.value: 2,
+        ShipName.SUBMARINE.value: 3,
+        ShipName.DESTROYER.value: 4
     }))
     _ships_ranges: dict = field(default_factory=lambda: ({
-        'Battleship': [-1, 2],
-        'Cruiser': [-1, 1],
-        'Submarine': [0, 1],
-        'Destroyer': [0, 0]
+        ShipName.BATTLESHIP.value: [-1, 2],
+        ShipName.CRUISER.value: [-1, 1],
+        ShipName.SUBMARINE.value: [0, 1],
+        ShipName.DESTROYER.value: [0, 0]
     }))
     _ship_list: list = field(default_factory=lambda: ([
         ShipName.BATTLESHIP.value,
@@ -105,33 +149,3 @@ class Board10:
         ShipName.SUBMARINE.value,
         ShipName.DESTROYER.value
     ]))
-    
-    def get_board_size(self):
-        return int(self._board_size)
-    
-    def get_min_cell_index(self):
-        return int(self._min_cell_index)
-    
-    def get_max_cell_index(self):
-        return int(self._max_cell_index)
-    
-    def convert_column(self, column):
-        return self._column_numbers_and_letters[column]
-    
-    def get_different_ships_count(self):
-        return int(self._different_ships_count)
-    
-    def get_ship_cells_count(self):
-        return int(self._ship_cells_count)
-    
-    def get_non_placed_ships_count(self):
-        return int(self._non_placed_ships_count)
-    
-    def get_ships_remains_to_place(self):
-        return dict(self._ships_remains_to_place)
-    
-    def get_ships_ranges(self):
-        return dict(self._ships_ranges)
-    
-    def get_ship_list(self):
-        return list(self._ship_list)

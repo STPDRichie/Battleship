@@ -1,4 +1,4 @@
-from modules.domain import GameStatus, CellStatus, ShipDirection
+from modules.domain import GameStatus, CellStatus, ShipDirection, BoardData
 from modules.ship import Ship
 
 
@@ -9,7 +9,7 @@ def get_ship_direction(ship_cells):
 
 
 class Player:
-    def __init__(self, board_data):
+    def __init__(self, board_data: BoardData):
         self.board_size = board_data.get_board_size()
         self.min_cell = board_data.get_min_cell_index()
         self.max_cell = board_data.get_max_cell_index()

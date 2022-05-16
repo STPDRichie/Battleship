@@ -5,8 +5,8 @@ class Lobby:
         self.member_name = member_name
         self.is_game_started = False
     
-    def init_second_player(self, player2_name):
-        self.member_name = player2_name
+    def init_second_player(self, member_name):
+        self.member_name = member_name
     
     def uninit_second_player(self):
         self.member_name = None

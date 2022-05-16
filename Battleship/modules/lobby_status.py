@@ -9,36 +9,13 @@ from modules.domain import LobbyChange, GameChange
 from modules.lobby import Lobby
 
 
-def host_lobby(session_key, host_name):
+def host_lobby(session_key, host_name) -> LobbyChange:
     lobby = Lobby(session_key, host_name)
     app.lobbies.append(lobby)
     return LobbyChange(is_lobby_exist=True, is_changed=True)
 
 
-def wait_for_member_connect(session_key):
-    current_lobby = get_lobby_if_exist(session_key)
-    if not current_lobby:
-        return LobbyChange()
-    
-    while True:
-        time.sleep(0.5)
-        if current_lobby.member_name:
-            return LobbyChange(is_lobby_exist=True, is_changed=True,
-                               opponent=current_lobby.member_name)
-
-
-def check_is_member_in_lobby(session_key):
-    while True:
-        time.sleep(0.5)
-        current_lobby = get_lobby_if_exist(session_key)
-        if not current_lobby:
-            return LobbyChange(is_lobby_exist=False, is_changed=True)
-        
-        if not current_lobby.member_name:
-            return LobbyChange(is_lobby_exist=True, is_changed=True)
-
-
-def connect_to_lobby(session_key, member_name):
+def connect_to_lobby(session_key, member_name) -> LobbyChange:
     current_lobby = get_lobby_if_exist(session_key)
     
     if not current_lobby or current_lobby.member_name:
@@ -52,7 +29,30 @@ def connect_to_lobby(session_key, member_name):
     return LobbyChange()
 
 
-def wait_for_start_game(session_key):
+def wait_for_member_connect(session_key) -> LobbyChange:
+    current_lobby = get_lobby_if_exist(session_key)
+    if not current_lobby:
+        return LobbyChange()
+    
+    while True:
+        time.sleep(0.5)
+        if current_lobby.member_name:
+            return LobbyChange(is_lobby_exist=True, is_changed=True,
+                               opponent=current_lobby.member_name)
+
+
+def check_is_member_in_lobby(session_key) -> LobbyChange:
+    while True:
+        time.sleep(0.5)
+        current_lobby = get_lobby_if_exist(session_key)
+        if not current_lobby:
+            return LobbyChange(is_lobby_exist=False, is_changed=True)
+        
+        if not current_lobby.member_name:
+            return LobbyChange(is_lobby_exist=True, is_changed=True)
+
+
+def wait_for_start_game(session_key) -> LobbyChange:
     while True:
         time.sleep(0.5)
         current_lobby = get_lobby_if_exist(session_key)
@@ -65,7 +65,7 @@ def wait_for_start_game(session_key):
                                opponent=current_lobby.host_name)
 
 
-def leave(session_key, username):
+def leave(session_key, username) -> LobbyChange:
     current_lobby = get_lobby_if_exist(session_key)
     if current_lobby:
         current_lobby.uninit_second_player()

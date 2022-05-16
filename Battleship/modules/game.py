@@ -1,15 +1,17 @@
 from random import choice
 
+from modules.lobby import Lobby
 from modules.player import Player
 from modules.robot import Robot
+from modules.domain import BoardData
 
 
 class Game:
-    def __init__(self, lobby, board_data):
+    def __init__(self, lobby: Lobby, board_data: BoardData):
         self.lobby = lobby
         self.board_data = board_data
         
-        self.player1 = Player(board_data)
+        self.player1: Player = Player(board_data)
         if not lobby.member_name:
             self.player2 = Robot(board_data)
             self.player2.init_board()

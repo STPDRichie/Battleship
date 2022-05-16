@@ -1,14 +1,14 @@
 import time
 from random import randint, uniform
 
-from modules.domain import CellStatus, ShipDirection
+from modules.domain import CellStatus, ShipDirection, BoardData
 from modules.player import Player
 
 _directions = [ShipDirection.VERTICAL.value, ShipDirection.HORIZONTAL.value]
 
 
 class Robot(Player):
-    def __init__(self, board_data):
+    def __init__(self, board_data: BoardData):
         super().__init__(board_data)
         self.diff_ships_count = board_data.get_different_ships_count()
         self.ship_list = board_data.get_ship_list()

@@ -15,6 +15,11 @@ games = []
 lobbies = []
 
 
+def reset_app_components():
+    games.clear()
+    lobbies.clear()
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -77,7 +82,7 @@ def leave():
 def wait_for_opponent_ready_for_battle():
     session_key = request.cookies.get('session-key')
     username = request.form['username']
-    return asdict(gs.wait_for_opponent_ready_for_battle(session_key, username))
+    return asdict(gs.wait_for_opponent_ready(session_key, username))
 
 
 @app.route('/start_game', methods=['POST'])
