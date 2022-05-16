@@ -4,7 +4,7 @@ from random import randint, uniform
 from modules.domain import CellStatus, ShipDirection
 from modules.player import Player
 
-directions = [ShipDirection.VERTICAL.value, ShipDirection.HORIZONTAL.value]
+_directions = [ShipDirection.VERTICAL.value, ShipDirection.HORIZONTAL.value]
 
 
 class Robot(Player):
@@ -26,12 +26,12 @@ class Robot(Player):
             
             row = randint(0, self.board_size - 1)
             column = randint(0, self.board_size - 1)
-            ship_direction = directions[randint(0, 1)]
+            ship_direction = _directions[randint(0, 1)]
             while not self.is_placement_correct((row, column),
                                                 ship, ship_direction):
                 row = randint(0, self.board_size - 1)
                 column = randint(0, self.board_size - 1)
-                ship_direction = directions[randint(0, 1)]
+                ship_direction = _directions[randint(0, 1)]
             
             self.place_ship((row, column), ship, ship_direction)
     
