@@ -532,11 +532,14 @@ class ShipsPlacingTest(TestCase):
         
         self.assertTrue(remove_response.is_changed)
         self.assertEqual([_person_cells_ids[0]], remove_response.cells)
-        
 
 
 class FireTest(TestCase):
-    pass
+    def test_fire_opponent_cell(self):
+        pass
+    
+    def test_dont_fire_if_game_status_is_not_battle(self):
+        pass
 
 
 class GetFiredTest(TestCase):
