@@ -269,7 +269,8 @@ def get_game_and_player_if_correct(session_key, username,
             current_game.lobby.host_name != username:
         turn = current_game.last_turn
         current_game.change_last_turn(None)
-        return current_game, None, turn
+        current_player = get_current_player(current_game, username)
+        return current_game, current_player, turn
     
     current_player = get_current_player(current_game, username)
     if not current_player:

@@ -20,9 +20,9 @@ _player2_name = 'Member'
 _player3_name = 'ThirdWheel'
 _robot_name = 'Robot'
 
-_player_cells = [(4, 3), (8, 2)]
-_person_cells_ids = ['person-board__cell_d-5', 'person-board__cell_c-9']
-_opponent_cells_ids = ['opponent-board__cell_d-5', 'opponent-board__cell_c-9']
+_player_cells = [(4, 3), (9, 2)]
+_person_cells_ids = ['person-board__cell_d-5', 'person-board__cell_c-10']
+_opponent_cells_ids = ['opponent-board__cell_d-5', 'opponent-board__cell_c-10']
 
 
 def _init_singleplayer_lobby(session_key):
@@ -300,6 +300,7 @@ class StartGameTest(TestCase):
                                     game_status=GameStatus.PLACE_SHIPS.value),
                          start_response)
         self.assertIsInstance(current_game.player2, Robot)
+        self.assertIs(None, current_game.lobby.member_name)
     
     def test_start_multiplayer_game(self):
         app.reset_app_components()
@@ -459,9 +460,6 @@ class ShipsPlacingTest(TestCase):
         self.assertFalse(get_response.is_changed)
     
     def test_place_ship(self):
-        pass
-    
-    def test_dont_place_ship_if_is_incorrect_place(self):
         app.reset_app_components()
         _init_multiplayer_game(_session1_key)
         place_response = g_s\
@@ -470,10 +468,27 @@ class ShipsPlacingTest(TestCase):
                                  ShipName.DESTROYER.value,
                                  ShipDirection.VERTICAL.value,
                                  GameStatus.PLACE_SHIPS.value)
+        
+        self.assertTrue(place_response.is_changed)
+        self.assertEqual(3, place_response.ship_count)
+        self.assertEqual([_person_cells_ids[0]], place_response.cells)
+    
+    def test_dont_place_ship_if_is_incorrect_place(self):
+        app.reset_app_components()
+        _init_multiplayer_game(_session1_key)
+        place_response = g_s\
+            .change_person_cells(_session1_key, _player1_name,
+                                 CellIcon.EMPTY.value, _person_cells_ids[1],
+                                 ShipName.BATTLESHIP.value,
+                                 ShipDirection.VERTICAL.value,
+                                 GameStatus.PLACE_SHIPS.value)
+        
+        self.assertFalse(place_response.is_changed)
+        self.assertEqual([], place_response.cells)
     
     def test_dont_place_ship_if_game_status_not_ships_placing(self):
         app.reset_app_components()
-        _init_multiplayer_lobby(_session1_key)
+        _init_multiplayer_game(_session1_key)
         place_response = g_s\
             .change_person_cells(_session1_key, _player1_name,
                                  CellIcon.EMPTY.value, _person_cells_ids[0],
@@ -482,6 +497,42 @@ class ShipsPlacingTest(TestCase):
                                  GameStatus.START.value)
         
         self.assertFalse(place_response.is_changed)
+    
+    def test_start_battle_when_zero_ships_remains_to_place(self):
+        app.reset_app_components()
+        _init_multiplayer_game(_session1_key)
+        current_game = a_s.get_game_if_exist(_session1_key)
+        current_game.player1.non_placed_ships_count = 1
+        current_game.player2.non_placed_ships_count = 0
+        place_response = g_s\
+            .change_person_cells(_session1_key, _player1_name,
+                                 CellIcon.EMPTY.value, _person_cells_ids[0],
+                                 ShipName.DESTROYER.value,
+                                 ShipDirection.VERTICAL.value,
+                                 GameStatus.PLACE_SHIPS.value)
+        
+        self.assertTrue(place_response.is_changed)
+        self.assertEqual([_person_cells_ids[0]], place_response.cells)
+        self.assertEqual(GameStatus.BATTLE.value, place_response.game_status)
+    
+    def test_remove_ship(self):
+        app.reset_app_components()
+        _init_multiplayer_game(_session1_key)
+        g_s.change_person_cells(_session1_key, _player2_name,
+                                CellIcon.EMPTY.value, _person_cells_ids[0],
+                                ShipName.DESTROYER.value,
+                                ShipDirection.VERTICAL.value,
+                                GameStatus.PLACE_SHIPS.value)
+        remove_response = g_s\
+            .change_person_cells(_session1_key, _player2_name,
+                                 CellIcon.SHIP.value, _person_cells_ids[0],
+                                 ShipName.DESTROYER.value,
+                                 ShipDirection.VERTICAL.value,
+                                 GameStatus.PLACE_SHIPS.value)
+        
+        self.assertTrue(remove_response.is_changed)
+        self.assertEqual([_person_cells_ids[0]], remove_response.cells)
+        
 
 
 class FireTest(TestCase):
