@@ -138,10 +138,10 @@ class Board10(BoardData):
         ShipName.DESTROYER.value: 4
     }))
     _ships_ranges: dict = field(default_factory=lambda: ({
-        ShipName.BATTLESHIP.value: [-1, 2],
-        ShipName.CRUISER.value: [-1, 1],
-        ShipName.SUBMARINE.value: [0, 1],
-        ShipName.DESTROYER.value: [0, 0]
+        ShipName.BATTLESHIP.value: (-1, 2),
+        ShipName.CRUISER.value: (-1, 1),
+        ShipName.SUBMARINE.value: (0, 1),
+        ShipName.DESTROYER.value: (0, 0)
     }))
     _ship_list: list = field(default_factory=lambda: ([
         ShipName.BATTLESHIP.value,

@@ -196,20 +196,6 @@ class LobbyTest(TestCase):
         self.assertTrue(leave_response.is_changed)
         self.assertEqual(0, lobbies_count_after_leave)
     
-    def test_leave_if_game_started(self):
-        app.reset_app_components()
-        _init_multiplayer_game(_session1_key)
-        games_count_before_leave = len(app.games)
-        current_game = a_s.get_game_if_exist(_session1_key)
-        leave_response = l_s.leave(_session1_key, _player2_name)
-        games_count_after_leave = len(app.games)
-        
-        self.assertEqual(1, games_count_before_leave)
-        self.assertIsNot(None, current_game)
-        self.assertTrue(leave_response.is_changed)
-        self.assertFalse(leave_response.is_lobby_exist)
-        self.assertEqual(0, games_count_after_leave)
-    
     def test_wait_for_member_connect(self):
         app.reset_app_components()
         l_s.host_lobby(_session1_key, _player1_name)
@@ -273,22 +259,35 @@ class GameStatusTest(TestCase):
         self.assertEqual(GameStatus.PLACE_SHIPS.value,
                          start_response.game_status)
     
-    def test_dont_start_game_if_lobby_doesnt_exist(self):
+    def test_init_game_if_already_exist(self):
         app.reset_app_components()
-        start_response = g_s.start_game(_session1_key, GameStatus.START.value)
+        _init_multiplayer_game(_session1_key)
         current_game = a_s.get_game_if_exist(_session1_key)
+        current_game.change_last_turn(GameChange())
+        last_turn_before_init = current_game.last_turn
+        init_response = g_s.init_game(current_game.lobby, a_s.board_data)
+        last_turn_after_init = current_game.last_turn
         
-        self.assertIs(None, current_game)
-        self.assertFalse(start_response.is_changed)
+        self.assertEqual(GameChange(), last_turn_before_init)
+        self.assertTrue(init_response.is_changed)
+        self.assertIs(None, last_turn_after_init)
     
-    def test_dont_start_game_if_status_is_not_start(self):
+    def test_leave_if_game_started(self):
         app.reset_app_components()
-        l_s.host_lobby(_session1_key, _player1_name)
-        start_response = g_s.start_game(_session1_key,
-                                        GameStatus.PLACE_SHIPS.value)
+        _init_multiplayer_game(_session1_key)
+        games_count_before_leave = len(app.games)
+        current_game = a_s.get_game_if_exist(_session1_key)
+        leave_response = l_s.leave(_session1_key, _player2_name)
+        games_count_after_leave = len(app.games)
         
-        self.assertFalse(start_response.is_changed)
-    
+        self.assertEqual(1, games_count_before_leave)
+        self.assertIsNot(None, current_game)
+        self.assertTrue(leave_response.is_changed)
+        self.assertFalse(leave_response.is_lobby_exist)
+        self.assertEqual(0, games_count_after_leave)
+
+
+class StartGameTest(TestCase):
     def test_start_singleplayer_game(self):
         app.reset_app_components()
         l_s.host_lobby(_session1_key, _player1_name)
@@ -316,20 +315,41 @@ class GameStatusTest(TestCase):
                          start_response)
         self.assertEqual(_player2_name, current_game.lobby.member_name)
         self.assertIsInstance(current_game.player2, Player)
+        
+    def test_dont_start_game_if_lobby_doesnt_exist(self):
+        app.reset_app_components()
+        start_response = g_s.start_game(_session1_key, GameStatus.START.value)
+        current_game = a_s.get_game_if_exist(_session1_key)
+        
+        self.assertIs(None, current_game)
+        self.assertFalse(start_response.is_changed)
     
-    def test_init_game_if_already_exist(self):
+    def test_dont_start_game_if_status_is_not_start(self):
+        app.reset_app_components()
+        l_s.host_lobby(_session1_key, _player1_name)
+        start_response = g_s.start_game(_session1_key,
+                                        GameStatus.PLACE_SHIPS.value)
+        
+        self.assertFalse(start_response.is_changed)
+    
+    def test_change_last_turn_after_game_restart(self):
         app.reset_app_components()
         _init_multiplayer_game(_session1_key)
         current_game = a_s.get_game_if_exist(_session1_key)
-        current_game.change_last_turn(GameChange())
-        last_turn_before_init = current_game.last_turn
-        init_response = g_s.init_game(current_game.lobby, a_s.board_data)
-        last_turn_after_init = current_game.last_turn
+        current_game.change_last_turn(
+            GameChange(is_lobby_exist=True, is_changed=True,
+                       is_game_restarted=True))
+        last_turn_before_wait = current_game.last_turn
+        wait_response = g_s.\
+            wait_for_opponent_ready(_session1_key, _player2_name)
         
-        self.assertEqual(GameChange(), last_turn_before_init)
-        self.assertTrue(init_response.is_changed)
-        self.assertIs(None, last_turn_after_init)
-    
+        self.assertIsNot(None, last_turn_before_wait)
+        self.assertTrue(wait_response.is_changed)
+        self.assertTrue(wait_response.is_game_restarted)
+        self.assertIs(None, current_game.last_turn)
+
+
+class RestartGameTest(TestCase):
     def test_restart_game(self):
         app.reset_app_components()
         l_s.host_lobby(_session1_key, _player1_name)
@@ -368,7 +388,9 @@ class GameStatusTest(TestCase):
         
         self.assertTrue(wait_response.is_changed)
         self.assertFalse(wait_response.is_lobby_exist)
-    
+
+
+class ReadyTest(TestCase):
     def test_wait_for_opponent_ready_for_battle(self):
         app.reset_app_components()
         _init_multiplayer_game(_session1_key)
@@ -391,22 +413,6 @@ class GameStatusTest(TestCase):
         self.assertTrue(wait_response.is_changed)
         self.assertFalse(wait_response.is_lobby_exist)
     
-    def test_change_last_turn_after_game_restart(self):
-        app.reset_app_components()
-        _init_multiplayer_game(_session1_key)
-        current_game = a_s.get_game_if_exist(_session1_key)
-        current_game.change_last_turn(
-            GameChange(is_lobby_exist=True, is_changed=True,
-                       is_game_restarted=True))
-        last_turn_before_wait = current_game.last_turn
-        wait_response = g_s.\
-            wait_for_opponent_ready(_session1_key, _player2_name)
-        
-        self.assertIsNot(None, last_turn_before_wait)
-        self.assertTrue(wait_response.is_changed)
-        self.assertTrue(wait_response.is_game_restarted)
-        self.assertIs(None, current_game.last_turn)
-    
     def test_dont_wait_for_opponent_ready_if_he_left(self):
         app.reset_app_components()
         _init_multiplayer_game(_session1_key)
@@ -419,7 +425,63 @@ class GameStatusTest(TestCase):
 
 
 class ShipsPlacingTest(TestCase):
-    pass
+    def test_get_outline_cells(self):
+        app.reset_app_components()
+        _init_multiplayer_game(_session1_key)
+        get_response = g_s\
+            .get_ship_outline_cells(_session1_key, _player1_name,
+                                    ShipName.DESTROYER.value,
+                                    ShipDirection.VERTICAL.value,
+                                    _person_cells_ids[0])
+        
+        self.assertTrue(get_response.is_changed)
+        self.assertEqual([_person_cells_ids[0]], get_response.cells)
+    
+    def test_dont_get_outline_cells_if_is_incorrect_place(self):
+        app.reset_app_components()
+        _init_multiplayer_game(_session1_key)
+        get_response = g_s\
+            .get_ship_outline_cells(_session1_key, _player1_name,
+                                    ShipName.BATTLESHIP.value,
+                                    ShipDirection.VERTICAL.value,
+                                    _person_cells_ids[1])
+        
+        self.assertFalse(get_response.is_changed)
+    
+    def test_dont_get_outline_cells_if_game_doesnt_exist(self):
+        app.reset_app_components()
+        get_response = g_s\
+            .get_ship_outline_cells(_session1_key, _player1_name,
+                                    ShipName.DESTROYER.value,
+                                    ShipDirection.VERTICAL.value,
+                                    _person_cells_ids[0])
+        
+        self.assertFalse(get_response.is_changed)
+    
+    def test_place_ship(self):
+        pass
+    
+    def test_dont_place_ship_if_is_incorrect_place(self):
+        app.reset_app_components()
+        _init_multiplayer_game(_session1_key)
+        place_response = g_s\
+            .change_person_cells(_session1_key, _player1_name,
+                                 CellIcon.EMPTY.value, _person_cells_ids[0],
+                                 ShipName.DESTROYER.value,
+                                 ShipDirection.VERTICAL.value,
+                                 GameStatus.PLACE_SHIPS.value)
+    
+    def test_dont_place_ship_if_game_status_not_ships_placing(self):
+        app.reset_app_components()
+        _init_multiplayer_lobby(_session1_key)
+        place_response = g_s\
+            .change_person_cells(_session1_key, _player1_name,
+                                 CellIcon.EMPTY.value, _person_cells_ids[0],
+                                 ShipName.DESTROYER.value,
+                                 ShipDirection.VERTICAL.value,
+                                 GameStatus.START.value)
+        
+        self.assertFalse(place_response.is_changed)
 
 
 class FireTest(TestCase):
