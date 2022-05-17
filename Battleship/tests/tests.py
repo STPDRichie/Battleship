@@ -1,3 +1,4 @@
+import time
 from unittest import TestCase, main
 from dataclasses import asdict
 
@@ -498,6 +499,18 @@ class ShipsPlacingTest(TestCase):
         
         self.assertFalse(place_response.is_changed)
     
+    def test_dont_change_cells_if_cell_is_incorrect(self):
+        app.reset_app_components()
+        _init_multiplayer_game(_session1_key)
+        change_response = g_s\
+            .change_person_cells(_session1_key, _player1_name,
+                                 CellIcon.MISFIRE.value, _person_cells_ids[0],
+                                 ShipName.DESTROYER.value,
+                                 ShipDirection.VERTICAL.value,
+                                 GameStatus.PLACE_SHIPS.value)
+        
+        self.assertFalse(change_response.is_changed)
+    
     def test_start_battle_when_zero_ships_remains_to_place(self):
         app.reset_app_components()
         _init_multiplayer_game(_session1_key)
@@ -535,15 +548,164 @@ class ShipsPlacingTest(TestCase):
 
 
 class FireTest(TestCase):
-    def test_fire_opponent_cell(self):
-        pass
+    def test_destroy_opponent_cell(self):
+        app.reset_app_components()
+        _init_multiplayer_game(_session1_key)
+        g_s.change_person_cells(_session1_key, _player2_name,
+                                CellIcon.EMPTY.value, _person_cells_ids[0],
+                                ShipName.DESTROYER.value,
+                                ShipDirection.VERTICAL.value,
+                                GameStatus.PLACE_SHIPS.value)
+        destroy_response = g_s\
+            .fire_opponent_cell(_session1_key, _player1_name,
+                                _opponent_cells_ids[0],
+                                GameStatus.BATTLE.value)
+        
+        self.assertTrue(destroy_response.is_changed)
+        self.assertTrue(destroy_response.is_ship_destroyed)
+        self.assertEqual(CellIcon.DESTROYED.value, destroy_response.icon)
+        self.assertEqual(ShipName.DESTROYER.value,
+                         destroy_response.destroyed_ship)
+    
+    def test_misfire_opponent_cell(self):
+        app.reset_app_components()
+        _init_multiplayer_game(_session1_key)
+        g_s.change_person_cells(_session1_key, _player2_name,
+                                CellIcon.EMPTY.value, _person_cells_ids[0],
+                                ShipName.DESTROYER.value,
+                                ShipDirection.VERTICAL.value,
+                                GameStatus.PLACE_SHIPS.value)
+        misfire_response = g_s\
+            .fire_opponent_cell(_session1_key, _player1_name,
+                                _opponent_cells_ids[1],
+                                GameStatus.BATTLE.value)
+        
+        self.assertTrue(misfire_response.is_changed)
+        self.assertFalse(misfire_response.is_ship_destroyed)
+        self.assertEqual(CellIcon.MISFIRE.value, misfire_response.icon)
     
     def test_dont_fire_if_game_status_is_not_battle(self):
-        pass
+        app.reset_app_components()
+        _init_multiplayer_game(_session1_key)
+        fire_response = g_s.fire_opponent_cell(_session1_key, _player1_name,
+                                               _opponent_cells_ids[0],
+                                               GameStatus.PLACE_SHIPS.value)
+        
+        self.assertFalse(fire_response.is_changed)
+    
+    def test_dont_fire_if_game_restarted(self):
+        app.reset_app_components()
+        _init_multiplayer_game(_session1_key)
+        g_s.restart_game(_session1_key)
+        fire_response = g_s.fire_opponent_cell(_session1_key, _player2_name,
+                                               _opponent_cells_ids[0],
+                                               GameStatus.BATTLE.value)
+        
+        self.assertTrue(fire_response.is_changed)
+        self.assertTrue(fire_response.is_game_restarted)
 
 
-class GetFiredTest(TestCase):
-    pass
+class GetOpponentTurnTest(TestCase):
+    def test_get_opponent_turn(self):
+        app.reset_app_components()
+        _init_multiplayer_game(_session1_key)
+        g_s.fire_opponent_cell(_session1_key, _player1_name,
+                               _opponent_cells_ids[0], GameStatus.BATTLE.value)
+        time.sleep(1)
+        get_response = g_s.get_opponent_turn(_session1_key, _player2_name,
+                                             GameStatus.BATTLE.value)
+        
+        self.assertTrue(get_response.is_changed)
+        self.assertEqual([_person_cells_ids[0]], get_response.cells)
+        self.assertEqual(CellIcon.MISFIRE.value, get_response.icon)
+    
+    def test_get_robot_turn(self):
+        app.reset_app_components()
+        _init_singleplayer_game(_session1_key)
+        get_response = g_s.get_opponent_turn(_session1_key, _player1_name,
+                                             GameStatus.BATTLE.value)
+        
+        self.assertTrue(get_response.is_changed)
+        self.assertTrue(get_response.is_lobby_exist)
+    
+    def test_get_opponent_turn_if_game_restarted(self):
+        app.reset_app_components()
+        _init_multiplayer_game(_session1_key)
+        g_s.restart_game(_session1_key)
+        get_response = g_s.get_opponent_turn(_session1_key, _player2_name,
+                                             GameStatus.BATTLE.value)
+        
+        self.assertTrue(get_response.is_changed)
+        self.assertTrue(get_response.is_game_restarted)
+    
+    def test_get_opponent_turn_if_game_ended(self):
+        app.reset_app_components()
+        _init_multiplayer_game(_session1_key)
+        current_game = a_s.get_game_if_exist(_session1_key)
+        current_game.change_last_turn(GameChange(is_lobby_exist=True,
+                                                 is_changed=True,
+                                                 is_game_restarted=True))
+        get_response = g_s.get_opponent_turn(_session1_key, _player2_name,
+                                             GameStatus.LOSE.value)
+        
+        self.assertTrue(get_response.is_changed)
+        self.assertTrue(get_response.is_game_restarted)
+    
+    def test_get_opponent_turn_if_game_doesnt_exist(self):
+        app.reset_app_components()
+        get_response = g_s.get_opponent_turn(_session1_key, _player1_name,
+                                             GameStatus.BATTLE.value)
+        
+        self.assertTrue(get_response.is_changed)
+        self.assertFalse(get_response.is_lobby_exist)
+
+
+class RemainingShipCellsTest(TestCase):
+    def test_get_opponent_remaining_ship_cells(self):
+        app.reset_app_components()
+        _init_singleplayer_game(_session1_key)
+        get_response = g_s\
+            .get_opponent_remaining_ship_cells(_session1_key, _player1_name)
+        
+        self.assertTrue(get_response.is_changed)
+        self.assertTrue(get_response.is_lobby_exist)
+        self.assertEqual(20, len(get_response.cells))
+    
+    def test_get_opponent_remaining_ship_cells_if_game_doesnt_exist(self):
+        app.reset_app_components()
+        get_response = g_s\
+            .get_opponent_remaining_ship_cells(_session1_key, _player1_name)
+        
+        self.assertTrue(get_response.is_changed)
+        self.assertFalse(get_response.is_lobby_exist)
+
+
+class PlayerTest(TestCase):
+    def test_get_fired(self):
+        player = Player(a_s.board_data)
+        player.place_ship(_player_cells[0], ShipName.SUBMARINE.value,
+                          ShipDirection.VERTICAL.value)
+        get_fired_response = player.get_fired(_player_cells[0])
+        
+        self.assertEqual(CellStatus.DESTROYED.value, get_fired_response)
+    
+    def test_get_misfired(self):
+        player = Player(a_s.board_data)
+        get_fired_response = player.get_fired(_player_cells[0])
+        
+        self.assertEqual(CellStatus.MISFIRE.value, get_fired_response)
+    
+    def test_uninit_ship(self):
+        player = Player(a_s.board_data)
+        player.place_ship(_player_cells[0], ShipName.SUBMARINE.value,
+                          ShipDirection.HORIZONTAL.value)
+        non_placed_ships_count_before_uninit = player.non_placed_ships_count
+        uninit_response = player.uninit_and_get_ship_cells(_player_cells[0])
+        non_placed_ships_count_after_uninit = player.non_placed_ships_count
+        
+        self.assertEqual(9, non_placed_ships_count_before_uninit)
+        self.assertEqual(2, len(uninit_response))
+        self.assertEqual(10, non_placed_ships_count_after_uninit)
 
 
 class RobotTest(TestCase):

@@ -174,7 +174,7 @@ def get_opponent_turn(session_key, username, current_status) -> GameChange:
     
     current_player = get_current_player(current_game, username)
     if isinstance(current_player.opponent, Robot):
-        return get_robot_fire(session_key, current_status)
+        return get_robot_fire(current_game)
     
     while True:
         time.sleep(0.5)
@@ -194,12 +194,7 @@ def get_opponent_turn(session_key, username, current_status) -> GameChange:
             return response_turn
 
 
-def get_robot_fire(session_key, current_status) -> GameChange:
-    current_game = get_game_if_correct(session_key, current_status,
-                                       GameStatus.BATTLE.value)
-    if not current_game:
-        return GameChange()
-    
+def get_robot_fire(current_game) -> GameChange:
     fired_cell, fired_cell_status = current_game.player2.random_fire()
     new_game_status = current_game.player2.check_game_status()
     fired_cell_id = \
@@ -216,14 +211,15 @@ def get_robot_fire(session_key, current_status) -> GameChange:
 def get_opponent_remaining_ship_cells(session_key, username) -> GameChange:
     current_game = get_game_if_exist(session_key)
     if not current_game:
-        return GameChange()
+        return GameChange(is_changed=True)
     
     current_player = get_current_player(current_game, username)
     
     remaining_cells = current_player.opponent.get_remaining_ship_cells()
     cells_ids = convert_player_cells_to_id(remaining_cells,
                                            PlayerName.OPPONENT.value)
-    return GameChange(cells=cells_ids, icon=CellIcon.SHIP.value)
+    return GameChange(is_lobby_exist=True, is_changed=True,
+                      cells=cells_ids, icon=CellIcon.SHIP.value)
 
 
 def update_game_and_get_last_turn(current_game, game_status,
@@ -273,8 +269,6 @@ def get_game_and_player_if_correct(session_key, username,
         return current_game, current_player, turn
     
     current_player = get_current_player(current_game, username)
-    if not current_player:
-        return current_game, None, GameChange()
     
     return current_game, current_player, None
 
