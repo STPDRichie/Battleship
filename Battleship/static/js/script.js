@@ -90,12 +90,10 @@ host_button.addEventListener('click', function () {
     return;
   }
   
-  const host_response = $.post('/host_lobby', {
+  $.post('/host_lobby', {
     session_key: session_key.innerHTML,
     username: username.value
-  });
-  
-  host_response.done(function (data) {
+  }).done(function (data) {
     if (data['is_lobby_exist']) {
       game_select_block.style.display = 'none';
       lobby_block.style.display = 'block';
@@ -170,11 +168,9 @@ start_button.addEventListener('click', function () {
   game_panel_section.style.display = 'block';
   game_section.style.display = 'flex';
   
-  const start_click_response = $.post('/start_game', {
+  $.post('/start_game', {
     current_status: game_status.innerHTML
-  });
-  
-  start_click_response.done(function (data) {
+  }).done(function (data) {
     if (data['is_changed']) {
       is_game_started = true;
       showShipsPlacingUI(data['game_status']);
@@ -190,12 +186,10 @@ connect_button.addEventListener('click', function () {
     return;
   }
   
-  const connect_button_click_response = $.post('/connect_to_lobby', {
+  $.post('/connect_to_lobby', {
     session_key: session_key_input.value,
     username: username.value
-  });
-  
-  connect_button_click_response.done(function (data) {
+  }).done(function (data) {
     if (!data['is_lobby_exist']) {
       // todo alert lobby is not exist
     }
@@ -323,11 +317,9 @@ changeBoardActivity(opponent_board, true);
 
 
 game_status.addEventListener('click', function () {
-  const game_status_click_response = $.post('/start_game', {
+  $.post('/start_game', {
     current_status: game_status.innerHTML
-  });
-  
-  game_status_click_response.done(function (data) {
+  }).done(function (data) {
     if (data['is_changed']) {
       showShipsPlacingUI(data['game_status']);
       changeTurnPlayerName(data['whose_turn']);
@@ -338,9 +330,7 @@ game_status.addEventListener('click', function () {
 
 
 restart_button.addEventListener('click', function () {
-  const restart_button_click_response = $.get('/restart_game');
-  
-  restart_button_click_response.done(function (data) {
+  $.get('/restart_game').done(function (data) {
     if (data['is_changed']) {
       resetShipsPlacing(data['whose_turn']);
       waitForOpponentReadyForBattle();
@@ -465,16 +455,14 @@ function handlePersonBoardClick(cell) {
     return;
   }
   
-  const person_board_click_response = $.post('/person_cell_clicked', {
+  $.post('/person_cell_clicked', {
     username: username.value,
     game_status: game_status.innerHTML,
     direction: selected_ship_direction,
     current_ship: selected_ship,
     cell_icon: cell.innerHTML,
     cell_id: cell.id
-  });
-  
-  person_board_click_response.done(async function (data) {
+  }).done(async function (data) {
     if (data['is_changed']) {
       if (data['is_game_restarted']) {
         resetShipsPlacing(data['whose_turn']);
@@ -597,14 +585,12 @@ function handlePersonCellHover(cell) {
     return;
   }
   
-  const person_cell_hover_response = $.post('/get_ship_outline_cells', {
+  $.post('/get_ship_outline_cells', {
     username: username.value,
     current_ship: selected_ship,
     direction: selected_ship_direction,
     cell_id: cell.id
-  });
-  
-  person_cell_hover_response.done(function (data) {
+  }).done(function (data) {
     if (data['is_changed']) {
       for (let i = 0; i < data['cells'].length; i++) {
         let current_cell = Array.from(person_cells).find(cell => cell.id === data['cells'][i]);
@@ -764,11 +750,9 @@ async function blinkRemainingShipCount(current_ship, blink_color) {
 }
 
 function showOpponentRemainingShipCells() {
-  const opponent_remaining_ships = $.post('/get_opponent_remaining_ships', {
+  $.post('/get_opponent_remaining_ships', {
     username: username.value
-  });
-  
-  opponent_remaining_ships.done(function (data) {
+  }).done(function (data) {
     const remaining_ship_cells = data['cells'];
     
     for (let i = 0; i < remaining_ship_cells.length; i++) {
