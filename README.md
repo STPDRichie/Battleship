@@ -81,7 +81,7 @@ ________________________________________________________________________________
 <details style="margin-bottom:25px">
   <summary>For example</summary>
 
-  ![Func-7-8](media/Functionality/Func-7-8.gif)
+  ![Func-7-8](media/Functionality/Func-7-8.png)
 </details>
 
 #### 9. The game can be restarted using the button on the page panel at any state
