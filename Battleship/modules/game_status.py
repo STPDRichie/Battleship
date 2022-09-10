@@ -4,7 +4,7 @@ from dataclasses import replace
 import app
 from modules.app_status import *
 from modules.domain import GameStatus, PlayerName, CellStatus, CellIcon, \
-    GameChange, BoardData
+    GameChange, BoardData, REQUEST_UPDATE_RATE
 
 from modules.game import Game
 from modules.robot import Robot
@@ -12,7 +12,7 @@ from modules.robot import Robot
 
 def wait_for_restart_game(session_key) -> GameChange:
     while True:
-        time.sleep(0.5)
+        time.sleep(REQUEST_UPDATE_RATE)
         current_game = get_game_if_exist(session_key)
         if not current_game:
             return GameChange(is_changed=True)
@@ -64,7 +64,7 @@ def restart_game(session_key) -> GameChange:
 
 def wait_for_opponent_ready(session_key, username) -> GameChange:
     while True:
-        time.sleep(0.5)
+        time.sleep(REQUEST_UPDATE_RATE)
         current_game = get_game_if_exist(session_key)
         if not current_game:
             return GameChange(is_changed=True)
@@ -177,7 +177,7 @@ def get_opponent_turn(session_key, username, current_status) -> GameChange:
         return get_robot_fire(current_game)
     
     while True:
-        time.sleep(0.5)
+        time.sleep(REQUEST_UPDATE_RATE)
         last_turn = current_game.last_turn
         if last_turn and last_turn.is_game_restarted and \
                 current_game.lobby.host_name != username:

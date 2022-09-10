@@ -2,6 +2,9 @@ from enum import Enum
 from dataclasses import dataclass, field
 
 
+REQUEST_UPDATE_RATE = 0.5
+
+
 class GameStatus(Enum):
     START = 'Start game'
     PLACE_SHIPS = 'Ships placing'
